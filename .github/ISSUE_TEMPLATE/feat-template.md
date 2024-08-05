@@ -1,6 +1,6 @@
 ---
-name: issue template
-about: 무엇에 관한 이슈인가요?
+name: feat template
+about: 기능 구현
 title: ''
 labels: ''
 assignees: posite
