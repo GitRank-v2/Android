@@ -1,7 +1,6 @@
 package com.dragonguard.android.connect
 
 import android.util.Log
-import com.dragonguard.android.BuildConfig
 import com.dragonguard.android.model.*
 import com.dragonguard.android.model.compare.CompareRepoMembersResponseModel
 import com.dragonguard.android.model.compare.CompareRepoRequestModel
@@ -34,7 +33,7 @@ class ApiRepository {
         .retryOnConnectionFailure(true)
         .build()
 
-    private val retrofit = Retrofit.Builder().baseUrl(BuildConfig.api)
+    private val retrofit = Retrofit.Builder().baseUrl("")
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -205,7 +204,7 @@ class ApiRepository {
     //kilp wallet address의 정보제공을 위한 함수
     fun postWalletAuth(body: WalletAuthRequestModel): WalletAuthResponseModel {
         var authResult = WalletAuthResponseModel(null, null,null)
-        val retrofitWallet = Retrofit.Builder().baseUrl(BuildConfig.prepare)
+        val retrofitWallet = Retrofit.Builder().baseUrl("")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -225,7 +224,7 @@ class ApiRepository {
     //klip wallet address 정보제공동의 결과를 받아오는 함수
     fun getAuthResult(key: String): WalletAuthResultModel {
         var authResult = WalletAuthResultModel(null, null,null,null)
-        val retrofitWallet = Retrofit.Builder().baseUrl(BuildConfig.prepare)
+        val retrofitWallet = Retrofit.Builder().baseUrl("")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

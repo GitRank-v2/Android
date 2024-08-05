@@ -236,6 +236,10 @@ class MainFragment(
                                     binding.user3Ranking.text = info.organization_rank!!.plus(1).toString()
 
                                 }
+
+                                null -> {
+
+                                }
                             }
                         }
                         3 -> {
@@ -263,6 +267,10 @@ class MainFragment(
                                     binding.user3Githubid.text = info.member_github_ids!![2]
                                     binding.user3Ranking.text =
                                         info.organization_rank!!.plus(1).toString()
+                                }
+
+                                null -> {
+
                                 }
                             }
                         }

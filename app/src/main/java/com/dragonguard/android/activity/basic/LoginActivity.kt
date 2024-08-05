@@ -21,7 +21,6 @@ import androidx.browser.customtabs.CustomTabsService
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.browser.customtabs.CustomTabsSession
 import androidx.databinding.DataBindingUtil
-import com.dragonguard.android.BuildConfig
 import com.dragonguard.android.R
 import com.dragonguard.android.connect.NetworkCheck
 import com.dragonguard.android.databinding.ActivityLoginBinding
@@ -47,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
     private val body = WalletAuthRequestModel(Bapp("GitRank", CallBack()), "auth")
     private var walletAddress = ""
     private var key = ""
-    private val oauthUrl = "${BuildConfig.api}oauth2/authorize/github"
+    private val oauthUrl = "oauth2/authorize/github"
     private lateinit var mClient: CustomTabsClient
     private val appUrl = "gitrank://github-auth"
 
