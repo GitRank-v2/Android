@@ -1,6 +1,54 @@
 [versions]
+androidx-core = "1.13.1"
+androidx-appcompat = "1.7.0"
+material = "1.12.0"
+constraintlayout = "2.1.4"
+junit = "4.13.2"
+retrofit = "2.9.0"
+moshi = "1.15.1"
+okhttp = "4.11.0"
+browser = "1.8.0"
+glide = "4.12.0"
+viewmodel = "2.8.4"
+lottie = "6.0.0"
+circleimageview = "3.1.0"
+mpandroidchart = "v3.1.0"
+ext-junit = "1.2.1"
+espreso = "3.6.1"
+agp = "8.5.1"
+kotlin = "1.9.0"
 
 [libraries]
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material"}
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
+moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+
+viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "viewmodel" }
+
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+
+circleimageview = { group = "de.hdodenhof", name = "circleimageview", version.ref = "circleimageview" }
+
+mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
+
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "ext-junit" }
+espreso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espreso" }
 
 [plugins]
-
+agp = { id = "com.android.application", version.ref = "agp" }
+library = { id = "com.android.library", version.ref = "agp" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
