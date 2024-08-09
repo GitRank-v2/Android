@@ -19,6 +19,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.search.RepoSearchResultModel
+import com.dragonguard.android.data.model.search.UserNameModelItem
 import com.dragonguard.android.util.HorizontalItemDecorator
 import com.dragonguard.android.util.VerticalItemDecorator
 import com.dragonguard.android.databinding.ActivitySearchBinding
@@ -37,9 +39,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
     lateinit var repositoryProfileAdapter: RepositoryProfileAdapter
     private var position = 0
-    private var repoNames =
-        ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel>()
-    private var userNames = ArrayList<com.dragonguard.android.data.model.search.UserNameModelItem>()
+    private var repoNames = ArrayList<RepoSearchResultModel>()
+    private var userNames = ArrayList<UserNameModelItem>()
     private var count = 0
     private var changed = true
     private var lastSearch = ""
@@ -418,7 +419,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     //    api 호출결과 판별 및 출력
-    private fun checkSearchResult(searchResult: ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel>): Boolean {
+    private fun checkSearchResult(searchResult: ArrayList<RepoSearchResultModel>): Boolean {
         return when (searchResult.isNullOrEmpty()) {
             true -> {
                 if (changed) {
@@ -444,7 +445,7 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
-    private fun checkUsers(searchResult: ArrayList<com.dragonguard.android.data.model.search.UserNameModelItem>): Boolean {
+    private fun checkUsers(searchResult: ArrayList<UserNameModelItem>): Boolean {
         return when (searchResult.isNullOrEmpty()) {
             true -> {
                 if (changed) {

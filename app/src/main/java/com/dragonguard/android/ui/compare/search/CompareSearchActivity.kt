@@ -150,7 +150,7 @@ class CompareSearchActivity : AppCompatActivity() {
     }
 
     //    api 호출결과 판별 및 출력
-    private fun checkSearchResult(searchResult: ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel>): Boolean {
+    private fun checkSearchResult(searchResult: ArrayList<RepoSearchResultModel>): Boolean {
         return when (searchResult.isNullOrEmpty()) {
             true -> {
                 if (changed) {

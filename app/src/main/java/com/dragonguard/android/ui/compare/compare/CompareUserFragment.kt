@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
+import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.FragmentCompareUserBinding
 import com.dragonguard.android.viewmodel.Viewmodel
 import com.github.mikephil.charting.components.AxisBase
@@ -27,12 +29,9 @@ class CompareUserFragment(repoName1: String, repoName2: String, token: String) :
 
     private var repo1 = repoName1
     private var repo2 = repoName2
-    private var contributors1 =
-        ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>()
-    private var contributors2 =
-        ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>()
-    private var allContiributors =
-        ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>()
+    private var contributors1 = ArrayList<GitRepoMember>()
+    private var contributors2 = ArrayList<GitRepoMember>()
+    private var allContiributors = ArrayList<GitRepoMember>()
     var user1 = ""
     var user2 = ""
     private var count = 0
@@ -99,22 +98,21 @@ class CompareUserFragment(repoName1: String, repoName2: String, token: String) :
     검색한 결과가 잘 왔는지 확인하는 함수
     이상없으면 spinner에 두 Repository의 github id 리스트 넣는 함수 호출
      */
-    fun checkContributors(result: com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel) {
+    fun checkContributors(result: CompareRepoMembersResponseModel) {
         if ((result.first_result != null) && (result.second_result != null)) {
             if (result.first_result.isEmpty()) {
                 count++
                 val handler = Handler(Looper.getMainLooper())
                 handler.postDelayed({ repoContributors(repo1, repo2) }, 5000)
             } else {
-                var compare1 =
-                    mutableListOf<com.dragonguard.android.data.model.contributors.GitRepoMember>()
+                var compare1: MutableList<GitRepoMember>
                 for (i in 0 until result.first_result.size) {
                     compare1 =
                         contributors1.filter { it.github_id == result.first_result[i].github_id }
                             .toMutableList()
                     if (compare1.isEmpty()) {
                         contributors1.add(
-                            com.dragonguard.android.data.model.contributors.GitRepoMember(
+                            GitRepoMember(
                                 result.first_result[i].additions,
                                 result.first_result[i].commits,
                                 result.first_result[i].deletions,
@@ -127,8 +125,7 @@ class CompareUserFragment(repoName1: String, repoName2: String, token: String) :
                         compare1.clear()
                     }
                 }
-                var compare2 =
-                    mutableListOf<com.dragonguard.android.data.model.contributors.GitRepoMember>()
+                var compare2: MutableList<GitRepoMember>
                 for (i in 0 until result.second_result.size) {
                     compare2 =
                         contributors2.filter { it.github_id == result.second_result[i].github_id }

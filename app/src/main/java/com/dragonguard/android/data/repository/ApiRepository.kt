@@ -1,16 +1,49 @@
 package com.dragonguard.android.data.repository
 
 import android.util.Log
+import com.dragonguard.android.data.model.GithubOrgReposModel
+import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
+import com.dragonguard.android.data.model.compare.CompareRepoRequestModel
+import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
+import com.dragonguard.android.data.model.contributors.RepoContributorsModel
+import com.dragonguard.android.data.model.detail.ClientDetailModel
+import com.dragonguard.android.data.model.detail.UserProfileModel
+import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
+import com.dragonguard.android.data.model.klip.WalletAddressModel
+import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
+import com.dragonguard.android.data.model.klip.WalletAuthResponseModel
+import com.dragonguard.android.data.model.klip.WalletAuthResultModel
+import com.dragonguard.android.data.model.org.AddOrgMemberModel
+import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
+import com.dragonguard.android.data.model.org.OrgApprovalModel
+import com.dragonguard.android.data.model.org.OrganizationNamesModel
+import com.dragonguard.android.data.model.org.OrganizationNamesModelItem
+import com.dragonguard.android.data.model.org.RegistOrgModel
+import com.dragonguard.android.data.model.org.RegistOrgResultModel
+import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
+import com.dragonguard.android.data.model.rankings.OrganizationRankingModel
+import com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem
+import com.dragonguard.android.data.model.search.RepoSearchResultModel
+import com.dragonguard.android.data.model.search.UserNameModelItem
+import com.dragonguard.android.data.model.token.RefreshTokenModel
 import com.dragonguard.android.data.service.GitRankService
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import retrofit2.HttpException
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 /*
  서버에 요청하는 모든 api들의 호출부분
  */
 class ApiRepository {
+    private val moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
+
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(5, TimeUnit.SECONDS)
         .readTimeout(18, TimeUnit.SECONDS)
@@ -20,7 +53,7 @@ class ApiRepository {
 
     private val retrofit = Retrofit.Builder().baseUrl("")
         .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
     private var api = retrofit.create(GitRankService::class.java)
@@ -31,9 +64,9 @@ class ApiRepository {
         count: Int,
         type: String,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel> {
-        var repoNames: ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel> =
-            arrayListOf<com.dragonguard.android.data.model.search.RepoSearchResultModel>()
+    ): ArrayList<RepoSearchResultModel> {
+        var repoNames: ArrayList<RepoSearchResultModel> =
+            arrayListOf()
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
         queryMap.put("name", name)
@@ -59,9 +92,9 @@ class ApiRepository {
         filters: String,
         type: String,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel> {
-        var repoNames: ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel> =
-            arrayListOf<com.dragonguard.android.data.model.search.RepoSearchResultModel>()
+    ): ArrayList<RepoSearchResultModel> {
+        var repoNames: ArrayList<RepoSearchResultModel> =
+            arrayListOf()
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
         queryMap.put("name", name)
@@ -87,9 +120,9 @@ class ApiRepository {
         count: Int,
         type: String,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.search.UserNameModelItem> {
-        var repoNames: ArrayList<com.dragonguard.android.data.model.search.UserNameModelItem> =
-            arrayListOf<com.dragonguard.android.data.model.search.UserNameModelItem>()
+    ): ArrayList<UserNameModelItem> {
+        var repoNames: ArrayList<UserNameModelItem> =
+            arrayListOf()
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
         queryMap.put("name", name)
@@ -110,9 +143,9 @@ class ApiRepository {
     }
 
     //사용자의 정보를 받아오기 위한 함수
-    fun getUserInfo(token: String): com.dragonguard.android.data.model.UserInfoModel {
+    fun getUserInfo(token: String): UserInfoModel {
         val userInfo = api.getUserInfo("Bearer $token")
-        var userResult = com.dragonguard.android.data.model.UserInfoModel(
+        var userResult = UserInfoModel(
             null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null
         )
@@ -128,7 +161,7 @@ class ApiRepository {
         return userResult
     }
 
-    fun getClientDetails(token: String): com.dragonguard.android.data.model.detail.ClientDetailModel? {
+    fun getClientDetails(token: String): ClientDetailModel? {
         val userDetails = api.getMemberDetails("Bearer $token")
         return try {
             val result = userDetails.execute()
@@ -145,10 +178,9 @@ class ApiRepository {
     fun getRepoContributors(
         repoName: String,
         token: String
-    ): com.dragonguard.android.data.model.contributors.RepoContributorsModel? {
+    ): RepoContributorsModel? {
         val repoContributors = api.getRepoContributors(repoName, "Bearer $token")
-        var repoContResult =
-            com.dragonguard.android.data.model.contributors.RepoContributorsModel(null, null)
+        var repoContResult = RepoContributorsModel(null, null)
         try {
             val result = repoContributors.execute()
 //            if(result.code() == 204) {
@@ -169,9 +201,9 @@ class ApiRepository {
         page: Int,
         size: Int,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem> {
+    ): ArrayList<TotalUsersRankingModelItem> {
         var rankingResult =
-            ArrayList<com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem>()
+            ArrayList<TotalUsersRankingModelItem>()
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$page")
         queryMap.put("size", "$size")
@@ -189,9 +221,9 @@ class ApiRepository {
     }
 
     //사용자의 토큰 부여 내역을 확인하기 위한 함수
-    fun getTokenHistory(token: String): ArrayList<com.dragonguard.android.data.model.klip.TokenHistoryModelItem>? {
+    fun getTokenHistory(token: String): ArrayList<TokenHistoryModelItem>? {
         val tokenHistory = api.getTokenHistory("Bearer $token")
-        var tokenHistoryResult: ArrayList<com.dragonguard.android.data.model.klip.TokenHistoryModelItem>? =
+        var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? =
             null
         try {
             val result = tokenHistory.execute()
@@ -206,7 +238,7 @@ class ApiRepository {
 
     //klip wallet address를 서버에 등록하기 위한 함수
     fun postWalletAddress(
-        body: com.dragonguard.android.data.model.klip.WalletAddressModel,
+        body: WalletAddressModel,
         token: String
     ): Boolean {
         val walletAddress = api.postWalletAddress(body, "Bearer $token")
@@ -221,12 +253,11 @@ class ApiRepository {
     }
 
     //kilp wallet address의 정보제공을 위한 함수
-    fun postWalletAuth(body: com.dragonguard.android.data.model.klip.WalletAuthRequestModel): com.dragonguard.android.data.model.klip.WalletAuthResponseModel {
-        var authResult =
-            com.dragonguard.android.data.model.klip.WalletAuthResponseModel(null, null, null)
+    fun postWalletAuth(body: WalletAuthRequestModel): WalletAuthResponseModel {
+        var authResult = WalletAuthResponseModel(null, null, null)
         val retrofitWallet = Retrofit.Builder().baseUrl("")
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
         val apiWallet = retrofitWallet.create(GitRankService::class.java)
         val authWallet = apiWallet.postWalletAuth(body)
@@ -242,12 +273,11 @@ class ApiRepository {
     }
 
     //klip wallet address 정보제공동의 결과를 받아오는 함수
-    fun getAuthResult(key: String): com.dragonguard.android.data.model.klip.WalletAuthResultModel {
-        var authResult =
-            com.dragonguard.android.data.model.klip.WalletAuthResultModel(null, null, null, null)
+    fun getAuthResult(key: String): WalletAuthResultModel {
+        var authResult = WalletAuthResultModel(null, null, null, null)
         val retrofitWallet = Retrofit.Builder().baseUrl("")
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
         val apiWallet = retrofitWallet.create(GitRankService::class.java)
         val authWallet = apiWallet.getAuthResult(key)
@@ -264,12 +294,11 @@ class ApiRepository {
 
     //두 Repository의 구성원들의 기여도를 받아오기 위한 함수
     fun postCompareRepoMembersRequest(
-        body: com.dragonguard.android.data.model.compare.CompareRepoRequestModel,
+        body: CompareRepoRequestModel,
         token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel {
+    ): CompareRepoMembersResponseModel {
         Log.d("token", "token: $token")
-        var compareRepoResult =
-            com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel(null, null)
+        var compareRepoResult = CompareRepoMembersResponseModel(null, null)
         val compareRepoMembers = api.postCompareRepoMembers(body, "Bearer $token")
         try {
             val result = compareRepoMembers.execute()
@@ -285,12 +314,11 @@ class ApiRepository {
 
     //두 Repository의 정보를 받아오기 위한 함수
     fun postCompareRepoRequest(
-        body: com.dragonguard.android.data.model.compare.CompareRepoRequestModel,
+        body: CompareRepoRequestModel,
         token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoResponseModel {
+    ): CompareRepoResponseModel {
         Log.d("token", "token: $token")
-        var compareRepoResult =
-            com.dragonguard.android.data.model.compare.CompareRepoResponseModel(null, null)
+        var compareRepoResult = CompareRepoResponseModel(null, null)
         val compareRepo = api.postCompareRepo(body, "Bearer $token")
         try {
             val result = compareRepo.execute()
@@ -303,11 +331,8 @@ class ApiRepository {
         return compareRepoResult
     }
 
-    fun getNewAccessToken(
-        access: String,
-        refresh: String
-    ): com.dragonguard.android.data.model.token.RefreshTokenModel {
-        var newToken = com.dragonguard.android.data.model.token.RefreshTokenModel(null, null, null)
+    fun getNewAccessToken(access: String, refresh: String): RefreshTokenModel {
+        var newToken = RefreshTokenModel(null, null, null)
         val getToken = api.getNewAccessToken(access, refresh)
         try {
             val result = getToken.execute()
@@ -335,16 +360,16 @@ class ApiRepository {
         token: String,
         count: Int,
         type: String
-    ): com.dragonguard.android.data.model.org.OrganizationNamesModel {
+    ): OrganizationNamesModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$count")
         queryMap.put("name", name)
         queryMap.put("type", type)
         queryMap.put("size", "10")
         val getOrgNames = api.getOrgNames(queryMap, "Bearer $token")
-        var orgNames = com.dragonguard.android.data.model.org.OrganizationNamesModel()
+        var orgNames = OrganizationNamesModel()
         orgNames.add(
-            com.dragonguard.android.data.model.org.OrganizationNamesModelItem(
+            OrganizationNamesModelItem(
                 null,
                 null,
                 null,
@@ -363,12 +388,9 @@ class ApiRepository {
         }
     }
 
-    fun postRegistOrg(
-        body: com.dragonguard.android.data.model.org.RegistOrgModel,
-        token: String
-    ): com.dragonguard.android.data.model.org.RegistOrgResultModel {
+    fun postRegistOrg(body: RegistOrgModel, token: String): RegistOrgResultModel {
         val postRegist = api.postOrgRegist(body, "Bearer $token")
-        var registResult = com.dragonguard.android.data.model.org.RegistOrgResultModel(0)
+        var registResult = RegistOrgResultModel(0)
         return try {
             val result = postRegist.execute()
             Log.d("error", "RegisterOrganization error: ${result.code()}}")
@@ -380,10 +402,7 @@ class ApiRepository {
         }
     }
 
-    fun addOrgMember(
-        body: com.dragonguard.android.data.model.org.AddOrgMemberModel,
-        token: String
-    ): Long {
+    fun addOrgMember(body: AddOrgMemberModel, token: String): Long {
         val addOrg = api.postAddOrgMember(body, "Bearer $token")
         return try {
             val result = addOrg.execute()
@@ -452,13 +471,13 @@ class ApiRepository {
         id: Long,
         count: Int,
         token: String
-    ): com.dragonguard.android.data.model.rankings.OrgInternalRankingModel {
+    ): OrgInternalRankingModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("organizationId", id.toString())
         queryMap.put("page", count.toString())
         queryMap.put("size", "20")
 
-        val orgRankings = com.dragonguard.android.data.model.rankings.OrgInternalRankingModel()
+        val orgRankings = OrgInternalRankingModel()
         val orgInternal = api.getOrgInternalRankings(queryMap, "Bearer $token")
 
         return try {
@@ -471,17 +490,13 @@ class ApiRepository {
         }
     }
 
-    fun typeOrgRanking(
-        type: String,
-        page: Int,
-        token: String
-    ): com.dragonguard.android.data.model.rankings.OrganizationRankingModel {
+    fun typeOrgRanking(type: String, page: Int, token: String): OrganizationRankingModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("type", type)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
 
-        val orgRankings = com.dragonguard.android.data.model.rankings.OrganizationRankingModel()
+        val orgRankings = OrganizationRankingModel()
         val orgTotal = api.getOrgRankings(queryMap, "Bearer $token")
         return try {
             val result = orgTotal.execute()
@@ -493,14 +508,11 @@ class ApiRepository {
         }
     }
 
-    fun allOrgRanking(
-        page: Int,
-        token: String
-    ): com.dragonguard.android.data.model.rankings.OrganizationRankingModel {
+    fun allOrgRanking(page: Int, token: String): OrganizationRankingModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
-        val orgRankings = com.dragonguard.android.data.model.rankings.OrganizationRankingModel()
+        val orgRankings = OrganizationRankingModel()
         val orgTotal = api.getAllOrgRankings(queryMap, "Bearer $token")
         return try {
             val result = orgTotal.execute()
@@ -534,10 +546,7 @@ class ApiRepository {
         return false
     }
 
-    fun approveOrgRequest(
-        body: com.dragonguard.android.data.model.org.OrgApprovalModel,
-        token: String
-    ): com.dragonguard.android.data.model.org.ApproveRequestOrgModel {
+    fun approveOrgRequest(body: OrgApprovalModel, token: String): ApproveRequestOrgModel {
         val approve = api.postOrgApproval(body, "Bearer $token")
         try {
             val result = approve.execute()
@@ -546,20 +555,16 @@ class ApiRepository {
         } catch (e: Exception) {
             Log.d("error", "admin error ${e.message}")
         }
-        return com.dragonguard.android.data.model.org.ApproveRequestOrgModel()
+        return ApproveRequestOrgModel()
     }
 
-    fun statusOrgList(
-        status: String,
-        page: Int,
-        token: String
-    ): com.dragonguard.android.data.model.org.ApproveRequestOrgModel {
+    fun statusOrgList(status: String, page: Int, token: String): ApproveRequestOrgModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("status", status)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
 
-        val statusOrg = com.dragonguard.android.data.model.org.ApproveRequestOrgModel()
+        val statusOrg = ApproveRequestOrgModel()
         val orgList = api.getOrgStatus(queryMap, "Bearer $token")
         return try {
             val result = orgList.execute()
@@ -571,10 +576,7 @@ class ApiRepository {
         }
     }
 
-    fun userGitOrgRepoList(
-        orgName: String,
-        token: String
-    ): com.dragonguard.android.data.model.GithubOrgReposModel? {
+    fun userGitOrgRepoList(orgName: String, token: String): GithubOrgReposModel? {
         val repoList = api.getOrgRepoList(orgName, "Bearer $token")
         return try {
             val result = repoList.execute()
@@ -586,10 +588,7 @@ class ApiRepository {
         }
     }
 
-    fun otherProfile(
-        githubId: String,
-        token: String
-    ): com.dragonguard.android.data.model.detail.UserProfileModel? {
+    fun otherProfile(githubId: String, token: String): UserProfileModel? {
         val profile = api.getOthersProfile(githubId, "Bearer $token")
         return try {
             val result = profile.execute()
@@ -603,12 +602,11 @@ class ApiRepository {
     }
 
     fun manualCompareMembers(
-        body: com.dragonguard.android.data.model.compare.CompareRepoRequestModel,
+        body: CompareRepoRequestModel,
         token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel {
+    ): CompareRepoMembersResponseModel {
         Log.d("token", "token: $token")
-        var compareRepoResult =
-            com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel(null, null)
+        var compareRepoResult = CompareRepoMembersResponseModel(null, null)
         val compareRepoMembers = api.postCompareRepoMembersUpdate(body, "Bearer $token")
         try {
             val result = compareRepoMembers.execute()
@@ -621,13 +619,9 @@ class ApiRepository {
         return compareRepoResult
     }
 
-    fun manualCompareRepo(
-        body: com.dragonguard.android.data.model.compare.CompareRepoRequestModel,
-        token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoResponseModel {
+    fun manualCompareRepo(body: CompareRepoRequestModel, token: String): CompareRepoResponseModel {
         Log.d("token", "token: $token")
-        var compareRepoResult =
-            com.dragonguard.android.data.model.compare.CompareRepoResponseModel(null, null)
+        var compareRepoResult = CompareRepoResponseModel(null, null)
         val compareRepo = api.postCompareRepoUpdate(body, "Bearer $token")
         try {
             val result = compareRepo.execute()
@@ -640,13 +634,9 @@ class ApiRepository {
         return compareRepoResult
     }
 
-    fun manualContribute(
-        repoName: String,
-        token: String
-    ): com.dragonguard.android.data.model.contributors.RepoContributorsModel {
+    fun manualContribute(repoName: String, token: String): RepoContributorsModel {
         val repoContributors = api.getRepoContributorsUpdate(repoName, "Bearer $token")
-        var repoContResult =
-            com.dragonguard.android.data.model.contributors.RepoContributorsModel(null, null)
+        var repoContResult = RepoContributorsModel(null, null)
         try {
             val result = repoContributors.execute()
             Log.d("result", "레포 상세조회 업데이트 결과 ${result.code()}")
@@ -658,9 +648,9 @@ class ApiRepository {
         return repoContResult
     }
 
-    fun manualToken(token: String): ArrayList<com.dragonguard.android.data.model.klip.TokenHistoryModelItem>? {
+    fun manualToken(token: String): ArrayList<TokenHistoryModelItem>? {
         val tokenHistory = api.updateToken("Bearer $token")
-        var tokenHistoryResult: ArrayList<com.dragonguard.android.data.model.klip.TokenHistoryModelItem>? =
+        var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? =
             null
         try {
             val result = tokenHistory.execute()
@@ -673,9 +663,9 @@ class ApiRepository {
         return tokenHistoryResult
     }
 
-    fun manualUserInfo(token: String): com.dragonguard.android.data.model.UserInfoModel {
+    fun manualUserInfo(token: String): UserInfoModel {
         val userInfo = api.userInfoUpdate("Bearer $token")
-        var userResult = com.dragonguard.android.data.model.UserInfoModel(
+        var userResult = UserInfoModel(
             null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null
         )

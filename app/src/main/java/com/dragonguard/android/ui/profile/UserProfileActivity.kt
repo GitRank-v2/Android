@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.databinding.ActivityUserProfileBinding
 import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
@@ -73,7 +74,7 @@ class UserProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun initRecycler(result: com.dragonguard.android.data.model.detail.UserProfileModel) {
+    private fun initRecycler(result: UserProfileModel) {
         othersReposAdapter =
             OthersReposAdapter(result.git_repos, this, token, result.profile_image, name)
         binding.userRepoList.adapter = othersReposAdapter

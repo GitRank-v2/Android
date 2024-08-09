@@ -5,6 +5,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.databinding.ActivityClientReposBinding
 import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +60,7 @@ class ClientReposActivity : AppCompatActivity() {
         }
     }
 
-    private fun initRecycler(result: com.dragonguard.android.data.model.GithubOrgReposModel) {
+    private fun initRecycler(result: GithubOrgReposModel) {
         reposAdapter = OthersReposAdapter(result.git_repos, this, token, img, orgName)
         binding.memberRepositoryList.adapter = reposAdapter
         binding.memberRepositoryList.layoutManager = LinearLayoutManager(this)

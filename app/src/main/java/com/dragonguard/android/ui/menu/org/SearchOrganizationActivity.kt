@@ -189,7 +189,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkSearchResult(searchResult: com.dragonguard.android.data.model.org.OrganizationNamesModel): Boolean {
+    private fun checkSearchResult(searchResult: OrganizationNamesModel): Boolean {
         return when (searchResult.isNullOrEmpty()) {
             true -> {
                 if (changable) {

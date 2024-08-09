@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.databinding.FragmentClientProfileBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.menu.MenuActivity
@@ -65,7 +66,7 @@ class ClientProfileFragment(
         }
     }
 
-    private fun initRecycler(result: com.dragonguard.android.data.model.detail.ClientDetailModel) {
+    private fun initRecycler(result: ClientDetailModel) {
         Log.d("결과", "사용자 org: ${result.git_organizations}")
         Log.d("결과", "사용자 repos: ${result.git_repos}")
         if (!this@ClientProfileFragment.isDetached && this@ClientProfileFragment.isAdded) {

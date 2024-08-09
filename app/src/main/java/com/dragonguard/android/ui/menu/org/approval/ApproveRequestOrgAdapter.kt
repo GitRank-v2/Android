@@ -34,10 +34,7 @@ class ApproveRequestOrgAdapter(
     inner class ViewHolder(private val binding: ApproveRequestListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private var current = 0
-        fun bind(
-            data1: com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem,
-            currentPosition: Int
-        ) {
+        fun bind(data1: ApproveRequestOrgModelItem, currentPosition: Int) {
             current = currentPosition
             binding.requestOrgName.text = data1.name
             binding.requestOrgType.text = data1.type
@@ -66,7 +63,7 @@ class ApproveRequestOrgAdapter(
     }
 
     private fun approveApproval(
-        data1: com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem,
+        data1: ApproveRequestOrgModelItem,
         status: RequestStatus,
         currentPosition: Int
     ) {
@@ -86,7 +83,7 @@ class ApproveRequestOrgAdapter(
     }
 
     private fun rejectApproval(
-        data1: com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem,
+        data1: ApproveRequestOrgModelItem,
         status: RequestStatus,
         currentPosition: Int
     ) {

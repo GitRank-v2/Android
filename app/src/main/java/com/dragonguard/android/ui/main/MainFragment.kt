@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.TokenHistoryActivity
 import com.dragonguard.android.ui.search.SearchActivity
@@ -30,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class MainFragment(
     private val token: String,
-    private var info: com.dragonguard.android.data.model.UserInfoModel,
+    private var info: UserInfoModel,
     private val refresh: Boolean
 ) :
     Fragment() {

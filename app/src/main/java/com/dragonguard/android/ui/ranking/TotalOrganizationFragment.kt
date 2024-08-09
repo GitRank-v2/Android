@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.rankings.OrganizationRankingModel
+import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +61,7 @@ class TotalOrganizationFragment(private val token: String) : Fragment() {
         }
     }
 
-    private fun checkRankings(result: com.dragonguard.android.data.model.rankings.OrganizationRankingModel) {
+    private fun checkRankings(result: OrganizationRankingModel) {
         Log.d("전체", "전체 조직들: $result")
         if (result.isNotEmpty()) {
             result.forEach {
@@ -165,10 +167,7 @@ class TotalOrganizationFragment(private val token: String) : Fragment() {
 
     }
 
-    private fun profileOrgBackground(
-        model: com.dragonguard.android.data.model.rankings.TotalOrganizationModel,
-        number: Int
-    ) {
+    private fun profileOrgBackground(model: TotalOrganizationModel, number: Int) {
         when (number) {
             1 -> {
 //                Glide.with(binding.firstProfile).load()
@@ -213,7 +212,7 @@ class TotalOrganizationFragment(private val token: String) : Fragment() {
         }
     }
 
-    private fun profileOrg(model: com.dragonguard.android.data.model.rankings.TotalOrganizationModel): Int {
+    private fun profileOrg(model: TotalOrganizationModel): Int {
         return when (model.organization_type) {
             "UNIVERSITY" -> R.drawable.university
             "COMPANY" -> R.drawable.company

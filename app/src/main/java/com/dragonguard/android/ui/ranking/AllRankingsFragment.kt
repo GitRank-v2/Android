@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.UserProfileActivity
 import com.dragonguard.android.viewmodel.Viewmodel
@@ -182,10 +183,7 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
         initScrollListener()
     }
 
-    private fun profileBackground(
-        model: com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel,
-        number: Int
-    ) {
+    private fun profileBackground(model: TotalUsersRankingsModel, number: Int) {
         binding.firstProfile.clipToOutline = true
         binding.secondProfile.clipToOutline = true
         binding.thirdProfile.clipToOutline = true

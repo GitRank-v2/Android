@@ -34,7 +34,7 @@ class ContributorsAdapter(
 
     //리사이클러 뷰의 요소들을 넣어줌
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(data1: com.dragonguard.android.data.model.contributors.GitRepoMember) {
+        fun bind(data1: GitRepoMember) {
             binding.contributeRanking.text = data1.commits.toString()
             binding.contrubutorId.text = data1.github_id
             val red = (Math.random() * 255).toInt()

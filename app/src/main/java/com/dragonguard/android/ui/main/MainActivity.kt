@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.CompareSearchFragment
 import com.dragonguard.android.ui.login.LoginActivity
@@ -96,7 +97,7 @@ class MainActivity : AppCompatActivity() {
     private var profileFrag: ClientProfileFragment? = null
     private var imgRefresh = true
     private var added = false
-    private var realModel = com.dragonguard.android.data.model.UserInfoModel(
+    private var realModel = UserInfoModel(
         null,
         null,
         null,
@@ -408,7 +409,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkUserInfo(userInfo: com.dragonguard.android.data.model.UserInfoModel) {
+    private fun checkUserInfo(userInfo: UserInfoModel) {
         if (userInfo.github_id == null && !loginOut) {
             if (prefs.getRefreshToken("").isBlank()) {
                 if (!this@MainActivity.isFinishing && state) {

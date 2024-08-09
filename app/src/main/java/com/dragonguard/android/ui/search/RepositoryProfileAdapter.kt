@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.dragonguard.android.data.model.search.RepoSearchResultModel
+import com.dragonguard.android.data.model.search.UserNameModelItem
 import com.dragonguard.android.databinding.RepositoryListBinding
 import com.dragonguard.android.ui.profile.UserProfileActivity
 
@@ -30,7 +32,7 @@ class RepositoryProfileAdapter(
         //클릭리스너 구현
         fun bind(data: Any?) {
             when (data) {
-                is com.dragonguard.android.data.model.search.RepoSearchResultModel -> {
+                is RepoSearchResultModel -> {
                     binding.repoName.text = data.name
                     Log.d("name", "${data.name}")
                     val img = imgList[data.language]
@@ -69,7 +71,7 @@ class RepositoryProfileAdapter(
                     }
                 }
 
-                is com.dragonguard.android.data.model.search.UserNameModelItem -> {
+                is UserNameModelItem -> {
                     binding.repoName.text = data.name
                     itemView.setOnClickListener {
                         Log.d("users", "user = $data")

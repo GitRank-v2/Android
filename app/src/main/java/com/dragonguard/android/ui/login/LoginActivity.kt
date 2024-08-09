@@ -29,6 +29,9 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.klip.Bapp
+import com.dragonguard.android.data.model.klip.CallBack
+import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
 import com.dragonguard.android.databinding.ActivityLoginBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.util.IdPreference
@@ -48,10 +51,10 @@ class LoginActivity : AppCompatActivity() {
     private var backPressed: Long = 0
     private lateinit var binding: ActivityLoginBinding
     private var viewmodel = Viewmodel()
-    private val body = com.dragonguard.android.data.model.klip.WalletAuthRequestModel(
-        com.dragonguard.android.data.model.klip.Bapp(
+    private val body = WalletAuthRequestModel(
+        Bapp(
             "GitRank",
-            com.dragonguard.android.data.model.klip.CallBack()
+            CallBack()
         ), "auth"
     )
     private var walletAddress = ""

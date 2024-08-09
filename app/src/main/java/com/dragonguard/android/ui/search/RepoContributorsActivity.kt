@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityRepoContributorsBinding
 import com.dragonguard.android.data.model.contributors.GitRepoMember
+import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.viewmodel.Viewmodel
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase
@@ -93,7 +94,7 @@ class RepoContributorsActivity : AppCompatActivity() {
     }
 
     //    검색한 결과가 잘 왔는지 확인
-    fun checkContributors(result: com.dragonguard.android.data.model.contributors.RepoContributorsModel?) {
+    fun checkContributors(result: RepoContributorsModel?) {
         Log.d("repo", "결과 $result")
         if (result != null) {
             if (result.git_repo_members != null && result.git_repo_members.isNotEmpty()) {
@@ -131,7 +132,7 @@ class RepoContributorsActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkUpdate(result: com.dragonguard.android.data.model.contributors.RepoContributorsModel) {
+    private fun checkUpdate(result: RepoContributorsModel) {
         Log.d("repo", "결과 $result")
         if (result.git_repo_members != null) {
             if (result.git_repo_members[0].additions == null) {
@@ -318,7 +319,7 @@ class RepoContributorsActivity : AppCompatActivity() {
     /*    그래프 x축을 contributor의 이름으로 변경하는 코드
           x축 label을 githubId의 앞의 4글자를 기입하여 곂치는 문제 해결
      */
-    class MyXAxisFormatter(contributors: ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>) :
+    class MyXAxisFormatter(contributors: ArrayList<GitRepoMember>) :
         ValueFormatter() {
         private val days = contributors.flatMap {
             if (it.github_id!!.length < 4) {
@@ -336,7 +337,7 @@ class RepoContributorsActivity : AppCompatActivity() {
     }
 
     //    막대 위의 커밋수 정수로 변경
-    class ScoreCustomFormatter(contributors: ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>) :
+    class ScoreCustomFormatter(contributors: ArrayList<GitRepoMember>) :
         ValueFormatter() {
         private val days = contributors.flatMap {
             if (it.github_id!!.length < 4) {

@@ -5,11 +5,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.FragmentCompareUserBinding
 import com.dragonguard.android.databinding.LanguageListBinding
 
 class UserListAdapter(
-    private val users: ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>,
+    private val users: ArrayList<GitRepoMember>,
     private val userFragment: CompareUserFragment,
     private val type: Int,
     private val fragmentBinding: FragmentCompareUserBinding

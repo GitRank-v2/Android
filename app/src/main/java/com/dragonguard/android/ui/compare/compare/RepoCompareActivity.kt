@@ -10,6 +10,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
+import com.dragonguard.android.data.model.compare.RepoMembersResult
 import com.dragonguard.android.databinding.ActivityRepoCompareBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.viewmodel.Viewmodel
@@ -67,7 +69,7 @@ class RepoCompareActivity : AppCompatActivity() {
         }
     }
 
-    fun checkContributors(result: com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel) {
+    fun checkContributors(result: CompareRepoMembersResponseModel) {
         if ((result.first_result != null) && (result.second_result != null)) {
             if (result.first_result.isEmpty() || result.second_result.isEmpty()) {
                 count++
@@ -86,8 +88,8 @@ class RepoCompareActivity : AppCompatActivity() {
     }
 
     private fun startFragment(
-        resultFirst: List<com.dragonguard.android.data.model.compare.RepoMembersResult>,
-        resultSecond: List<com.dragonguard.android.data.model.compare.RepoMembersResult>
+        resultFirst: List<RepoMembersResult>,
+        resultSecond: List<RepoMembersResult>
     ) {
         binding.rankingLottie.pauseAnimation()
         binding.rankingLottie.visibility = View.GONE

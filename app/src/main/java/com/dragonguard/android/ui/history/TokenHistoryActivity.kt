@@ -10,6 +10,7 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.databinding.ActivityTokenHistoryBinding
 import com.dragonguard.android.viewmodel.Viewmodel
@@ -51,7 +52,7 @@ class TokenHistoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun initRecycler(result: ArrayList<com.dragonguard.android.data.model.klip.TokenHistoryModelItem>) {
+    private fun initRecycler(result: ArrayList<TokenHistoryModelItem>) {
         tokenAdapter = TokenListAdapter(result, this@TokenHistoryActivity)
         binding.tokenContributeList.adapter = tokenAdapter
         binding.tokenContributeList.layoutManager = LinearLayoutManager(this)

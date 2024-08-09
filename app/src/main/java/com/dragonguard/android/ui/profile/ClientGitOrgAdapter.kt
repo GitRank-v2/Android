@@ -27,7 +27,7 @@ class ClientGitOrgAdapter(
     //리사이클러 뷰의 요소들을 넣어줌
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //클릭리스너 구현
-        fun bind(data: com.dragonguard.android.data.model.detail.GitOrganization) {
+        fun bind(data: GitOrganization) {
             Glide.with(binding.gitOrganizationProfile).load(data.profile_image)
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)

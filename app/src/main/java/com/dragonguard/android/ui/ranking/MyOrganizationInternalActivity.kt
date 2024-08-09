@@ -11,6 +11,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
+import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
 import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +34,7 @@ class MyOrganizationInternalActivity : AppCompatActivity() {
     private var changed = true
     private var ranking = 0
     private var orgInternalRankings =
-        ArrayList<com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel>()
+        ArrayList<OrgInternalRankingsModel>()
     private lateinit var organizationInternalRankingAdapter: RankingsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +84,7 @@ class MyOrganizationInternalActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkRankings(result: com.dragonguard.android.data.model.rankings.OrgInternalRankingModel) {
+    private fun checkRankings(result: OrgInternalRankingModel) {
         if (result.isNotEmpty()) {
             Log.d("조직 내 랭킹", "결과 : ${result[0].github_id}")
             result.forEach {
@@ -90,7 +92,7 @@ class MyOrganizationInternalActivity : AppCompatActivity() {
                 if (ranking != 0) {
                     if (orgInternalRankings[ranking - 1].tokens == it.tokens) {
                         orgInternalRankings.add(
-                            com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel(
+                            OrgInternalRankingsModel(
                                 it.github_id, it.id, it.name, it.tier, it.tokens,
                                 orgInternalRankings[ranking - 1].ranking,
                                 it.profile_image
@@ -98,7 +100,7 @@ class MyOrganizationInternalActivity : AppCompatActivity() {
                         )
                     } else {
                         orgInternalRankings.add(
-                            com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel(
+                            OrgInternalRankingsModel(
                                 it.github_id,
                                 it.id,
                                 it.name,
@@ -111,7 +113,7 @@ class MyOrganizationInternalActivity : AppCompatActivity() {
                     }
                 } else {
                     orgInternalRankings.add(
-                        com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel(
+                        OrgInternalRankingsModel(
                             it.github_id,
                             it.id,
                             it.name,

@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.rankings.OrganizationRankingModel
+import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
@@ -62,7 +64,7 @@ class UniversityFragment(private val token: String) : Fragment() {
         }
     }
 
-    private fun checkRankings(result: com.dragonguard.android.data.model.rankings.OrganizationRankingModel) {
+    private fun checkRankings(result: OrganizationRankingModel) {
         if (result.isNotEmpty()) {
             Log.d("조직 내 랭킹", "$type 결과 : ${result[0].name}")
             result.forEach {
@@ -169,10 +171,7 @@ class UniversityFragment(private val token: String) : Fragment() {
 
     }
 
-    private fun profileOrgBackground(
-        model: com.dragonguard.android.data.model.rankings.TotalOrganizationModel,
-        number: Int
-    ) {
+    private fun profileOrgBackground(model: TotalOrganizationModel, number: Int) {
         when (number) {
             1 -> {
 //                Glide.with(binding.firstProfile).load()

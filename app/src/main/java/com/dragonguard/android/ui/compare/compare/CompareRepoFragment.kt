@@ -17,8 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
+import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.databinding.FragmentCompareRepoBinding
 import com.dragonguard.android.data.model.compare.RepoMembersResult
+import com.dragonguard.android.data.model.compare.RepoStats
 import com.dragonguard.android.viewmodel.Viewmodel
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -121,7 +124,7 @@ class CompareRepoFragment(
     이상없으면 비교하는 함수 호출
      */
 
-    fun checkContributors(result: com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel) {
+    fun checkContributors(result: CompareRepoMembersResponseModel) {
         if ((result.first_result != null) && (result.second_result != null)) {
             if (result.first_result.isEmpty()) {
                 count++
@@ -161,7 +164,7 @@ class CompareRepoFragment(
     비교하는 API의 결과의 이상유뮤 확인 후
     recyclerview 그리는 함수 호출
      */
-    private fun checkRepos(result: com.dragonguard.android.data.model.compare.CompareRepoResponseModel) {
+    private fun checkRepos(result: CompareRepoResponseModel) {
         if (result.first_repo != null && result.second_repo != null) {
             try {
                 result.first_repo.git_repo!!
@@ -191,7 +194,7 @@ class CompareRepoFragment(
     두 Repository를 비교하기 위한 표를 그리는 recyclerview
     결과에 문제 없으면 다 그리고 그래프를 그리는 함수 호출
      */
-    private fun initRecycler(result: com.dragonguard.android.data.model.compare.CompareRepoResponseModel) {
+    private fun initRecycler(result: CompareRepoResponseModel) {
         Log.d("initRecycler()", "리사이클러뷰 구현 시작")
         if (result.first_repo!!.languages_stats == null || result.second_repo!!.languages_stats == null) {
             Log.d(
@@ -215,10 +218,7 @@ class CompareRepoFragment(
     두 Repository를 비교하기 위한 그래프를 그리는 함수
     가로로 슬라이딩하며 애니메이션 적용함
      */
-    private fun initGraph(
-        data1: com.dragonguard.android.data.model.compare.RepoStats,
-        data2: com.dragonguard.android.data.model.compare.RepoStats
-    ) {
+    private fun initGraph(data1: RepoStats, data2: RepoStats) {
         data1.languages!!
         data1.git_repo!!
         data1.statistics!!

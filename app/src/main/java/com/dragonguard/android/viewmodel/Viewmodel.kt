@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
@@ -31,6 +30,7 @@ import com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.data.model.search.UserNameModelItem
 import com.dragonguard.android.data.model.token.RefreshTokenModel
+import com.dragonguard.android.data.repository.ApiRepository
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -72,12 +72,12 @@ class Viewmodel : ViewModel() {
     }
 
     //
-    fun getUserInfo(token: String): com.dragonguard.android.data.model.UserInfoModel {
+    fun getUserInfo(token: String): UserInfoModel {
         Log.d("tokenG", "Bearer : $token")
         return repository.getUserInfo(token)
     }
 
-    fun getClientDetails(token: String): com.dragonguard.android.data.model.detail.ClientDetailModel? {
+    fun getClientDetails(token: String): ClientDetailModel? {
         return repository.getClientDetails(token)
     }
 
@@ -86,7 +86,7 @@ class Viewmodel : ViewModel() {
         count: Int,
         type: String,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel> {
+    ): ArrayList<RepoSearchResultModel> {
         return repository.getRepositoryNames(name, count, type, token)
     }
 
@@ -96,7 +96,7 @@ class Viewmodel : ViewModel() {
         filters: String,
         type: String,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.search.RepoSearchResultModel> {
+    ): ArrayList<RepoSearchResultModel> {
         return repository.getRepositoryNamesWithFilters(name, count, filters, type, token)
     }
 
@@ -109,7 +109,7 @@ class Viewmodel : ViewModel() {
         onSearchClickListener.value = true
     }
 
-    fun getRepoContributors(repoName: String, token: String): com.dragonguard.android.data.model.contributors.RepoContributorsModel? {
+    fun getRepoContributors(repoName: String, token: String): RepoContributorsModel? {
         return repository.getRepoContributors(repoName, token)
     }
 
@@ -125,24 +125,24 @@ class Viewmodel : ViewModel() {
         page: Int,
         size: Int,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem> {
+    ): ArrayList<TotalUsersRankingModelItem> {
         return repository.getTotalUsersRankings(page, size, token)
     }
 
-    fun postWalletAuth(body: com.dragonguard.android.data.model.klip.WalletAuthRequestModel): com.dragonguard.android.data.model.klip.WalletAuthResponseModel {
+    fun postWalletAuth(body: WalletAuthRequestModel): WalletAuthResponseModel {
         return repository.postWalletAuth(body)
     }
 
-    fun getWalletAuthResult(key: String): com.dragonguard.android.data.model.klip.WalletAuthResultModel {
+    fun getWalletAuthResult(key: String): WalletAuthResultModel {
         return repository.getAuthResult(key)
     }
 
-    fun getTokenHistory(token: String): ArrayList<com.dragonguard.android.data.model.klip.TokenHistoryModelItem>? {
+    fun getTokenHistory(token: String): ArrayList<TokenHistoryModelItem>? {
         return repository.getTokenHistory(token)
     }
 
     fun postWalletAddress(walletAddress: String, token: String): Boolean {
-        val body = com.dragonguard.android.data.model.klip.WalletAddressModel(walletAddress)
+        val body = WalletAddressModel(walletAddress)
         return repository.postWalletAddress(body, token)
     }
 
@@ -150,11 +150,8 @@ class Viewmodel : ViewModel() {
         firstRepo: String,
         secondRepo: String,
         token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel {
-        val body = com.dragonguard.android.data.model.compare.CompareRepoRequestModel(
-            firstRepo,
-            secondRepo
-        )
+    ): CompareRepoMembersResponseModel {
+        val body = CompareRepoRequestModel(firstRepo, secondRepo)
         return repository.postCompareRepoMembersRequest(body, token)
     }
 
@@ -162,15 +159,15 @@ class Viewmodel : ViewModel() {
         firstRepo: String,
         secondRepo: String,
         token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoResponseModel {
-        val body = com.dragonguard.android.data.model.compare.CompareRepoRequestModel(
+    ): CompareRepoResponseModel {
+        val body = CompareRepoRequestModel(
             firstRepo,
             secondRepo
         )
         return repository.postCompareRepoRequest(body, token)
     }
 
-    fun getNewToken(access: String, refresh: String): com.dragonguard.android.data.model.token.RefreshTokenModel {
+    fun getNewToken(access: String, refresh: String): RefreshTokenModel {
         return repository.getNewAccessToken(access, refresh)
     }
 
@@ -178,11 +175,11 @@ class Viewmodel : ViewModel() {
         repository.postCommits(token)
     }
 
-    fun getOrgRepoList(orgName: String, token: String): com.dragonguard.android.data.model.GithubOrgReposModel? {
+    fun getOrgRepoList(orgName: String, token: String): GithubOrgReposModel? {
         return repository.userGitOrgRepoList(orgName, token)
     }
 
-    fun getOrgNames(name: String, token: String, type: String, page: Int): com.dragonguard.android.data.model.org.OrganizationNamesModel {
+    fun getOrgNames(name: String, token: String, type: String, page: Int): OrganizationNamesModel {
         return repository.getOrgNames(name, token, page, type)
     }
 
@@ -191,9 +188,9 @@ class Viewmodel : ViewModel() {
         orgType: String,
         emailEndPoint: String,
         token: String
-    ): com.dragonguard.android.data.model.org.RegistOrgResultModel {
+    ): RegistOrgResultModel {
         return repository.postRegistOrg(
-            com.dragonguard.android.data.model.org.RegistOrgModel(
+            RegistOrgModel(
                 email_endpoint = emailEndPoint,
                 organization_type = orgType,
                 name = name
@@ -202,11 +199,7 @@ class Viewmodel : ViewModel() {
     }
 
     fun addOrgMember(orgId: Long, email: String, token: String): Long {
-        return repository.addOrgMember(
-            com.dragonguard.android.data.model.org.AddOrgMemberModel(
-                email,
-                orgId
-            ), token)
+        return repository.addOrgMember(AddOrgMemberModel(email, orgId), token)
     }
 
     fun sendEmailAuth(token: String): Long {
@@ -227,15 +220,15 @@ class Viewmodel : ViewModel() {
         return repository.searchOrgId(name, token)
     }
 
-    fun orgInterRankings(id: Long, page: Int, token: String): com.dragonguard.android.data.model.rankings.OrgInternalRankingModel {
+    fun orgInterRankings(id: Long, page: Int, token: String): OrgInternalRankingModel {
         return repository.orgInternalRankings(id, page, token)
     }
 
-    fun typeOrgRankings(type: String, page: Int, token: String): com.dragonguard.android.data.model.rankings.OrganizationRankingModel {
+    fun typeOrgRankings(type: String, page: Int, token: String): OrganizationRankingModel {
         return repository.typeOrgRanking(type, page, token)
     }
 
-    fun totalOrgRankings(page: Int, token: String): com.dragonguard.android.data.model.rankings.OrganizationRankingModel {
+    fun totalOrgRankings(page: Int, token: String): OrganizationRankingModel {
         return repository.allOrgRanking(page, token)
     }
 
@@ -244,16 +237,16 @@ class Viewmodel : ViewModel() {
         return repository.checkAdmin(token)
     }
 
-    fun approveOrgRequest(id: Long, decide: String, token: String): com.dragonguard.android.data.model.org.ApproveRequestOrgModel {
-        val body = com.dragonguard.android.data.model.org.OrgApprovalModel(decide, id)
+    fun approveOrgRequest(id: Long, decide: String, token: String): ApproveRequestOrgModel {
+        val body = OrgApprovalModel(decide, id)
         return repository.approveOrgRequest(body, token)
     }
 
-    fun statusOrgList(status: String, page: Int, token: String): com.dragonguard.android.data.model.org.ApproveRequestOrgModel {
+    fun statusOrgList(status: String, page: Int, token: String): ApproveRequestOrgModel {
         return repository.statusOrgList(status, page, token)
     }
 
-    fun othersProfile(githubId: String, token: String): com.dragonguard.android.data.model.detail.UserProfileModel? {
+    fun othersProfile(githubId: String, token: String): UserProfileModel? {
         return repository.otherProfile(githubId, token)
     }
 
@@ -261,11 +254,8 @@ class Viewmodel : ViewModel() {
         firstRepo: String,
         secondRepo: String,
         token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel {
-        val body = com.dragonguard.android.data.model.compare.CompareRepoRequestModel(
-            firstRepo,
-            secondRepo
-        )
+    ): CompareRepoMembersResponseModel {
+        val body = CompareRepoRequestModel(firstRepo, secondRepo)
         return repository.manualCompareMembers(body, token)
     }
 
@@ -273,23 +263,20 @@ class Viewmodel : ViewModel() {
         firstRepo: String,
         secondRepo: String,
         token: String
-    ): com.dragonguard.android.data.model.compare.CompareRepoResponseModel {
-        val body = com.dragonguard.android.data.model.compare.CompareRepoRequestModel(
-            firstRepo,
-            secondRepo
-        )
+    ): CompareRepoResponseModel {
+        val body = CompareRepoRequestModel(firstRepo, secondRepo)
         return repository.manualCompareRepo(body, token)
     }
 
-    fun updateContribute(repoName: String, token: String): com.dragonguard.android.data.model.contributors.RepoContributorsModel {
+    fun updateContribute(repoName: String, token: String): RepoContributorsModel {
         return repository.manualContribute(repoName, token)
     }
 
-    fun updateToken(token: String): ArrayList<com.dragonguard.android.data.model.klip.TokenHistoryModelItem>? {
+    fun updateToken(token: String): ArrayList<TokenHistoryModelItem>? {
         return repository.manualToken(token)
     }
 
-    fun updateUserInfo(token: String): com.dragonguard.android.data.model.UserInfoModel {
+    fun updateUserInfo(token: String): UserInfoModel {
         Log.d("tokenU", "Bearer : $token")
         return repository.manualUserInfo(token)
     }
@@ -303,7 +290,7 @@ class Viewmodel : ViewModel() {
         count: Int,
         type: String,
         token: String
-    ): ArrayList<com.dragonguard.android.data.model.search.UserNameModelItem> {
+    ): ArrayList<UserNameModelItem> {
         return repository.getUserNames(name, count, type, token)
     }
 
