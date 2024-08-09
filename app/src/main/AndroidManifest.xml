@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <queries>
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService" />
@@ -17,81 +18,81 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".activity.profile.ClientReposActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".activity.profile.UserProfileActivity"
+            android:name=".ui.profile.ClientReposActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.basic.TokenHistoryActivity"
+            android:name=".ui.profile.UserProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.search.SearchFilterActivity"
+            android:name=".ui.history.TokenHistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.search.SearchFilterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.ApprovalOrgActivity"
+            android:name=".ui.menu.org.approval.ApprovalOrgActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.AuthEmailActivity"
+            android:name=".ui.menu.org.AuthEmailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.AuthOrgActivity"
+            android:name=".ui.menu.org.AuthOrgActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.RegistOrgActivity"
+            android:name=".ui.menu.org.RegistOrgActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.SearchOrganizationActivity"
+            android:name=".ui.menu.org.SearchOrganizationActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.compare.RepoCompareActivity"
+            android:name=".ui.compare.compare.RepoCompareActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.compare.RepoChooseActivity"
+            android:name=".ui.compare.choose.RepoChooseActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.compare.CompareSearchActivity"
+            android:name=".ui.compare.search.CompareSearchActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.search.RepoContributorsActivity"
+            android:name=".ui.search.RepoContributorsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ranking.MyOrganizationInternalActivity"
+            android:name=".ui.ranking.MyOrganizationInternalActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.MenuActivity"
+            android:name=".ui.menu.MenuActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.CriterionActivity"
+            android:name=".ui.menu.criterion.CriterionActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.menu.FaqActivity"
+            android:name=".ui.menu.faq.FaqActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.search.SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.basic.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:screenOrientation="portrait"
             android:exported="true"
             android:launchMode="singleTask">
@@ -117,9 +118,9 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.basic.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:screenOrientation="portrait"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

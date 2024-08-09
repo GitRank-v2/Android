@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="3.4"
-        tools:context=".activity.ranking.MyOrganizationInternalActivity">
+        tools:context=".ui.ranking.MyOrganizationInternalActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"

@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="3.4"
-        tools:context=".activity.menu.AuthOrgActivity">
+        tools:context=".ui.menu.org.AuthOrgActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -63,6 +63,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
+                    android:paddingVertical="12dp"
                     android:background="@drawable/round_pink"
                     android:textSize="20sp" />
 

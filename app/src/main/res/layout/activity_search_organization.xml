@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="3.4"
-        tools:context=".activity.menu.SearchOrganizationActivity">
+        tools:context=".ui.menu.org.SearchOrganizationActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -47,7 +47,7 @@
                     android:orientation="horizontal" />
 
 
-                <com.dragonguard.android.custom.edittext.CustomEdittext
+                <com.dragonguard.android.util.CustomEdittext
                     android:id="@+id/search_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

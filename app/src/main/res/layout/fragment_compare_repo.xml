@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        tools:context=".fragment.CompareRepoFragment">
+        tools:context=".ui.compare.compare.CompareRepoFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,7 +30,7 @@
                 app:lottie_autoPlay="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:lottie_loop="true"
-                app:lottie_rawRes="@raw/compare_loading"/>
+                app:lottie_rawRes="@raw/compare_loading" />
 
 
             <LinearLayout
@@ -41,7 +41,6 @@
                 android:layout_gravity="bottom"
                 android:weightSum="5"
                 android:visibility="gone">
-
 
 
                 <LinearLayout
@@ -70,7 +69,7 @@
                             app:layout_constraintEnd_toStartOf="@id/repo1_user2"
                             android:layout_margin="3dp"
                             android:background="@drawable/round_title"
-                            app:layout_constraintHorizontal_chainStyle="packed"/>
+                            app:layout_constraintHorizontal_chainStyle="packed" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/repo1_user2"
@@ -111,8 +110,7 @@
                         android:gravity="center"
                         android:autoSizeMaxTextSize="20sp"
                         android:autoSizeTextType="uniform"
-                        android:textAppearance="@style/textAppearance"/>
-
+                        android:textAppearance="@style/textAppearance" />
 
 
                     <com.github.mikephil.charting.charts.PieChart
@@ -135,11 +133,12 @@
 
                     </HorizontalScrollView>
                 </LinearLayout>
+
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:layout_marginVertical="3dp"
-                    android:background="#aaaaaa"/>
+                    android:background="#aaaaaa" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -166,7 +165,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             android:background="@drawable/round_title"
                             app:layout_constraintEnd_toStartOf="@id/repo2_user2"
-                            app:layout_constraintHorizontal_chainStyle="packed"/>
+                            app:layout_constraintHorizontal_chainStyle="packed" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/repo2_user2"
@@ -207,7 +206,7 @@
                         android:autoSizeMaxTextSize="20sp"
                         android:autoSizeTextType="uniform"
                         android:gravity="center"
-                        android:textAppearance="@style/textAppearance"/>
+                        android:textAppearance="@style/textAppearance" />
 
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/repo2_language"
@@ -237,8 +236,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 tools:listitem="@layout/repo_compare_list"
-                android:visibility="gone"/>
-
+                android:visibility="gone" />
 
 
         </LinearLayout>

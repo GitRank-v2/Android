@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="approvedOrgViewmodel"
             type="com.dragonguard.android.viewmodel.Viewmodel" />
@@ -11,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragment.ApprovedOrgFragment"
+        tools:context=".ui.menu.org.approval.ApprovedOrgFragment"
         android:orientation="vertical">
 
         <LinearLayout
@@ -24,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                tools:listitem="@layout/approved_org_list"/>
+                tools:listitem="@layout/approved_org_list" />
 
 
         </LinearLayout>

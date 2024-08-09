@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activity.menu.ApprovalOrgActivity"
+        tools:context=".ui.menu.org.approval.ApprovalOrgActivity"
         android:orientation="vertical"
         android:weightSum="3.4">
 
