@@ -7,8 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.view.View
@@ -28,18 +26,17 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.klip.Bapp
 import com.dragonguard.android.data.model.klip.CallBack
 import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
+import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.ActivityLoginBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.util.IdPreference
-import com.dragonguard.android.util.NetworkCheck
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
@@ -50,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
 
     private var backPressed: Long = 0
     private lateinit var binding: ActivityLoginBinding
-    private var viewmodel = Viewmodel()
+    private lateinit var viewModel: LoginViewModel
     private val body = WalletAuthRequestModel(
         Bapp(
             "GitRank",
@@ -67,9 +64,11 @@ class LoginActivity : AppCompatActivity() {
         CookieManager.getInstance().setAcceptCookie(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-        binding.loginViewmodel = viewmodel
+
         Log.d("시작", "loginactivity1")
         prefs = IdPreference(applicationContext)
+        viewModel = LoginViewModel(ApiRepository(), prefs)
+        initObserver()
         //쿠키 확인 코드
         this.onBackPressedDispatcher.addCallback(this, callback)
         val defaultBrowser = getDefaultBrowserPackageName(this@LoginActivity)
@@ -93,9 +92,9 @@ class LoginActivity : AppCompatActivity() {
         Log.d("info", "로그인 화면 token: $token")
         Log.d("info", "로그인 화면 refresh: $refresh")
         val logout = intent.getBooleanExtra("logout", false)
-        if (prefs.getJwtToken("").isNotBlank() && prefs.getRefreshToken("").isNotBlank()) {
+        if (viewModel.currentState.token.token.isNotBlank() && viewModel.currentState.refreshToken.refreshToken.isNotBlank()) {
 //            Toast.makeText(applicationContext, "jwt token : $token", Toast.LENGTH_SHORT).show()
-            if (prefs.getKey("").isNotBlank()) {
+            if (viewModel.currentState.key.key.isNotBlank()) {
                 val intentF = Intent(applicationContext, MainActivity::class.java)
                 Log.d("info", "key : $key")
                 intentF.putExtra("key", key)
@@ -106,17 +105,15 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 binding.githubAuth.isEnabled = false
                 binding.githubAuth.setTextColor(Color.BLACK)
-                checkState(prefs.getJwtToken(""), prefs.getRefreshToken(""))
+                checkState()
             }
         } else {
             binding.githubAuth.isEnabled = true
-            binding.walletAuth.isEnabled = false
 //            binding.walletFinish.isEnabled = false
         }
         if (logout) {
-            prefs.setKey("")
-            prefs.setJwtToken("")
-            prefs.setRefreshToken("")
+            viewModel.setKey("")
+            viewModel.setJwtToken("", "")
             binding.oauthWebView.apply {
                 clearHistory()
                 clearCache(true)
@@ -192,9 +189,8 @@ class LoginActivity : AppCompatActivity() {
                             val access = splits[1].split("=")[1]
                             val refresh = splits[2].split("=")[1]
                             Log.d("tokens", "access:$access, refresh:$refresh")
-                            prefs.setJwtToken(access)
-                            prefs.setRefreshToken(refresh)
-                            if (walletAddress.isNotBlank()) {
+                            viewModel.setJwtToken(access, refresh)
+                            /*if (walletAddress.isNotBlank()) {
                                 val intentH = Intent(this@LoginActivity, MainActivity::class.java)
                                 intentH.putExtra("access", access)
                                 intentH.putExtra("refresh", refresh)
@@ -204,7 +200,11 @@ class LoginActivity : AppCompatActivity() {
                                 binding.loginMain.visibility = View.VISIBLE
                                 binding.githubAuth.isEnabled = false
                                 checkState(prefs.getJwtToken(""), prefs.getRefreshToken(""))
-                            }
+                            }*/
+                            val intentH = Intent(this@LoginActivity, MainActivity::class.java)
+                            intentH.putExtra("access", access)
+                            intentH.putExtra("refresh", refresh)
+                            startActivity(intentH)
                         }
                     }
                 } catch (e: Exception) {
@@ -275,12 +275,25 @@ class LoginActivity : AppCompatActivity() {
 //            startActivity(intentG)
 
         }
-        binding.walletAuth.setOnClickListener {
+        /*binding.walletAuth.setOnClickListener {
             if (NetworkCheck.checkNetworkState(this)) {
                 walletAuthRequest()
             }
-        }
+        }*/
 
+    }
+
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                if (viewModel.currentState.loginState.login == true) {
+                    val intentF = Intent(applicationContext, MainActivity::class.java)
+                    intentF.putExtra("access", viewModel.currentState.token.token)
+                    startActivity(intentF)
+                    finish()
+                }
+            }
+        }
     }
 
 
@@ -314,124 +327,32 @@ class LoginActivity : AppCompatActivity() {
 
     inner class MyCustomTabsCallback : CustomTabsCallback() {
         override fun onNavigationEvent(navigationEvent: Int, extras: Bundle?) {
-//            when (navigationEvent) {
-//                CustomTabsCallback.NAVIGATION_STARTED -> {
-//                    checkCookie(navigationEvent)
-//                }
-//                CustomTabsCallback.TAB_HIDDEN -> {
-//                    checkCookie(navigationEvent)
-//                }
-//                CustomTabsCallback.NAVIGATION_FINISHED -> { checkCookie(navigationEvent)}
-//                else -> {checkCookie(navigationEvent)}
-//                // 기타 필요한 경우 처리
-//            }
-        }
-
-    }
-
-    private fun checkCookie(state: Int) {
-        Log.d("state", "state: $state")
-        val cookies = CookieManager.getInstance().getCookie(oauthUrl)
-        val cookie = CookieManager.getInstance()
-            .getCookie(appUrl)
-        Log.d("start", "$oauthUrl: $cookies   $appUrl: $cookie")
-        if (cookies != null && cookies.contains("Access")) {
-            val splits = cookies.split("; ")
-            val access = splits[1].split("=")[1]
-            val refresh = splits[2].split("=")[1]
-            Log.d("tokens", "access:$access, refresh:$refresh")
-            prefs.setJwtToken(access)
-            prefs.setRefreshToken(refresh)
-            if (walletAddress.isNotBlank()) {
-                val intentH = Intent(this@LoginActivity, MainActivity::class.java)
-                intentH.putExtra("access", access)
-                intentH.putExtra("refresh", refresh)
-                startActivity(intentH)
-            } else {
-                Log.d("start", "access: $access, refresh: $refresh")
-                binding.loginMain.visibility = View.VISIBLE
-                checkState(prefs.getJwtToken(""), prefs.getRefreshToken(""))
-            }
-        }
-
-        if (cookie != null && cookie.contains("Access")) {
-            val splits = cookie.split("; ")
-            val access = splits[1].split("=")[1]
-            val refresh = splits[2].split("=")[1]
-            Log.d("tokens", "access:$access, refresh:$refresh")
-            prefs.setJwtToken(access)
-            prefs.setRefreshToken(refresh)
-            if (walletAddress.isNotBlank()) {
-                val intentH = Intent(this@LoginActivity, MainActivity::class.java)
-                intentH.putExtra("access", access)
-                intentH.putExtra("refresh", refresh)
-                startActivity(intentH)
-            } else {
-                Log.d("start", "access: $access, refresh: $refresh")
-                binding.loginMain.visibility = View.VISIBLE
-                checkState(prefs.getJwtToken(""), prefs.getRefreshToken(""))
-            }
-        }
-    }
-
-    private fun checkState(token: String, refresh: String) {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@LoginActivity.isFinishing) {
-                val resultDeffered = coroutine.async(Dispatchers.IO) {
-                    viewmodel.checkLoginState(token)
+            /*when (navigationEvent) {
+                CustomTabsCallback.NAVIGATION_STARTED -> {
+                    checkCookie(navigationEvent)
                 }
-                val result = resultDeffered.await()
-                Log.d("info", "로그인 화면 token: $token")
-                Log.d("info", "로그인 화면 refresh: $refresh")
-                Log.d("info", "check key : $key")
-                Log.d("로그인 상태", "로그인 상태 결과 : $result")
-                when (result) {
-                    true -> {
-                        val intentF = Intent(applicationContext, MainActivity::class.java)
-                        intentF.putExtra("access", token)
-                        intentF.putExtra("refresh", refresh)
-                        startActivity(intentF)
-                        finish()
-                    }
-
-                    false -> {
-                        if (key.isNotBlank()) {
-                            val intentF = Intent(applicationContext, MainActivity::class.java)
-                            Log.d("info", "key : $key")
-                            intentF.putExtra("key", key)
-                            intentF.putExtra("access", token)
-                            intentF.putExtra("refresh", refresh)
-                            startActivity(intentF)
-                            finish()
-                        } else {
-                            binding.githubAuth.isEnabled = false
-                            binding.walletAuth.isEnabled = true
-//                        binding.walletFinish.isEnabled = true
-                        }
-                    }
-
-                    null -> {
-                        Log.d("로그인 상태 null", "null")
-                        prefs.setJwtToken("")
-                        prefs.setRefreshToken("")
-                        binding.githubAuth.setTextColor(Color.WHITE)
-                        binding.githubAuth.isEnabled = true
-
-                        binding.walletAuth.isEnabled = false
-                    }
+                CustomTabsCallback.TAB_HIDDEN -> {
+                    checkCookie(navigationEvent)
                 }
-            }
-
+                CustomTabsCallback.NAVIGATION_FINISHED -> { checkCookie(navigationEvent)}
+                else -> {checkCookie(navigationEvent)}
+                // 기타 필요한 경우 처리
+            }*/
         }
+
     }
 
-    private fun walletAuthRequest() {
+
+    private fun checkState() {
+        viewModel.checkLoginState(viewModel.currentState.token.token)
+    }
+
+    /*private fun walletAuthRequest() {
         val coroutine = CoroutineScope(Dispatchers.Main)
         coroutine.launch {
             if (!this@LoginActivity.isFinishing) {
                 val authResponseDeffered = coroutine.async(Dispatchers.IO) {
-                    viewmodel.postWalletAuth(body)
+                    viewModel.postWalletAuth(body)
                 }
                 val authResponse = authResponseDeffered.await()
                 if (authResponse.request_key.isNullOrEmpty() || authResponse.status != "prepared") {
@@ -447,14 +368,14 @@ class LoginActivity : AppCompatActivity() {
                     )
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
-//                    finishAffinity()
-//                    moveTaskToBack(true); // 태스크를 백그라운드로 이동
-//                    finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
-//                    Process.killProcess(Process.myPid())
+                    finishAffinity()
+                    moveTaskToBack(true); // 태스크를 백그라운드로 이동
+                    finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+                    Process.killProcess(Process.myPid())
                 }
             }
         }
-    }
+    }*/
 
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -484,20 +405,11 @@ class LoginActivity : AppCompatActivity() {
             val queries = urlSplit[1].split("&")
             val access = queries[0].split("=")[1]
             val refresh = queries[1].split("=")[1]
-            prefs.setJwtToken(access)
-            prefs.setRefreshToken(refresh)
-            if (walletAddress.isNotBlank()) {
-                val intentH = Intent(this@LoginActivity, MainActivity::class.java)
-                intentH.putExtra("access", access)
-                intentH.putExtra("refresh", refresh)
-                startActivity(intentH)
-            } else {
-                Log.d("start", "access: $access, refresh: $refresh")
-                binding.loginMain.visibility = View.VISIBLE
-                checkState(prefs.getJwtToken(""), prefs.getRefreshToken(""))
-            }
+            viewModel.setJwtToken(access, refresh)
+            binding.loginMain.visibility = View.VISIBLE
+            checkState()
         } else {
-            checkState(prefs.getJwtToken(""), prefs.getRefreshToken(""))
+            checkState()
         }
     }
 

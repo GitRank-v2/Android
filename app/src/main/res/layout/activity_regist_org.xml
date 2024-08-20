@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -59,7 +58,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.25" />
 
-                <com.dragonguard.android.custom.edittext.CustomEdittext
+                <com.dragonguard.android.util.CustomEdittext
                     android:id="@+id/org_name_edit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -136,7 +135,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.25" />
 
-                <com.dragonguard.android.custom.edittext.CustomEdittext
+                <com.dragonguard.android.util.CustomEdittext
                     android:id="@+id/org_email_edit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
