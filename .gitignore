@@ -10,3 +10,4 @@ release/
 .externalNativeBuild
 .cxx
 local.properties
+constant.xml
