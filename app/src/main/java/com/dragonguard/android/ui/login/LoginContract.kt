@@ -6,11 +6,8 @@ import com.dragonguard.android.ui.base.UiState
 
 class LoginContract {
     sealed class LoginEvent : UiEvent {
-        data class CheckLoginState(val token: String) : LoginEvent()
         data class SetJwtToken(val token: String, val refreshToken: String) : LoginEvent()
         object GetJwtToken : LoginEvent()
-        data class SetKey(val key: String) : LoginEvent()
-        object GetKey : LoginEvent()
     }
 
     sealed class LoginState {

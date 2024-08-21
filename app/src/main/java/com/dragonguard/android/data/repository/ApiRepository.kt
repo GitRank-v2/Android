@@ -1,6 +1,8 @@
 package com.dragonguard.android.data.repository
 
 import android.util.Log
+import com.dragonguard.android.GitRankApplication.Companion.getString
+import com.dragonguard.android.R
 import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
@@ -51,7 +53,7 @@ class ApiRepository {
         .retryOnConnectionFailure(true)
         .build()
 
-    private val retrofit = Retrofit.Builder().baseUrl("")
+    private val retrofit = Retrofit.Builder().baseUrl(getString(R.string.base_url))
         .client(okHttpClient)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()

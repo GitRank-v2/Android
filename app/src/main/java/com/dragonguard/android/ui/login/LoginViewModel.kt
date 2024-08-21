@@ -22,10 +22,6 @@ class LoginViewModel(private val repository: ApiRepository, private val pref: Id
     override fun handleEvent(event: LoginContract.LoginEvent) {
         viewModelScope.launch {
             when (event) {
-                is LoginContract.LoginEvent.CheckLoginState -> {
-                    val result = repository.getLoginState(event.token)
-                    setState { copy(loginState = LoginContract.LoginState.LoginStat(result)) }
-                }
 
                 is LoginContract.LoginEvent.SetJwtToken -> {
                     pref.setJwtToken(event.token)
@@ -50,22 +46,10 @@ class LoginViewModel(private val repository: ApiRepository, private val pref: Id
                         )
                     }
                 }
-
-                is LoginContract.LoginEvent.SetKey -> {
-                    pref.setKey(event.key)
-                    setState { copy(key = LoginContract.LoginState.Key(event.key)) }
-                }
-
-                is LoginContract.LoginEvent.GetKey -> {
-                    setState { copy(key = LoginContract.LoginState.Key(pref.getKey(""))) }
-                }
             }
         }
     }
 
-    fun checkLoginState(token: String) {
-        setEvent(LoginContract.LoginEvent.CheckLoginState(token))
-    }
 
     fun setJwtToken(token: String, refreshToken: String) {
         setEvent(LoginContract.LoginEvent.SetJwtToken(token, refreshToken))
@@ -75,7 +59,4 @@ class LoginViewModel(private val repository: ApiRepository, private val pref: Id
         setEvent(LoginContract.LoginEvent.GetJwtToken)
     }
 
-    fun setKey(key: String) {
-        setEvent(LoginContract.LoginEvent.SetKey(key))
-    }
 }
