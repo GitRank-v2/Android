@@ -1,15 +1,16 @@
 package com.dragonguard.android.ui.login
 
 import androidx.lifecycle.viewModelScope
+import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val repository: ApiRepository, private val pref: IdPreference) :
+class LoginViewModel(private val repository: ApiRepository) :
     BaseViewModel<LoginContract.LoginEvent, LoginContract.LoginStates, LoginContract.LoginEffect>() {
 
-
+    private val pref: IdPreference = getPref()
     override fun createInitialState(): LoginContract.LoginStates {
         return LoginContract.LoginStates(
             LoginContract.LoginState.LoginStat(null),

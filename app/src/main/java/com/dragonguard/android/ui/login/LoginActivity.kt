@@ -28,14 +28,10 @@ import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.ActivityLoginBinding
 import com.dragonguard.android.ui.main.MainActivity
-import com.dragonguard.android.util.IdPreference
 import kotlinx.coroutines.launch
 
 
 class LoginActivity : AppCompatActivity() {
-    companion object {
-        lateinit var prefs: IdPreference
-    }
 
     private var backPressed: Long = 0
     private lateinit var binding: ActivityLoginBinding
@@ -57,8 +53,7 @@ class LoginActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
         Log.d("시작", "loginactivity1")
-        prefs = IdPreference(applicationContext)
-        viewModel = LoginViewModel(ApiRepository(), prefs)
+        viewModel = LoginViewModel(ApiRepository())
         initObserver()
         //쿠키 확인 코드
         this.onBackPressedDispatcher.addCallback(this, callback)
