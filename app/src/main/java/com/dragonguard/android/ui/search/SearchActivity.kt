@@ -21,10 +21,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.data.model.search.UserNameModelItem
-import com.dragonguard.android.util.HorizontalItemDecorator
-import com.dragonguard.android.util.VerticalItemDecorator
 import com.dragonguard.android.databinding.ActivitySearchBinding
 import com.dragonguard.android.ui.main.MainActivity
+import com.dragonguard.android.util.HorizontalItemDecorator
+import com.dragonguard.android.util.VerticalItemDecorator
 import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +69,6 @@ class SearchActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
 
         val intent = intent
-        token = intent.getStringExtra("token")!!
         repoCount = intent.getIntExtra("count", 0)
         popularLanguages = arrayListOf(
             "C",

@@ -146,7 +146,8 @@ class ApiRepository {
 
     //사용자의 정보를 받아오기 위한 함수
     fun getUserInfo(token: String): UserInfoModel {
-        val userInfo = api.getUserInfo("Bearer $token")
+        Log.d("user token", "token: $token")
+        val userInfo = api.getUserInfo("Bearer: $token")
         var userResult = UserInfoModel(
             null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null
@@ -157,7 +158,7 @@ class ApiRepository {
             Log.d("result", "사용자 정보 요청 결과 : ${result.code()}")
             userResult = result.body()!!
         } catch (e: Exception) {
-            Log.d("error", "사용자 정보 요청 에러 : ${e.message}")
+            Log.d("userinfo error", "사용자 정보 요청 에러 : ${e.message}")
             return userResult
         }
         return userResult

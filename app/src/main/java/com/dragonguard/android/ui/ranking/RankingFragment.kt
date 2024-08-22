@@ -11,7 +11,9 @@ import com.dragonguard.android.databinding.FragmentRankingBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 
-class RankingFragment(private val token: String) : Fragment() {
+class RankingFragment() : Fragment() {
+
+    private val token = ""
     private lateinit var binding: FragmentRankingBinding
 
     override fun onCreateView(

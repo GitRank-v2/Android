@@ -14,9 +14,9 @@ import com.dragonguard.android.databinding.FragmentCompareSearchBinding
 import com.dragonguard.android.ui.compare.compare.RepoCompareActivity
 import com.dragonguard.android.ui.search.SearchActivity
 
-class CompareSearchFragment(private val token: String) : Fragment() {
+class CompareSearchFragment() : Fragment() {
     private lateinit var binding: FragmentCompareSearchBinding
-
+    private val token = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

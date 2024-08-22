@@ -30,11 +30,12 @@ import kotlinx.coroutines.launch
 
 
 class MainFragment(
-    private val token: String,
     private var info: UserInfoModel,
     private val refresh: Boolean
 ) :
     Fragment() {
+    private val token = ""
+
     companion object {
         lateinit var prefs: IdPreference
     }

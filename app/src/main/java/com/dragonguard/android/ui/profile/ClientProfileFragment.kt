@@ -24,10 +24,10 @@ import kotlinx.coroutines.launch
 
 
 class ClientProfileFragment(
-    private val token: String,
     private val viewmodel: Viewmodel,
     private val userName: String
 ) : Fragment() {
+    private val token = ""
     private lateinit var binding: FragmentClientProfileBinding
     private lateinit var orgAdapter: ClientGitOrgAdapter
     private lateinit var repoAdapter: OthersReposAdapter

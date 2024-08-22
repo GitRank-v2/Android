@@ -78,8 +78,6 @@ class LoginActivity : AppCompatActivity() {
         if (viewModel.currentState.token.token.isNotBlank() && viewModel.currentState.refreshToken.refreshToken.isNotBlank()) {
             //Toast.makeText(applicationContext, "jwt token : $token", Toast.LENGTH_SHORT).show()
             val intentF = Intent(applicationContext, MainActivity::class.java)
-            intentF.putExtra("access", token)
-            intentF.putExtra("refresh", refresh)
             startActivity(intentF)
             finish()
         } else {
@@ -264,11 +262,12 @@ class LoginActivity : AppCompatActivity() {
     private fun initObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                if (viewModel.currentState.loginState.login == true) {
-                    val intentF = Intent(applicationContext, MainActivity::class.java)
-                    intentF.putExtra("access", viewModel.currentState.token.token)
-                    startActivity(intentF)
-                    finish()
+                viewModel.uiState.collect { state ->
+                    if (state.loginState.login == true) {
+                        val intentF = Intent(applicationContext, MainActivity::class.java)
+                        startActivity(intentF)
+                        finish()
+                    }
                 }
             }
         }
@@ -353,8 +352,6 @@ class LoginActivity : AppCompatActivity() {
             viewModel.setJwtToken(access, refresh)
             binding.loginMain.visibility = View.VISIBLE
             val intentF = Intent(applicationContext, MainActivity::class.java)
-            intentF.putExtra("access", access)
-            intentF.putExtra("refresh", refresh)
             startActivity(intentF)
             finish()
         } else {
