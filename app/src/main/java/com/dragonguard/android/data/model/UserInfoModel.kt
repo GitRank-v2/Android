@@ -10,39 +10,39 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class UserInfoModel(
     @field:Json(name = "auth_step")
-    var auth_step: String?,
+    var auth_step: String? = "",
     @field:Json(name = "commits")
-    var commits: Int?,
+    var commits: Int? = 0,
     @field:Json(name = "github_id")
-    var github_id: String?,
+    var github_id: String? = "",
     @field:Json(name = "id")
-    var id: String?,
+    var id: String? = "",
     @field:Json(name = "name")
-    var name: String?,
+    var name: String? = "",
     @field:Json(name = "profile_image")
-    var profile_image: String?,
+    var profile_image: String? = "",
     @field:Json(name = "tier")
-    var tier: String?,
+    var tier: String? = "",
     @field:Json(name = "rank")
-    var rank: Int?,
+    var rank: Int? = 0,
     @field:Json(name = "token_amount")
-    var token_amount: Int?,
+    var token_amount: Int? = 0,
     @field:Json(name = "organization")
-    var organization: String?,
+    var organization: String? = "",
     @field:Json(name = "organization_rank")
-    var organization_rank: Int?,
+    var organization_rank: Int? = 0,
     @field:Json(name = "blockchain_url")
-    var blockchain_url: String?,
+    var blockchain_url: String? = "",
     @field:Json(name = "issues")
-    var issues: Int?,
+    var issues: Int? = 0,
     @field:Json(name = "pull_requests")
-    var pull_requests: Int?,
+    var pull_requests: Int? = 0,
     @field:Json(name = "reviews")
-    var reviews: Int?,
+    var reviews: Int? = 0,
     @field:Json(name = "is_last")
-    var is_last: Boolean?,
+    var is_last: Boolean? = false,
     @field:Json(name = "member_github_ids")
-    var member_github_ids: List<String>?
+    var member_github_ids: List<String>? = listOf()
 ) {
     constructor() : this(
         auth_step = "",

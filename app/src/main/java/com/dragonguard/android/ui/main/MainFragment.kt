@@ -11,37 +11,26 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.signature.ObjectKey
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.TokenHistoryActivity
-import com.dragonguard.android.ui.search.SearchActivity
-import com.dragonguard.android.util.IdPreference
-import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
 class MainFragment(
     private var info: UserInfoModel,
-    private val refresh: Boolean
+    private val refresh: Boolean,
+    private val viewModel: MainViewModel
 ) :
     Fragment() {
     private val token = ""
 
-    companion object {
-        lateinit var prefs: IdPreference
-    }
 
     private lateinit var binding: FragmentMainBinding
-    private var viewmodel = Viewmodel()
     private var repeat = false
 
     //    private var menuItem: MenuItem? = null
@@ -57,7 +46,7 @@ class MainFragment(
     ): View? {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
-        binding.mainFragViewmodel = viewmodel
+        binding.mainFragViewmodel = viewModel
 //        val main = activity as MainActivity
 //        main.setSupportActionBar(binding.toolbar)
 //        main.supportActionBar?.setDisplayHomeAsUpEnabled(false)
@@ -67,17 +56,16 @@ class MainFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        binding.toolbar.inflateMenu(R.menu.refresh)
-        prefs = IdPreference(requireContext())
         binding.githubProfile.clipToOutline = true
         binding.tokenFrame.setOnClickListener {
             val intent = Intent(requireActivity(), TokenHistoryActivity::class.java)
-            intent.putExtra("token", token)
+            intent.putExtra("token", viewModel.currentState.newAccessToken.token)
             startActivity(intent)
         }
-
+        initObserver()
         drawInfo()
         CoroutineScope(Dispatchers.IO).launch {
-            prefs.setRepeat(true)
+            viewModel.setRepeat(true)
             while (true) {
                 Thread.sleep(3000)
                 handler.sendEmptyMessage(0)
@@ -90,13 +78,14 @@ class MainFragment(
         val layoutParams = binding.mainFrame.layoutParams as FrameLayout.LayoutParams
         layoutParams.bottomMargin = main.getNavSize()
         binding.mainFrame.layoutParams = layoutParams
-        if (info.github_id!!.isNotBlank()) {
+        info.github_id?.let {
             binding.userId.text = info.github_id
         }
         if (!requireActivity().isFinishing) {
             Log.d("profile", "profile image ${info.profile_image}")
             if (refresh) {
-                val coroutine = CoroutineScope(Dispatchers.Main)
+                //프로필 사진 넣기
+                /*val coroutine = CoroutineScope(Dispatchers.Main)
                 coroutine.launch {
                     val deferred = coroutine.async(Dispatchers.IO) {
                         Glide.get(requireContext()).clearDiskCache()
@@ -111,10 +100,10 @@ class MainFragment(
                             )
                         )
                         .into(binding.githubProfile)
-                }
+                }*/
             } else {
-                Glide.with(this).load(info.profile_image)
-                    .into(binding.githubProfile)
+                /*Glide.with(this).load(info.profile_image)
+                    .into(binding.githubProfile)*/
 
             }
         }
@@ -140,13 +129,7 @@ class MainFragment(
                 binding.tierImg.setBackgroundResource(R.drawable.diamond)
             }
         }
-        viewmodel.onSearchClickListener.observe(requireActivity(), Observer {
-            if (viewmodel.onSearchClickListener.value == true) {
-                val intent = Intent(requireActivity(), SearchActivity::class.java)
-                intent.putExtra("token", token)
-                startActivity(intent)
-            }
-        })
+
         if (info.token_amount != null) {
             binding.tokenAmount.text = info.token_amount.toString()
         }
@@ -286,6 +269,10 @@ class MainFragment(
         }
     }
 
+    private fun initObserver() {
+
+    }
+
 //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        inflater.inflate(R.menu.refresh, binding.toolbar.menu)
 //        menuItem = menu.findItem(R.id.refresh_button)
@@ -327,7 +314,7 @@ class MainFragment(
     }
 
     override fun onDestroy() {
-        prefs.setRepeat(false)
+        viewModel.setRepeat(false)
         super.onDestroy()
     }
 

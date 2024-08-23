@@ -16,15 +16,10 @@ import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.databinding.FragmentClientProfileBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.menu.MenuActivity
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 
 class ClientProfileFragment(
-    private val viewmodel: Viewmodel,
+    //private val viewmodel: Viewmodel,
     private val userName: String
 ) : Fragment() {
     private val token = ""
@@ -51,7 +46,7 @@ class ClientProfileFragment(
 
 
     private fun getClientDetail() {
-        val coroutine = CoroutineScope(Dispatchers.Main)
+        /*val coroutine = CoroutineScope(Dispatchers.Main)
         coroutine.launch {
             if (!this@ClientProfileFragment.isRemoving) {
                 val resultDeferred = coroutine.async(Dispatchers.IO) {
@@ -63,7 +58,7 @@ class ClientProfileFragment(
                 }
 
             }
-        }
+        }*/
     }
 
     private fun initRecycler(result: ClientDetailModel) {

@@ -7,7 +7,7 @@
 
         <variable
             name="mainFragViewmodel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
+            type="com.dragonguard.android.ui.main.MainViewModel" />
     </data>
 
     <LinearLayout
@@ -48,7 +48,7 @@
                 android:fontFamily="@font/ibm_regular"
                 android:gravity="center_vertical"
                 android:hint="Repositoy or User"
-                android:onClick="@{()->mainFragViewmodel.clickSearchIcon()}"
+                android:onClick="@{()->mainFragViewmodel.clickSearch()}"
                 android:textColor="@color/black"
                 android:textSize="25sp" />
 

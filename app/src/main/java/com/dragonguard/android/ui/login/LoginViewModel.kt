@@ -10,12 +10,13 @@ import kotlinx.coroutines.launch
 class LoginViewModel(private val repository: ApiRepository) :
     BaseViewModel<LoginContract.LoginEvent, LoginContract.LoginStates, LoginContract.LoginEffect>() {
 
-    private val pref: IdPreference = getPref()
+    private lateinit var pref: IdPreference
     override fun createInitialState(): LoginContract.LoginStates {
+        pref = getPref()
         return LoginContract.LoginStates(
             LoginContract.LoginState.LoginStat(null),
-            LoginContract.LoginState.Token(""),
-            LoginContract.LoginState.RefreshToken(""),
+            LoginContract.LoginState.Token(pref.getJwtToken("")),
+            LoginContract.LoginState.RefreshToken(pref.getRefreshToken("")),
             LoginContract.LoginState.Key("")
         )
     }

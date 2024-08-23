@@ -69,11 +69,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
-        val intent = intent
-        var token = intent.getStringExtra("token")
-        var refresh = intent.getStringExtra("refresh")
-        Log.d("info", "로그인 화면 token: $token")
-        Log.d("info", "로그인 화면 refresh: $refresh")
+        if (viewModel.currentState.token.token.isNotBlank() && viewModel.currentState.refreshToken.refreshToken.isNotBlank()) {
+            val intentF = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intentF)
+            finish()
+        }
         val logout = intent.getBooleanExtra("logout", false)
         if (viewModel.currentState.token.token.isNotBlank() && viewModel.currentState.refreshToken.refreshToken.isNotBlank()) {
             //Toast.makeText(applicationContext, "jwt token : $token", Toast.LENGTH_SHORT).show()

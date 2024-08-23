@@ -20,9 +20,14 @@ import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.CompareSearchFragment
 import com.dragonguard.android.ui.login.LoginActivity
 import com.dragonguard.android.ui.profile.ClientProfileFragment
+import com.dragonguard.android.ui.profile.UserProfileActivity
 import com.dragonguard.android.ui.ranking.RankingFragment
 import com.dragonguard.android.ui.search.SearchActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /*
  사용자의 정보를 보여주고 검색, 랭킹등을
@@ -36,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var viewModel: MainViewModel
     private var backPressed: Long = 0
     private var loginOut = false
     private var refreshState = true
@@ -45,25 +50,7 @@ class MainActivity : AppCompatActivity() {
     private var compareFrag: CompareSearchFragment? = null
     private var profileFrag: ClientProfileFragment? = null
     private var imgRefresh = true
-    private var realModel = UserInfoModel(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    )
+    private var realModel = UserInfoModel()
     private var finish = false
     private var post = true
 
@@ -102,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = MainActivityViewModel(ApiRepository())
+        viewModel = MainViewModel(ApiRepository())
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initObserver()
@@ -116,15 +103,15 @@ class MainActivity : AppCompatActivity() {
         binding.mainLoading.visibility = View.VISIBLE
 
         // 유저 정보 가져오기
-        viewModel.getUserInfo()
+        //viewModel.getUserInfo()
+        refreshMain()
 
         binding.mainNav.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.bottom_main -> {
                     if (mainFrag != null) {
-                        val main = MainFragment(realModel, true)
                         val transaction = supportFragmentManager.beginTransaction()
-                        transaction.replace(binding.contentFrame.id, main)
+                        transaction.replace(binding.contentFrame.id, mainFrag!!)
                             .commit()
                     }
                 }
@@ -145,12 +132,12 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.bottom_profile -> {
                     Log.d("user name", "user name: ${realModel.github_id}")
-                    /*realModel.github_id?.let {
-                        profileFrag = ClientProfileFragment(token, viewModel, it)
+                    realModel.github_id?.let {
+                        profileFrag = ClientProfileFragment(it)
                         val transaction = supportFragmentManager.beginTransaction()
                         transaction.replace(binding.contentFrame.id, profileFrag!!)
                             .commit()
-                    }*/
+                    }
                 }
             }
             true
@@ -166,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.searchClicked.clicked) {
+                    if (state.clickSearch.clicked) {
                         val intent = Intent(applicationContext, SearchActivity::class.java)
                         intent.putExtra("token", "")
                         startActivity(intent)
@@ -190,8 +177,22 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    if (state.loadState is MainActivityContract.MainActivityState.LoadState.Success) {
+                    if (state.loadState is MainContract.MainState.LoadState.Success) {
                         checkUserInfo(state.userInfo.userInfo)
+                    }
+
+                    if (state.clickSearch.clicked) {
+                        val intent = Intent(applicationContext, SearchActivity::class.java)
+                        intent.putExtra("token", "")
+                        startActivity(intent)
+                    }
+
+                    if (state.clickUserIcon.clicked) {
+                        Log.d("userIcon", "userIcon")
+                        val intent = Intent(applicationContext, UserProfileActivity::class.java)
+                        intent.putExtra("token", "")
+                        intent.putExtra("userName", realModel.github_id)
+                        startActivity(intent)
                     }
                 }
 
@@ -202,13 +203,19 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun refreshMain() {
-        binding.mainLoading.pauseAnimation()
-        binding.mainLoading.visibility = View.GONE
-        binding.mainNav.visibility = View.VISIBLE
-        val main = MainFragment(realModel, true)
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(binding.contentFrame.id, main)
-            .commit()
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(1000)
+            withContext(Dispatchers.Main) {
+                binding.mainLoading.pauseAnimation()
+                binding.mainLoading.visibility = View.GONE
+                binding.mainNav.visibility = View.VISIBLE
+                mainFrag = MainFragment(realModel, true, viewModel)
+                val transaction = supportFragmentManager.beginTransaction()
+                transaction.replace(binding.contentFrame.id, mainFrag!!)
+                    .commit()
+            }
+
+        }
     }
 
     private fun checkUserInfo(userInfo: UserInfoModel) {
@@ -223,73 +230,7 @@ class MainActivity : AppCompatActivity() {
                 activityResultLauncher.launch(intent)
             }
         } else {
-            if (userInfo.github_id!!.isNotBlank()) {
-                realModel.github_id = userInfo.github_id
-            }
-            if (userInfo.commits != 0 && userInfo.tier == "SPROUT") {
-                realModel.commits = userInfo.commits
-            } else {
-                realModel.commits = userInfo.commits
-                realModel.tier = userInfo.tier
-            }
-            if (userInfo.token_amount == null) {
-                realModel.token_amount = userInfo.commits
-            } else {
-                realModel.token_amount = userInfo.token_amount
-            }
-            if (userInfo.organization != null) {
-                realModel.organization = userInfo.organization
-            }
-            realModel.profile_image = userInfo.profile_image
-            realModel.rank = userInfo.rank
-            realModel.issues = userInfo.issues
-            realModel.pull_requests = userInfo.pull_requests
-            realModel.reviews = userInfo.reviews
-            if (userInfo.organization_rank != null) {
-                realModel.organization_rank = userInfo.organization_rank
-            }
-            userInfo.blockchain_url?.let {
-                realModel.blockchain_url = it
-            }
-            realModel.id = userInfo.id
-            realModel.auth_step = userInfo.auth_step
-            realModel.member_github_ids = userInfo.member_github_ids
-            realModel.is_last = userInfo.is_last
-            realModel.name = userInfo.name
-
-            Log.d("userInfo", "realModel:$realModel")
-            if (realModel.commits != null && realModel.github_id != null && realModel.profile_image != null && realModel.auth_step != null) {
-                Log.d("userInfo", "id:${userInfo.github_id}")
-                mainFrag = MainFragment(realModel, imgRefresh)
-//                binding.mainLoading.pauseAnimation()
-//                binding.mainLoading.visibility = View.GONE
-//                binding.mainNav.visibility = View.VISIBLE
-                Log.d("메인", "메인화면 초기화")
-                imgRefresh = false
-                var sum = 0
-                realModel.commits?.let {
-                    sum += it
-                }
-                realModel.issues?.let {
-                    sum += it
-                }
-                realModel.pull_requests?.let {
-                    sum += it
-                }
-                realModel.reviews?.let {
-                    sum += it
-                }
-                Log.d("sum", "sum : $sum  amount: ${realModel.token_amount}")
-                if (sum != 0 && realModel.token_amount != sum && post) {
-                    post = false
-                }
-                refreshMain()
-                //if(realModel.tier != "SPROUT") {
-                //finish = true
-                //}
-            } else {
-
-            }
+            mainFrag = MainFragment(realModel, imgRefresh, viewModel)
         }
     }
 
