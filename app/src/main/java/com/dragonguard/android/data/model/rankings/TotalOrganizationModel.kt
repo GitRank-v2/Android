@@ -1,10 +1,10 @@
 package com.dragonguard.android.data.model.rankings
 
 data class TotalOrganizationModel(
-    val email_endpoint: String?,
-    val id: Long?,
-    val name: String?,
-    val organization_type: String?,
-    val token_sum: Long?,
-    val ranking: Int
-)
+    override val email_endpoint: String?,
+    override val id: Long?,
+    override val name: String?,
+    override val organization_type: String?,
+    override val token_sum: Long?,
+    val ranking: Int?
+): OrganizationRankingModelItem(email_endpoint, id, name, organization_type, token_sum)

@@ -24,37 +24,24 @@ class RankingsContract {
 
         data class Type(val type: String) : RankingsState()
         sealed class Rankings(val ranking: ArrayList<*>) : RankingsState() {
-            sealed class AllUsers(val userRanking: ArrayList<*>) : Rankings(userRanking) {
-                data class Ranking(val baseRanking: ArrayList<TotalUsersRankingModelItem>) :
+            sealed class AllUsers(val userRanking: ArrayList<TotalUsersRankingsModel>) :
+                Rankings(userRanking) {
+                data class Ranking(val baseRanking: ArrayList<TotalUsersRankingsModel>) :
                     AllUsers(baseRanking)
 
                 data class Rankings(val rankings: ArrayList<TotalUsersRankingsModel>) :
                     AllUsers(rankings)
             }
 
-            sealed class Organization(val orgRanking: ArrayList<*>) : Rankings(orgRanking) {
-                data class Ranking(val baseRanking: ArrayList<OrganizationRankingModelItem>) :
+            sealed class Organization(val orgRanking: ArrayList<TotalOrganizationModel>) : Rankings(orgRanking) {
+                data class Ranking(val baseRanking: ArrayList<TotalOrganizationModel>) :
                     Organization(baseRanking)
 
                 data class Rankings(val rankings: ArrayList<TotalOrganizationModel>) :
                     Organization(rankings)
             }
 
-            sealed class Company() : Rankings() {
 
-            }
-
-            sealed class University : Rankings() {
-
-            }
-
-            sealed class HighSchool : Rankings() {
-
-            }
-
-            sealed class Etc : Rankings() {
-
-            }
         }
 
         data class Token(val token: String) : RankingsState()

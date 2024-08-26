@@ -89,7 +89,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                         when (it.type.type) {
                             "사용자 전체" -> {
                                 checkTotalUserRankings(
-                                    (it.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).ranking
+                                    (it.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).baseRanking
                                 )
                             }
 
@@ -132,20 +132,20 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
             result.forEach {
                 if (it.tokens != null) {
                     if (ranking != 0) {
-                        if ((viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).ranking[ranking - 1].tokens == it.tokens) {
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking.add(
+                        if ((viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).baseRanking[ranking - 1].tokens == it.tokens) {
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
                                 TotalUsersRankingsModel(
                                     it.tokens,
                                     it.github_id,
                                     it.id,
                                     it.name,
                                     it.tier,
-                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking[ranking - 1].ranking,
+                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[ranking - 1].ranking,
                                     it.profile_image
                                 )
                             )
                         } else {
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking.add(
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
                                 TotalUsersRankingsModel(
                                     it.tokens,
                                     it.github_id,
@@ -158,7 +158,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                             )
                         }
                     } else {
-                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking.add(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
                             TotalUsersRankingsModel(
                                 it.tokens,
                                 it.github_id,
@@ -189,24 +189,24 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         if (page == 0) {
             when (viewModel.currentState.rankings.ranking.size) {
                 1 -> {
-                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
                 }
 
                 2 -> {
-                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
-                    profileBackground(viewModel.currentState.rankings.ranking[1], 2)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1], 2)
                 }
 
                 3 -> {
-                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
-                    profileBackground(viewModel.currentState.rankings.ranking[1], 2)
-                    profileBackground(viewModel.currentState.rankings.ranking[2], 3)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1], 2)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[2], 3)
                 }
 
                 else -> {
-                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
-                    profileBackground(viewModel.currentState.rankings.ranking[1], 2)
-                    profileBackground(viewModel.currentState.rankings.ranking[2], 3)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1], 2)
+                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[2], 3)
 
                     viewModel.currentState.rankings.ranking.removeFirst()
                     viewModel.currentState.rankings.ranking.removeFirst()
