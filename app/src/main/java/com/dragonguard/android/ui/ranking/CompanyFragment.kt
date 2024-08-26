@@ -30,8 +30,7 @@ class CompanyFragment(private val token: String) : Fragment() {
     private var type = "COMPANY"
     private var changed = true
     private lateinit var rankingsAdapter: RankingsAdapter
-    private var totalOrgRankings =
-        ArrayList<com.dragonguard.android.data.model.rankings.TotalOrganizationModel>()
+    private var totalOrgRankings = ArrayList<TotalOrganizationModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -2,45 +2,41 @@ package com.dragonguard.android.ui.ranking
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
+import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.UserProfileActivity
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
-class AllRankingsFragment(private val token: String, private val rankingType: String) : Fragment() {
+class AllRankingsFragment(private val rankingType: String) : Fragment() {
     private lateinit var binding: FragmentAllRankingsBinding
-    private var viewmodel = Viewmodel()
+    private val viewModel = RankingsViewModel(ApiRepository())
     private val size = 20
     private var page = 0
     private var position = 0
     private var ranking = 0
-    private var usersRanking =
-        ArrayList<com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel>()
     private var changed = true
     private lateinit var rankingsAdapter: RankingsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         binding = FragmentAllRankingsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -48,49 +44,109 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("type", "랭킹 type: $rankingType")
+        initObserver()
         when (rankingType) {
             "사용자 전체" -> {
-                getTotalUsersRanking(page, size)
+                //getTotalUsersRanking()
+                viewModel.setTypeName("사용자 전체")
+                RankingsAdapter(
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking,
+                    requireActivity(),
+                    viewModel.currentState.token.token
+                )
+            }
+
+            "조직 전체" -> {
+                viewModel.setTypeName("조직 전체")
+            }
+
+            "회사" -> {
+                viewModel.setTypeName("회사")
+            }
+
+            "대학교" -> {
+                viewModel.setTypeName("대학교")
+
+            }
+
+            "고등학교" -> {
+                viewModel.setTypeName("고등학교")
+
+            }
+
+            "ETC" -> {
+                viewModel.setTypeName("ETC")
+
             }
         }
     }
 
-    private fun getTotalUsersRanking(page: Int, size: Int) {
+    private fun initObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    if (it.loadState is RankingsContract.RankingsState.LoadState.Success) {
+                        when (it.type.type) {
+                            "사용자 전체" -> {
+                                checkTotalUserRankings(
+                                    (it.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).ranking
+                                )
+                            }
+
+                            "조직 전체" -> {
+
+                            }
+
+                            "회사" -> {
+
+                            }
+
+                            "대학교" -> {
+
+                            }
+
+                            "고등학교" -> {
+
+                            }
+
+                            "ETC" -> {
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getTotalUsersRanking() {
         binding.rankingLottie.visibility = View.VISIBLE
         binding.rankingLottie.playAnimation()
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@AllRankingsFragment.isRemoving) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.getTotalUserRanking(page, size, token)
-                }
-                val result = resultDeferred.await()
-                checkRankings(result)
-            }
-        }
+        viewModel.getTotalUserRanking(page, size)
     }
 
-    private fun checkRankings(result: ArrayList<com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem>) {
-//        Toast.makeText(applicationContext, "개수 : ${result.size}",Toast.LENGTH_SHORT).show()
+    private fun checkTotalUserRankings(result: List<TotalUsersRankingModelItem>) {
         if (result.isNotEmpty()) {
+            viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking
+            viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings
             result.forEach {
                 if (it.tokens != null) {
                     if (ranking != 0) {
-                        if (usersRanking[ranking - 1].tokens == it.tokens) {
-                            usersRanking.add(
-                                com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel(
+                        if ((viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).ranking[ranking - 1].tokens == it.tokens) {
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking.add(
+                                TotalUsersRankingsModel(
                                     it.tokens,
                                     it.github_id,
                                     it.id,
                                     it.name,
                                     it.tier,
-                                    usersRanking[ranking - 1].ranking,
+                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking[ranking - 1].ranking,
                                     it.profile_image
                                 )
                             )
                         } else {
-                            usersRanking.add(
-                                com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel(
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking.add(
+                                TotalUsersRankingsModel(
                                     it.tokens,
                                     it.github_id,
                                     it.id,
@@ -102,8 +158,8 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
                             )
                         }
                     } else {
-                        usersRanking.add(
-                            com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking.add(
+                            TotalUsersRankingsModel(
                                 it.tokens,
                                 it.github_id,
                                 it.id,
@@ -120,49 +176,42 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
             }
             initRecycler()
         } else {
-            if (changed) {
-                changed = false
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ getTotalUsersRanking(page, size) }, 4000)
-            } else {
-                binding.rankingLottie.pauseAnimation()
-                binding.rankingLottie.visibility = View.GONE
-            }
+            binding.rankingLottie.pauseAnimation()
+            binding.rankingLottie.visibility = View.GONE
         }
     }
 
     private fun initRecycler() {
-        binding.eachRankings.setItemViewCacheSize(usersRanking.size)
+        //binding.eachRankings.setItemViewCacheSize(viewModel.currentState.rankings.ranking.size)
         binding.eachRankings.setHasFixedSize(true)
         binding.eachRankings.isNestedScrollingEnabled = true
-//        Toast.makeText(applicationContext, "개수 : ${usersRanking.size}",Toast.LENGTH_SHORT).show()
+        //Toast.makeText(applicationContext, "개수 : ${usersRanking.size}",Toast.LENGTH_SHORT).show()
         if (page == 0) {
-            when (usersRanking.size) {
+            when (viewModel.currentState.rankings.ranking.size) {
                 1 -> {
-                    profileBackground(usersRanking[0], 1)
+                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
                 }
 
                 2 -> {
-                    profileBackground(usersRanking[0], 1)
-                    profileBackground(usersRanking[1], 2)
+                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
+                    profileBackground(viewModel.currentState.rankings.ranking[1], 2)
                 }
 
                 3 -> {
-                    profileBackground(usersRanking[0], 1)
-                    profileBackground(usersRanking[1], 2)
-                    profileBackground(usersRanking[2], 3)
+                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
+                    profileBackground(viewModel.currentState.rankings.ranking[1], 2)
+                    profileBackground(viewModel.currentState.rankings.ranking[2], 3)
                 }
 
                 else -> {
-                    profileBackground(usersRanking[0], 1)
-                    profileBackground(usersRanking[1], 2)
-                    profileBackground(usersRanking[2], 3)
+                    profileBackground(viewModel.currentState.rankings.ranking[0], 1)
+                    profileBackground(viewModel.currentState.rankings.ranking[1], 2)
+                    profileBackground(viewModel.currentState.rankings.ranking[2], 3)
 
-                    usersRanking.removeFirst()
-                    usersRanking.removeFirst()
-                    usersRanking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeFirst()
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
-                        rankingsAdapter = RankingsAdapter(usersRanking, requireActivity(), token)
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
                         layoutmanager.initialPrefetchItemCount = 4
@@ -179,7 +228,7 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
         Log.d("api 횟수", "$page 페이지 검색")
         binding.rankingLottie.pauseAnimation()
         binding.rankingLottie.visibility = View.GONE
-        Log.d("전부", "유저 랭킹: $usersRanking")
+        Log.d("전부", "유저 랭킹: ${viewModel.currentState.rankings.ranking}")
         initScrollListener()
     }
 
@@ -224,7 +273,7 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
                 binding.firstFrame.setOnClickListener {
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", token)
+                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.firstRanker.visibility = View.VISIBLE
@@ -267,7 +316,7 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
                 binding.secondFrame.setOnClickListener {
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", token)
+                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.secondRanker.visibility = View.VISIBLE
@@ -310,7 +359,7 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
                 binding.thirdFrame.setOnClickListener {
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", token)
+                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.thirdRanker.visibility = View.VISIBLE
@@ -324,10 +373,7 @@ class AllRankingsFragment(private val token: String, private val rankingType: St
             binding.rankingLottie.visibility = View.VISIBLE
             binding.rankingLottie.playAnimation()
             changed = true
-            CoroutineScope(Dispatchers.Main).launch {
-                Log.d("api 시도", "getTotalUsersRanking 실행  load more")
-                getTotalUsersRanking(page, size)
-            }
+            getTotalUsersRanking()
         }
     }
 

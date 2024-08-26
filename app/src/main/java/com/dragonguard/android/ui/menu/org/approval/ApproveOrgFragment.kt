@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
 import com.dragonguard.android.databinding.FragmentApproveOrgBinding
 import com.dragonguard.android.util.RequestStatus
 import com.dragonguard.android.viewmodel.Viewmodel
@@ -27,7 +28,7 @@ class ApproveOrgFragment(private val token: String) : Fragment() {
     var page = 0
     private var count = 0
     private var orgList =
-        ArrayList<com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem>()
+        ArrayList<ApproveRequestOrgModelItem>()
     private var position = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
