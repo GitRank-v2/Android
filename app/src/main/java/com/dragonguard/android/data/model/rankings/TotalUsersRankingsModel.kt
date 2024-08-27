@@ -7,6 +7,6 @@ data class TotalUsersRankingsModel(
     override var id: String?,
     override var name: String?,
     override var tier: String?,
-    val ranking: Int?,
+    var ranking: Int? = 0,
     override var profile_image: String?
 ) : TotalUsersRankingModelItem(tokens, github_id, id, name, tier, profile_image)

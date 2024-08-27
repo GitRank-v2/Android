@@ -11,14 +11,6 @@ class FragmentAdapter(fragment: Fragment, private val token: String) :
 
     override fun createFragment(position: Int): Fragment {
         val fragmentTag = fragmentList[position]
-        return when (fragmentTag) {
-            "사용자 전체" -> AllRankingsFragment(token)
-            "조직 전체" -> TotalOrganizationFragment(token)
-            "회사" -> CompanyFragment(token)
-            "대학교" -> UniversityFragment(token)
-            "고등학교" -> HighSchoolFragment(token)
-            "ETC" -> EtcFragment(token)
-            else -> throw IllegalArgumentException("Invalid fragment tag: $fragmentTag")
-        }
+        return AllRankingsFragment(fragmentTag)
     }
 }

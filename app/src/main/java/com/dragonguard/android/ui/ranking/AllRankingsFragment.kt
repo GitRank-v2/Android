@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem
+import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
@@ -45,12 +45,15 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("type", "랭킹 type: $rankingType")
         initObserver()
+        binding.rankingLottie.visibility = View.VISIBLE
+        binding.rankingLottie.playAnimation()
         when (rankingType) {
             "사용자 전체" -> {
-                //getTotalUsersRanking()
                 viewModel.setTypeName("사용자 전체")
+                viewModel.setTypeToUser()
+                //viewModel.getTotalUserRanking(page, size)
                 RankingsAdapter(
-                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).ranking,
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
                     requireActivity(),
                     viewModel.currentState.token.token
                 )
@@ -58,25 +61,52 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
 
             "조직 전체" -> {
                 viewModel.setTypeName("조직 전체")
+                //viewModel.getTotalOrganizationRanking(page)
+                RankingsAdapter(
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                    requireActivity(),
+                    viewModel.currentState.token.token
+                )
             }
 
             "회사" -> {
                 viewModel.setTypeName("회사")
+                //viewModel.getCompanyRanking(page)
+                RankingsAdapter(
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                    requireActivity(),
+                    viewModel.currentState.token.token
+                )
             }
 
             "대학교" -> {
                 viewModel.setTypeName("대학교")
-
+                //viewModel.getUniversityRanking(page)
+                RankingsAdapter(
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                    requireActivity(),
+                    viewModel.currentState.token.token
+                )
             }
 
             "고등학교" -> {
                 viewModel.setTypeName("고등학교")
-
+                viewModel.getHighSchoolRanking(page)
+                RankingsAdapter(
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                    requireActivity(),
+                    viewModel.currentState.token.token
+                )
             }
 
             "ETC" -> {
                 viewModel.setTypeName("ETC")
-
+                //viewModel.getEtcRanking(page)
+                RankingsAdapter(
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                    requireActivity(),
+                    viewModel.currentState.token.token
+                )
             }
         }
     }
@@ -88,29 +118,11 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     if (it.loadState is RankingsContract.RankingsState.LoadState.Success) {
                         when (it.type.type) {
                             "사용자 전체" -> {
-                                checkTotalUserRankings(
-                                    (it.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).baseRanking
-                                )
+                                checkTotalUserRankings()
                             }
 
-                            "조직 전체" -> {
-
-                            }
-
-                            "회사" -> {
-
-                            }
-
-                            "대학교" -> {
-
-                            }
-
-                            "고등학교" -> {
-
-                            }
-
-                            "ETC" -> {
-
+                            else -> {
+                                checkOrgRankings()
                             }
                         }
                     }
@@ -119,17 +131,12 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         }
     }
 
-    private fun getTotalUsersRanking() {
-        binding.rankingLottie.visibility = View.VISIBLE
-        binding.rankingLottie.playAnimation()
-        viewModel.getTotalUserRanking(page, size)
-    }
 
-    private fun checkTotalUserRankings(result: List<TotalUsersRankingModelItem>) {
-        if (result.isNotEmpty()) {
+    private fun checkTotalUserRankings() {
+        if (viewModel.currentState.ranking.ranking.isNotEmpty()) {
             viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking
             viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings
-            result.forEach {
+            (viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).userRanking.forEach {
                 if (it.tokens != null) {
                     if (ranking != 0) {
                         if ((viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).baseRanking[ranking - 1].tokens == it.tokens) {
@@ -170,18 +177,69 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                             )
                         )
                     }
-//                Log.d("유져", "랭킹 ${ranking+1} 추가")
+                    //Log.d("유져", "랭킹 ${ranking+1} 추가")
                     ranking++
                 }
             }
-            initRecycler()
+            initUserRecycler()
         } else {
             binding.rankingLottie.pauseAnimation()
             binding.rankingLottie.visibility = View.GONE
         }
     }
 
-    private fun initRecycler() {
+    private fun checkOrgRankings() {
+        if (viewModel.currentState.ranking.ranking.isNotEmpty()) {
+            (viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.Organization.Ranking).orgRanking.forEach {
+                if (it.name != null) {
+                    if (ranking != 0) {
+                        if ((viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.Organization.Ranking).baseRanking[ranking - 1].token_sum == it.token_sum) {
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
+                                TotalOrganizationModel(
+                                    email_endpoint = it.email_endpoint,
+                                    id = it.id,
+                                    name = it.name,
+                                    organization_type = it.organization_type,
+                                    token_sum = it.token_sum,
+                                    ranking = (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings[ranking - 1].ranking
+                                )
+                            )
+                        } else {
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
+                                TotalOrganizationModel(
+                                    email_endpoint = it.email_endpoint,
+                                    id = it.id,
+                                    name = it.name,
+                                    organization_type = it.organization_type,
+                                    token_sum = it.token_sum,
+                                    ranking = ranking + 1
+                                )
+                            )
+                        }
+                    } else {
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
+                            TotalOrganizationModel(
+                                email_endpoint = it.email_endpoint,
+                                id = it.id,
+                                name = it.name,
+                                organization_type = it.organization_type,
+                                token_sum = it.token_sum,
+                                ranking = 1
+                            )
+                        )
+                    }
+                    //Log.d("유져", "랭킹 ${ranking+1} 추가")
+                    ranking++
+                }
+            }
+            initUserRecycler()
+        } else {
+            binding.rankingLottie.pauseAnimation()
+            binding.rankingLottie.visibility = View.GONE
+        }
+    }
+
+    private fun initUserRecycler() {
         //binding.eachRankings.setItemViewCacheSize(viewModel.currentState.rankings.ranking.size)
         binding.eachRankings.setHasFixedSize(true)
         binding.eachRankings.isNestedScrollingEnabled = true
@@ -189,34 +247,66 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         if (page == 0) {
             when (viewModel.currentState.rankings.ranking.size) {
                 1 -> {
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0],
+                        1
+                    )
                 }
 
                 2 -> {
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1], 2)
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0],
+                        1
+                    )
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1],
+                        2
+                    )
                 }
 
                 3 -> {
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1], 2)
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[2], 3)
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0],
+                        1
+                    )
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1],
+                        2
+                    )
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[2],
+                        3
+                    )
                 }
 
                 else -> {
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0], 1)
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1], 2)
-                    profileBackground((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[2], 3)
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[0],
+                        1
+                    )
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[1],
+                        2
+                    )
+                    profileBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[2],
+                        3
+                    )
 
                     viewModel.currentState.rankings.ranking.removeFirst()
                     viewModel.currentState.rankings.ranking.removeFirst()
                     viewModel.currentState.rankings.ranking.removeFirst()
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
+                        RankingsAdapter(
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
+                            requireActivity(),
+                            viewModel.currentState.token.token
+                        )
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
                         layoutmanager.initialPrefetchItemCount = 4
                         binding.eachRankings.layoutManager = layoutmanager
-//            totalUserRankingAdapter.notifyDataSetChanged()
+                        //rankingsAdapter.notifyDataSetChanged()
                         binding.eachRankings.visibility = View.VISIBLE
                     }
 
@@ -229,6 +319,85 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         binding.rankingLottie.pauseAnimation()
         binding.rankingLottie.visibility = View.GONE
         Log.d("전부", "유저 랭킹: ${viewModel.currentState.rankings.ranking}")
+        initScrollListener()
+    }
+
+    private fun initOrgRecycler() {
+        if (page == 0) {
+            when (viewModel.currentState.rankings.ranking.size) {
+                1 -> {
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[0],
+                        1
+                    )
+                }
+
+                2 -> {
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[0],
+                        1
+                    )
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[1],
+                        2
+                    )
+                }
+
+                3 -> {
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[0],
+                        1
+                    )
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[1],
+                        2
+                    )
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[2],
+                        3
+                    )
+                }
+
+                else -> {
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[0],
+                        1
+                    )
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[1],
+                        2
+                    )
+                    profileOrgBackground(
+                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking[2],
+                        3
+                    )
+
+                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeFirst()
+
+                    if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
+                        rankingsAdapter = RankingsAdapter(
+                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                            requireActivity(),
+                            viewModel.currentState.token.token
+                        )
+                        val layoutmanager = LinearLayoutManager(requireContext())
+                        layoutmanager.initialPrefetchItemCount = 10
+                        binding.eachRankings.layoutManager = layoutmanager
+                        binding.eachRankings.layoutManager = LinearLayoutManager(requireContext())
+                        binding.eachRankings.visibility = View.VISIBLE
+                    }
+
+                }
+            }
+        }
+        binding.eachRankings.adapter?.notifyDataSetChanged()
+        page++
+        Log.d("api 횟수", "$page 페이지 검색")
+        binding.rankingLottie.pauseAnimation()
+        binding.rankingLottie.visibility = View.GONE
+        binding.topRankings.visibility = View.VISIBLE
         initScrollListener()
     }
 
@@ -368,14 +537,48 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         }
     }
 
-    private fun loadMorePosts() {
-        if (binding.rankingLottie.visibility == View.GONE) {
-            binding.rankingLottie.visibility = View.VISIBLE
-            binding.rankingLottie.playAnimation()
-            changed = true
-            getTotalUsersRanking()
+    private fun profileOrgBackground(model: TotalOrganizationModel, number: Int) {
+        when (number) {
+            1 -> {
+                //Glide.with(binding.firstProfile).load()
+                //.into(binding.firstProfile)
+                binding.firstId.text = model.name
+                binding.firstContribute.text = model.token_sum.toString()
+                binding.firstRanker.visibility = View.VISIBLE
+                binding.firstProfile.setImageResource(R.drawable.company)
+                binding.firstFrame.setOnClickListener {
+                    val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                    intent.putExtra("organization", model.name)
+                    startActivity(intent)
+                }
+            }
+
+            2 -> {
+                binding.secondId.text = model.name
+                binding.secondContribute.text = model.token_sum.toString()
+                binding.secondRanker.visibility = View.VISIBLE
+                binding.secondProfile.setImageResource(R.drawable.company)
+                binding.secondFrame.setOnClickListener {
+                    val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                    intent.putExtra("organization", model.name)
+                    startActivity(intent)
+                }
+            }
+
+            3 -> {
+                binding.thirdId.text = model.name
+                binding.thirdContribute.text = model.token_sum.toString()
+                binding.thirdRanker.visibility = View.VISIBLE
+                binding.thirdProfile.setImageResource(R.drawable.company)
+                binding.thirdFrame.setOnClickListener {
+                    val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                    intent.putExtra("organization", model.name)
+                    startActivity(intent)
+                }
+            }
         }
     }
+
 
     private fun initScrollListener() {
         binding.eachRankings.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -391,9 +594,64 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 // 마지막으로 보여진 아이템 position 이
                 // 전체 아이템 개수보다 1개 모자란 경우, 데이터를 loadMore 한다
                 if (!binding.eachRankings.canScrollVertically(1) && lastVisibleItem == itemTotalCount) {
-                    loadMorePosts()
+                    when (rankingType) {
+                        "사용자 전체" -> {
+                            loadMoreUserRanking()
+                        }
+
+                        "조직 전체" -> {
+                            loadMoreTotalOrgRanking()
+                        }
+
+                        else -> {
+                            loadMoreTypeOrgRanking()
+                        }
+                    }
                 }
             }
         })
+    }
+
+    private fun loadMoreUserRanking() {
+        if (binding.rankingLottie.visibility == View.GONE) {
+            binding.rankingLottie.visibility = View.VISIBLE
+            binding.rankingLottie.playAnimation()
+            changed = true
+            //viewModel.getTotalUserRanking(page, size)
+        }
+    }
+
+    private fun loadMoreTotalOrgRanking() {
+        if (binding.rankingLottie.visibility == View.GONE) {
+            binding.rankingLottie.visibility = View.VISIBLE
+            binding.rankingLottie.playAnimation()
+            changed = true
+            //viewModel.getTotalOrganizationRanking(page)
+        }
+    }
+
+    private fun loadMoreTypeOrgRanking() {
+        if (binding.rankingLottie.visibility == View.GONE) {
+            binding.rankingLottie.visibility = View.VISIBLE
+            binding.rankingLottie.playAnimation()
+            changed = true
+            when (rankingType) {
+                "회사" -> {
+                    //viewModel.getCompanyRanking(page)
+                }
+
+                "대학교" -> {
+                    //viewModel.getUniversityRanking(page)
+                }
+
+                "고등학교" -> {
+                    //viewModel.getHighSchoolRanking(page)
+                }
+
+                "ETC" -> {
+                    //viewModel.getEtcRanking(page)
+                }
+            }
+        }
     }
 }

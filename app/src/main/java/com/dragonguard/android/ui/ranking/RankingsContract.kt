@@ -1,8 +1,6 @@
 package com.dragonguard.android.ui.ranking
 
-import com.dragonguard.android.data.model.rankings.OrganizationRankingModelItem
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
-import com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
@@ -10,8 +8,14 @@ import com.dragonguard.android.ui.base.UiState
 
 class RankingsContract {
     sealed class RankingsEvent : UiEvent {
-        data class GetTotalUserRanking(val page: Int, val size: Int) : RankingsEvent()
         data class SetType(val type: String) : RankingsEvent()
+        object SetTypeToUser : RankingsEvent()
+        data class GetTotalUserRanking(val page: Int, val size: Int) : RankingsEvent()
+        data class GetTotalOrganizationRanking(val page: Int) : RankingsEvent()
+        data class GetCompanyRanking(val page: Int) : RankingsEvent()
+        data class GetUniversityRanking(val page: Int) : RankingsEvent()
+        data class GetHighSchoolRanking(val page: Int) : RankingsEvent()
+        data class GetEtcRanking(val page: Int) : RankingsEvent()
     }
 
     sealed class RankingsState {
@@ -33,7 +37,8 @@ class RankingsContract {
                     AllUsers(rankings)
             }
 
-            sealed class Organization(val orgRanking: ArrayList<TotalOrganizationModel>) : Rankings(orgRanking) {
+            sealed class Organization(val orgRanking: ArrayList<TotalOrganizationModel>) :
+                Rankings(orgRanking) {
                 data class Ranking(val baseRanking: ArrayList<TotalOrganizationModel>) :
                     Organization(baseRanking)
 

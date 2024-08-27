@@ -6,5 +6,5 @@ data class TotalOrganizationModel(
     override val name: String?,
     override val organization_type: String?,
     override val token_sum: Long?,
-    val ranking: Int?
-): OrganizationRankingModelItem(email_endpoint, id, name, organization_type, token_sum)
+    var ranking: Int? = 0
+) : OrganizationRankingModelItem(email_endpoint, id, name, organization_type, token_sum)
