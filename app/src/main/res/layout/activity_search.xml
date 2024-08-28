@@ -3,13 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="searchViewModel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
-    </data>
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent">
@@ -19,11 +12,13 @@
             android:layout_height="350dp"
             android:background="@android:color/transparent"
             android:fitsSystemWindows="true">
+
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 android:background="@android:color/transparent"
                 android:layout_height="350dp">
+
                 <androidx.appcompat.widget.AppCompatImageView
                     android:background="@android:color/transparent"
                     android:id="@+id/search_back"
@@ -41,10 +36,12 @@
                     android:layout_gravity="bottom"
                     android:gravity="top|start"
                     app:layout_collapseMode="pin">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -104,6 +101,6 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:lottie_loop="true"
             android:layout_gravity="top"
-            app:lottie_rawRes="@raw/loading_page"/>
+            app:lottie_rawRes="@raw/loading_page" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

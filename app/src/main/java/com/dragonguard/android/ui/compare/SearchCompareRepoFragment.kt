@@ -14,9 +14,8 @@ import com.dragonguard.android.databinding.FragmentCompareSearchBinding
 import com.dragonguard.android.ui.compare.compare.RepoCompareActivity
 import com.dragonguard.android.ui.search.SearchActivity
 
-class CompareSearchFragment() : Fragment() {
+class SearchCompareRepoFragment : Fragment() {
     private lateinit var binding: FragmentCompareSearchBinding
-    private val token = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,13 +43,11 @@ class CompareSearchFragment() : Fragment() {
         }
         binding.repoCompare1.setOnClickListener {
             val intent = Intent(activity, SearchActivity::class.java)
-            intent.putExtra("token", token)
             intent.putExtra("count", 1)
             resultLauncher.launch(intent)
         }
         binding.repoCompare2.setOnClickListener {
             val intent = Intent(activity, SearchActivity::class.java)
-            intent.putExtra("token", token)
             intent.putExtra("count", 2)
             resultLauncher.launch(intent)
         }
@@ -65,7 +62,6 @@ class CompareSearchFragment() : Fragment() {
                     val intent = Intent(requireContext(), RepoCompareActivity::class.java)
                     intent.putExtra("repo1", binding.repoCompare1.text.toString())
                     intent.putExtra("repo2", binding.repoCompare2.text.toString())
-                    intent.putExtra("token", token)
                     startActivity(intent)
                 } else {
                     Toast.makeText(
@@ -78,7 +74,7 @@ class CompareSearchFragment() : Fragment() {
         }
     }
 
-    val resultLauncher =
+    private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when (result.resultCode) {
                 1 -> {

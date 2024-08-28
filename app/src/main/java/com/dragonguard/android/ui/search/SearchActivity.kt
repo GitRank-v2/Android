@@ -57,7 +57,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
-        binding.searchViewModel = viewmodel
 
         this.onBackPressedDispatcher.addCallback(this, callback)
         binding.searchResult.addItemDecoration(VerticalItemDecorator(20))

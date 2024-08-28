@@ -17,7 +17,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.ActivityMainBinding
-import com.dragonguard.android.ui.compare.CompareSearchFragment
+import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
 import com.dragonguard.android.ui.profile.ClientProfileFragment
 import com.dragonguard.android.ui.profile.UserProfileActivity
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     private var refreshState = true
     private var mainFrag: MainFragment? = null
     private var rankingFrag: RankingFragment? = null
-    private var compareFrag: CompareSearchFragment? = null
+    private var compareFrag: SearchCompareRepoFragment? = null
     private var profileFrag: ClientProfileFragment? = null
     private var imgRefresh = true
     private var realModel = UserInfoModel()
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.bottom_compare -> {
-                    compareFrag = CompareSearchFragment()
+                    compareFrag = SearchCompareRepoFragment()
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, compareFrag!!)
                         .commit()

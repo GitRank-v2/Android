@@ -7,20 +7,20 @@ import com.dragonguard.android.ui.base.UiState
 
 class MainContract {
     sealed class MainEvent : UiEvent {
-        object GetUserInfo : MainEvent()
-        object ClickSearch : MainEvent()
-        object ClickUserIcon : MainEvent()
-        object GetNewToken : MainEvent()
-        object Logout : MainEvent()
+        data object GetUserInfo : MainEvent()
+        data object ClickSearch : MainEvent()
+        data object ClickUserIcon : MainEvent()
+        data object GetNewToken : MainEvent()
+        data object Logout : MainEvent()
         data class SetRepeat(val repeat: Boolean) : MainEvent()
     }
 
     sealed class MainState {
         sealed class LoadState : MainState() {
-            object Initial : LoadState()
-            object Loading : LoadState()
-            object Success : LoadState()
-            object Error : LoadState()
+            data object Initial : LoadState()
+            data object Loading : LoadState()
+            data object Success : LoadState()
+            data object Error : LoadState()
         }
 
         data class UserInfo(val userInfo: UserInfoModel) : MainState()

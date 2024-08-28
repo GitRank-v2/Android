@@ -9,7 +9,7 @@ import com.dragonguard.android.ui.base.UiState
 class RankingsContract {
     sealed class RankingsEvent : UiEvent {
         data class SetType(val type: String) : RankingsEvent()
-        object SetTypeToUser : RankingsEvent()
+        data object SetTypeToUser : RankingsEvent()
         data class GetTotalUserRanking(val page: Int, val size: Int) : RankingsEvent()
         data class GetTotalOrganizationRanking(val page: Int) : RankingsEvent()
         data class GetCompanyRanking(val page: Int) : RankingsEvent()
@@ -20,10 +20,10 @@ class RankingsContract {
 
     sealed class RankingsState {
         sealed class LoadState : RankingsState() {
-            object Initial : LoadState()
-            object Loading : LoadState()
-            object Success : LoadState()
-            object Error : LoadState()
+            data object Initial : LoadState()
+            data object Loading : LoadState()
+            data object Success : LoadState()
+            data object Error : LoadState()
         }
 
         data class Type(val type: String) : RankingsState()
