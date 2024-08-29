@@ -5,9 +5,6 @@
 
     <data>
 
-        <variable
-            name="compareUserViewmodel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
     </data>
 
     <androidx.core.widget.NestedScrollView

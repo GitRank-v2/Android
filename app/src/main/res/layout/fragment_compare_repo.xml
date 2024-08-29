@@ -5,9 +5,7 @@
 
     <data>
 
-        <variable
-            name="compareRepoViewmodel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
+
     </data>
 
     <androidx.core.widget.NestedScrollView

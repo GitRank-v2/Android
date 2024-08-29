@@ -6,30 +6,27 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
 import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
-import com.dragonguard.android.databinding.FragmentCompareRepoBinding
-import com.dragonguard.android.data.model.compare.RepoMembersResult
 import com.dragonguard.android.data.model.compare.RepoStats
-import com.dragonguard.android.viewmodel.Viewmodel
+import com.dragonguard.android.databinding.FragmentCompareRepoBinding
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -37,14 +34,11 @@ import java.text.DecimalFormat
 class CompareRepoFragment(
     repoName1: String,
     repoName2: String,
-    token: String,
-    private val firstRepoMember: List<RepoMembersResult>,
-    private val secondRepoMember: List<RepoMembersResult>
+    private val viewModel: RepoCompareViewModel
 ) : Fragment() {
     // TODO: Rename and change types of parameters
     private var repo1 = repoName1
     private var repo2 = repoName2
-    private var viewmodel = Viewmodel()
     private lateinit var binding: FragmentCompareRepoBinding
     private var count = 0
     private val compareItems = arrayListOf(
@@ -72,7 +66,6 @@ class CompareRepoFragment(
         "languages",
         "average lines"
     )
-    private val token = token
 
 
     override fun onCreateView(
@@ -82,17 +75,11 @@ class CompareRepoFragment(
         // Inflate the layout for this fragment
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_compare_repo, container, false)
-        binding.compareRepoViewmodel = viewmodel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateUI()
-    }
-
-    //activity 구성 이후 화면을 초기화하는 함수
-    private fun updateUI() {
         binding.repo1User1.clipToOutline = true
         binding.repo1User2.clipToOutline = true
         binding.repo1User3.clipToOutline = true
@@ -101,64 +88,23 @@ class CompareRepoFragment(
         binding.repo2User2.clipToOutline = true
         binding.repo2User3.clipToOutline = true
         binding.repo2User4.clipToOutline = true
-        repoContributors()
+        initObserver()
+        viewModel.requestCompareRepo(repo1, repo2)
     }
 
-    /*비교 전에 멤버를 불러오는 함수
-    호출 후 이상유무를 확인하는 함수 호출
-     */
-    fun repoContributors() {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            val resultDeferred = coroutine.async(Dispatchers.IO) {
-                viewmodel.postCompareRepoMembersRequest(repo1, repo2, token)
-            }
-            val result = resultDeferred.await()
-//            Toast.makeText(applicationContext, "result = ${result.size}",Toast.LENGTH_SHORT).show()
-            checkContributors(result)
-        }
-    }
-
-    /*
-    멤버를 불러오는 함수의 결과의 이상 유뮤 확인 함수
-    이상없으면 비교하는 함수 호출
-     */
-
-    fun checkContributors(result: CompareRepoMembersResponseModel) {
-        if ((result.first_result != null) && (result.second_result != null)) {
-            if (result.first_result.isEmpty()) {
-                count++
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ repoContributors() }, 2000)
-            } else {
-                repoCompare()
-            }
-        } else {
-            if (count < 10) {
-                count++
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ repoContributors() }, 2000)
-            } else {
-
+    //activity 구성 이후 화면을 초기화하는 함수
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.loadState is RepoCompareContract.RepoCompareState.LoadState.Success) {
+                        checkRepos(state.repo.repo)
+                    }
+                }
             }
         }
     }
 
-    /*
-    두 Repository를 비교하는 API를 호출하는 함수
-    호출 후 이상유무를 확인하는 함수 호출
-     */
-    private fun repoCompare() {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            val resultDeferred = coroutine.async(Dispatchers.IO) {
-                viewmodel.postCompareRepoRequest(repo1, repo2, token)
-            }
-            val result = resultDeferred.await()
-//            Toast.makeText(applicationContext, "result = ${result.size}",Toast.LENGTH_SHORT).show()
-            checkRepos(result)
-        }
-    }
 
     /*
     비교하는 API의 결과의 이상유뮤 확인 후
@@ -178,15 +124,14 @@ class CompareRepoFragment(
                 initRecycler(result)
 
             } catch (e: Exception) {
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ repoCompare() }, 5000)
-            }
-        } else {
-            if (count < 10) {
                 count++
                 val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ repoCompare() }, 5000)
+                handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
             }
+        } else {
+            count++
+            val handler = Handler(Looper.getMainLooper())
+            handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
         }
     }
 
@@ -203,7 +148,7 @@ class CompareRepoFragment(
             )
             count++
             val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({ repoCompare() }, 5000)
+            handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
         } else {
             val repoCompareAdapter =
                 RepoCompareAdapter(result.first_repo!!, result.second_repo!!, compareItems)
@@ -369,9 +314,9 @@ class CompareRepoFragment(
     }
 
     private fun initProfiles() {
-        Log.d("frist", "first : $firstRepoMember")
-        Log.d("second", "first : $secondRepoMember")
-        when (firstRepoMember.size) {
+        Log.d("frist", "first : ${viewModel.currentState.repoMembers.repoMembers.first_result}")
+        Log.d("second", "second : ${viewModel.currentState.repoMembers.repoMembers.second_result}")
+        when (viewModel.currentState.repoMembers.repoMembers.first_result!!.size) {
             0 -> {
                 binding.repo1User1.visibility = View.INVISIBLE
                 binding.repo1User2.visibility = View.INVISIBLE
@@ -380,36 +325,66 @@ class CompareRepoFragment(
             }
 
             1 -> {
-                adaptProfile(1, firstRepoMember[0].profile_url)
+                adaptProfile(
+                    1,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![0].profile_url
+                )
                 binding.repo1User2.visibility = View.INVISIBLE
                 binding.repo1User3.visibility = View.INVISIBLE
                 binding.repo1User4.visibility = View.INVISIBLE
             }
 
             2 -> {
-                adaptProfile(1, firstRepoMember[0].profile_url)
-                adaptProfile(2, firstRepoMember[1].profile_url)
+                adaptProfile(
+                    1,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![0].profile_url
+                )
+                adaptProfile(
+                    2,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![1].profile_url
+                )
                 binding.repo1User3.visibility = View.INVISIBLE
                 binding.repo1User4.visibility = View.INVISIBLE
             }
 
             3 -> {
-                adaptProfile(1, firstRepoMember[0].profile_url)
-                adaptProfile(2, firstRepoMember[1].profile_url)
-                adaptProfile(3, firstRepoMember[2].profile_url)
+                adaptProfile(
+                    1,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![0].profile_url
+                )
+                adaptProfile(
+                    2,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![1].profile_url
+                )
+                adaptProfile(
+                    3,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![2].profile_url
+                )
                 binding.repo1User4.visibility = View.INVISIBLE
             }
 
             else -> {
-                adaptProfile(1, firstRepoMember[0].profile_url)
-                adaptProfile(2, firstRepoMember[1].profile_url)
-                adaptProfile(3, firstRepoMember[2].profile_url)
-                adaptProfile(4, firstRepoMember[3].profile_url)
+                adaptProfile(
+                    1,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![0].profile_url
+                )
+                adaptProfile(
+                    2,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![1].profile_url
+                )
+                adaptProfile(
+                    3,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![2].profile_url
+                )
+                adaptProfile(
+                    4,
+                    viewModel.currentState.repoMembers.repoMembers.first_result!![3].profile_url
+                )
             }
 
         }
 
-        when (secondRepoMember.size) {
+        when (viewModel.currentState.repoMembers.repoMembers.second_result!!.size) {
             0 -> {
                 binding.repo2User1.visibility = View.INVISIBLE
                 binding.repo2User2.visibility = View.INVISIBLE
@@ -418,31 +393,61 @@ class CompareRepoFragment(
             }
 
             1 -> {
-                adaptProfile(5, secondRepoMember[0].profile_url)
+                adaptProfile(
+                    5,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![0].profile_url
+                )
                 binding.repo2User2.visibility = View.INVISIBLE
                 binding.repo2User3.visibility = View.INVISIBLE
                 binding.repo2User4.visibility = View.INVISIBLE
             }
 
             2 -> {
-                adaptProfile(5, secondRepoMember[0].profile_url)
-                adaptProfile(6, secondRepoMember[1].profile_url)
+                adaptProfile(
+                    5,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![0].profile_url
+                )
+                adaptProfile(
+                    6,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![1].profile_url
+                )
                 binding.repo2User3.visibility = View.INVISIBLE
                 binding.repo2User4.visibility = View.INVISIBLE
             }
 
             3 -> {
-                adaptProfile(5, secondRepoMember[0].profile_url)
-                adaptProfile(6, secondRepoMember[1].profile_url)
-                adaptProfile(7, secondRepoMember[2].profile_url)
+                adaptProfile(
+                    5,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![0].profile_url
+                )
+                adaptProfile(
+                    6,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![1].profile_url
+                )
+                adaptProfile(
+                    7,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![2].profile_url
+                )
                 binding.repo2User4.visibility = View.INVISIBLE
             }
 
             else -> {
-                adaptProfile(5, secondRepoMember[0].profile_url)
-                adaptProfile(6, secondRepoMember[1].profile_url)
-                adaptProfile(7, secondRepoMember[2].profile_url)
-                adaptProfile(8, secondRepoMember[3].profile_url)
+                adaptProfile(
+                    5,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![0].profile_url
+                )
+                adaptProfile(
+                    6,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![1].profile_url
+                )
+                adaptProfile(
+                    7,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![2].profile_url
+                )
+                adaptProfile(
+                    8,
+                    viewModel.currentState.repoMembers.repoMembers.second_result!![3].profile_url
+                )
             }
         }
 

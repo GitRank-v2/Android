@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.compare.compare
+package com.dragonguard.android.ui.search
 
 import android.content.Context
 import android.os.Bundle
@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.databinding.ActivitySearchFilterBinding
 import com.dragonguard.android.databinding.FilterSheetBinding
-import com.dragonguard.android.ui.search.SearchFilterActivity
+import com.dragonguard.android.ui.compare.compare.LanguagesAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class FilterSheetFragment(

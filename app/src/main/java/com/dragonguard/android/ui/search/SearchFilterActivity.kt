@@ -10,7 +10,6 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivitySearchFilterBinding
-import com.dragonguard.android.ui.compare.compare.FilterSheetFragment
 
 class SearchFilterActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchFilterBinding

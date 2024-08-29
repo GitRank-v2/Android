@@ -5,9 +5,6 @@
 
     <data>
 
-        <variable
-            name="repoCompareViewModel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
 
     </data>
 
@@ -42,7 +39,7 @@
                 app:lottie_autoPlay="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:lottie_loop="true"
-                app:lottie_rawRes="@raw/compare_loading"/>
+                app:lottie_rawRes="@raw/compare_loading" />
 
 
             <LinearLayout
@@ -60,14 +57,13 @@
                     app:tabSelectedTextColor="@color/black"
                     app:tabIconTint="@drawable/menu_selector"
                     app:tabTextAppearance="@style/tabText"
-                    app:tabIndicatorColor="@color/black"/>
+                    app:tabIndicatorColor="@color/black" />
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:layout_marginTop="20dp"
                     android:id="@+id/fragment_content"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
-
 
 
             </LinearLayout>
