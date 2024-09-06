@@ -2,6 +2,7 @@ package com.dragonguard.android.ui.ranking
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
+import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.data.repository.ApiRepository
@@ -9,11 +10,13 @@ import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import kotlinx.coroutines.launch
 
-class RankingsViewModel(private val repository: ApiRepository) :
+class RankingsViewModel :
     BaseViewModel<RankingsContract.RankingsEvent, RankingsContract.RankingsStates, RankingsContract.RankingsEffect>() {
     private lateinit var pref: IdPreference
+    private lateinit var repository: ApiRepository
     override fun createInitialState(): RankingsContract.RankingsStates {
         pref = getPref()
+        repository = getRepository()
         return RankingsContract.RankingsStates(
             RankingsContract.RankingsState.LoadState.Initial,
             RankingsContract.RankingsState.Type(""),

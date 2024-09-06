@@ -25,7 +25,6 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.klip.Bapp
 import com.dragonguard.android.data.model.klip.CallBack
 import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
-import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.ActivityLoginBinding
 import com.dragonguard.android.ui.main.MainActivity
 import kotlinx.coroutines.launch
@@ -53,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
         Log.d("시작", "loginactivity1")
-        viewModel = LoginViewModel(ApiRepository())
+        viewModel = LoginViewModel()
         initObserver()
         //쿠키 확인 코드
         this.onBackPressedDispatcher.addCallback(this, callback)

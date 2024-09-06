@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.UserInfoModel
-import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
@@ -89,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = MainViewModel(ApiRepository())
+        viewModel = MainViewModel()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initObserver()

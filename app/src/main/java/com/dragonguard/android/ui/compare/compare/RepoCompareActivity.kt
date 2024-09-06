@@ -10,8 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.compare.RepoMembersResult
-import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.ActivityRepoCompareBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
@@ -29,7 +27,7 @@ class RepoCompareActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_compare)
-        viewModel = RepoCompareViewModel(ApiRepository())
+        viewModel = RepoCompareViewModel()
         initObserver()
         repo1 = intent.getStringExtra("repo1")!!
         repo2 = intent.getStringExtra("repo2")!!
@@ -47,10 +45,7 @@ class RepoCompareActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     if (state.repoMembers.repoMembers.first_result != null && state.repoMembers.repoMembers.second_result != null) {
-                        startFragment(
-                            state.repoMembers.repoMembers.first_result,
-                            state.repoMembers.repoMembers.second_result
-                        )
+                        startFragment()
                     } else {
 
                     }
@@ -59,10 +54,7 @@ class RepoCompareActivity : AppCompatActivity() {
         }
     }
 
-    private fun startFragment(
-        resultFirst: List<RepoMembersResult>,
-        resultSecond: List<RepoMembersResult>
-    ) {
+    private fun startFragment() {
         binding.rankingLottie.pauseAnimation()
         binding.rankingLottie.visibility = View.GONE
         binding.compareFrame.visibility = View.VISIBLE

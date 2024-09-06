@@ -2,16 +2,19 @@ package com.dragonguard.android.ui.compare.search
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
+import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import kotlinx.coroutines.launch
 
-class CompareSearchViewModel(private val repository: ApiRepository) :
+class CompareSearchViewModel :
     BaseViewModel<CompareSearchContract.CompareSearchEvent, CompareSearchContract.CompareSearchStates, CompareSearchContract.CompareSearchEffect>() {
     private lateinit var pref: IdPreference
+    private lateinit var repository: ApiRepository
     override fun createInitialState(): CompareSearchContract.CompareSearchStates {
         pref = getPref()
+        repository = getRepository()
         return CompareSearchContract.CompareSearchStates(
             CompareSearchContract.CompareSearchState.LoadState.Loading,
             CompareSearchContract.CompareSearchState.Token(pref.getJwtToken("")),

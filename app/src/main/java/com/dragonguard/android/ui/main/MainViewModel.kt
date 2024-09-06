@@ -2,18 +2,20 @@ package com.dragonguard.android.ui.main
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
+import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val repository: ApiRepository) :
+class MainViewModel :
     BaseViewModel<MainContract.MainEvent, MainContract.MainStates, MainContract.MainActivityEffect>() {
     private lateinit var pref: IdPreference
-
+    private lateinit var repository: ApiRepository
     override fun createInitialState(): MainContract.MainStates {
         pref = getPref()
+        repository = getRepository()
         return MainContract.MainStates(
             loadState = MainContract.MainState.LoadState.Initial,
             userInfo = MainContract.MainState.UserInfo(

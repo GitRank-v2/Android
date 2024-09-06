@@ -17,7 +17,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
-import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.UserProfileActivity
 import kotlinx.coroutines.launch
@@ -25,7 +24,7 @@ import kotlinx.coroutines.launch
 
 class AllRankingsFragment(private val rankingType: String) : Fragment() {
     private lateinit var binding: FragmentAllRankingsBinding
-    private val viewModel = RankingsViewModel(ApiRepository())
+    private val viewModel = RankingsViewModel()
     private val size = 20
     private var page = 0
     private var position = 0

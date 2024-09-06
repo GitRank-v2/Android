@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
-import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.databinding.ActivitySearchBinding
 import kotlinx.coroutines.launch
 
@@ -39,7 +38,7 @@ class CompareSearchActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
-        viewModel = CompareSearchViewModel(ApiRepository())
+        viewModel = CompareSearchViewModel()
         initObserver()
 
         repoCount = intent.getIntExtra("count", 0)
