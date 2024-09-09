@@ -2,21 +2,22 @@ package com.dragonguard.android.ui.search.repo
 
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.databinding.ActivityRepoContributorsBinding
-import com.dragonguard.android.viewmodel.Viewmodel
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -29,9 +30,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /*
@@ -41,55 +39,64 @@ import kotlinx.coroutines.launch
 class RepoContributorsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRepoContributorsBinding
     lateinit var contributorsAdapter: ContributorsAdapter
-    private var contributors = ArrayList<GitRepoMember>()
     private var repoName = ""
-    var viewmodel = Viewmodel()
-    private var count = 0
-    private val colorsets = ArrayList<Int>()
-    private var token = ""
+    private lateinit var viewModel: RepoContributorsViewModel
+    private val colorSets = ArrayList<Int>()
     private var sparkLines = mutableListOf<Int>()
     private var refresh = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = RepoContributorsViewModel()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_contributors)
-        binding.repoContributorsViewmodel = viewmodel
+        initObserver()
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
-        val intent = intent
-        token = intent.getStringExtra("token")!!
 
         repoName = intent.getStringExtra("repoName")!!
 //        Toast.makeText(applicationContext, "reponame = $repoName", Toast.LENGTH_SHORT).show()
         repoContributors(repoName)
     }
 
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    if (it.loadState is RepoContributorsContract.RepoContributorsState.LoadState.Success) {
+                        checkContributors(it.repoState.repoState)
+                    }
+                }
+
+
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effect.collect {
+                    when (it) {
+                        is RepoContributorsContract.RepoContributorsEffect.ShowToast -> {
+                            Toast.makeText(
+                                applicationContext,
+                                "데이터를 불러오는데 실패했습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //    repo의 contributors 검색
     fun repoContributors(repoName: String) {
         binding.loadingLottie.resumeAnimation()
         binding.loadingLottie.visibility = View.VISIBLE
-        if (!this@RepoContributorsActivity.isFinishing && count < 4) {
+        if (!this@RepoContributorsActivity.isFinishing) {
             Log.d("check", "repoName $repoName")
-            Log.d("check", "token $token")
-            val coroutine = CoroutineScope(Dispatchers.Main)
-            coroutine.launch {
-                if (!this@RepoContributorsActivity.isFinishing) {
-                    val resultDeferred = coroutine.async(Dispatchers.IO) {
-                        viewmodel.getRepoContributors(repoName, token)
-                    }
-                    val result = resultDeferred.await()
-//            Toast.makeText(applicationContext, "result = ${result.size}",Toast.LENGTH_SHORT).show()
-                    checkContributors(result)
-                }
-            }
-        }
-
-        if (count >= 4) {
-            //완전 빈 repository 상세조회 시 처리
-            binding.loadingLottie.pauseAnimation()
-            binding.loadingLottie.visibility = View.GONE
+            viewModel.getRepoContributors(repoName)
         }
     }
 
@@ -97,34 +104,17 @@ class RepoContributorsActivity : AppCompatActivity() {
     fun checkContributors(result: RepoContributorsModel?) {
         Log.d("repo", "결과 $result")
         if (result != null) {
-            if (result.git_repo_members != null && result.git_repo_members.isNotEmpty()) {
+            if (!result.git_repo_members.isNullOrEmpty()) {
                 if (result.git_repo_members[0].additions == null) {
-                    count++
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.postDelayed({ repoContributors(repoName) }, 2000)
+                    //재시도
                 } else {
-                    for (i in 0 until result.git_repo_members.size) {
-                        val compare =
-                            contributors.filter { it.github_id == result.git_repo_members[i].github_id }
-                        if (compare.isEmpty()) {
-                            contributors.add(result.git_repo_members[i])
-                        }
-                    }
                     result.spark_line?.let {
                         sparkLines = it.toMutableList()
                     }
                     initRecycler()
                 }
             } else {
-                if (count < 4) {
-                    count++
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.postDelayed({ repoContributors(repoName) }, 2000)
-                } else {
-                    Log.d("결과", "lottie 멈춤")
-                    binding.loadingLottie.pauseAnimation()
-                    binding.loadingLottie.visibility = View.GONE
-                }
+                //재시도
             }
         } else {
             binding.loadingLottie.pauseAnimation()
@@ -132,45 +122,19 @@ class RepoContributorsActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkUpdate(result: RepoContributorsModel) {
-        Log.d("repo", "결과 $result")
-        if (result.git_repo_members != null) {
-            if (result.git_repo_members[0].additions == null) {
-                count++
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ repoContributors(repoName) }, 2000)
-            } else {
-                Log.d("중복확인", "중복확인")
-                for (i in 0 until result.git_repo_members.size) {
-                    val compare =
-                        contributors.filter { it.github_id == result.git_repo_members[i].github_id }
-                    if (compare.isEmpty()) {
-                        contributors.add(result.git_repo_members[i])
-                    }
-                }
-                result.spark_line?.let {
-                    sparkLines = it.toMutableList()
-                }
-                initRecycler()
-            }
-        } else {
-            if (count < 4) {
-                count++
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ updateContributions() }, 2000)
-            } else {
-                binding.loadingLottie.pauseAnimation()
-                binding.loadingLottie.visibility = View.GONE
-            }
-        }
-    }
 
     //    리사이클러뷰 실행
     private fun initRecycler() {
-        binding.repoContributors.setItemViewCacheSize(contributors.size)
+        binding.repoContributors.setItemViewCacheSize(viewModel.currentState.repoState.repoState.git_repo_members!!.size)
 //        Toast.makeText(applicationContext, "리사이클러뷰 시작", Toast.LENGTH_SHORT).show()
 //        Toast.makeText(applicationContext, "contributors 수 : ${contributors.size}", Toast.LENGTH_SHORT).show()
-        contributorsAdapter = ContributorsAdapter(contributors, this, colorsets, token, repoName)
+        contributorsAdapter = ContributorsAdapter(
+            viewModel.currentState.repoState.repoState.git_repo_members!! as ArrayList<GitRepoMember>,
+            this,
+            colorSets,
+            viewModel.currentState.token.token,
+            repoName
+        )
         binding.repoContributors.adapter = contributorsAdapter
         binding.repoContributors.layoutManager = LinearLayoutManager(this)
         binding.repoTitle.text = repoName
@@ -188,7 +152,7 @@ class RepoContributorsActivity : AppCompatActivity() {
         val entries = ArrayList<BarEntry>()
         val sparkEntries = ArrayList<Entry>()
         var countN = 1
-        contributors.forEach {
+        viewModel.currentState.repoState.repoState.git_repo_members!!.forEach {
             it.commits?.let { commit ->
                 entries.add(BarEntry(countN.toFloat(), commit.toFloat()))
                 countN++
@@ -200,12 +164,13 @@ class RepoContributorsActivity : AppCompatActivity() {
         }
 
         val set = BarDataSet(entries, "DataSet")
-        set.colors = colorsets
+        set.colors = colorSets
         set.apply {
             formSize = 15f
             valueTextSize = 12f
             setDrawValues(true)
-            valueFormatter = ScoreCustomFormatter(contributors)
+            valueFormatter =
+                ScoreCustomFormatter(viewModel.currentState.repoState.repoState.git_repo_members!!)
             setDrawIcons(true)
         }
 
@@ -257,7 +222,8 @@ class RepoContributorsActivity : AppCompatActivity() {
                 setDrawGridLines(false) // 격자
                 textColor = ContextCompat.getColor(context, R.color.black) //라벨 색상
                 textSize = 12f // 텍스트 크기
-                valueFormatter = MyXAxisFormatter(contributors) // X축 라벨값(밑에 표시되는 글자) 바꿔주기 위해 설정
+                valueFormatter =
+                    MyXAxisFormatter(viewModel.currentState.repoState.repoState.git_repo_members!!) // X축 라벨값(밑에 표시되는 글자) 바꿔주기 위해 설정
             }
             animateY(500) // 밑에서부터 올라오는 애니매이션 적용
         }
@@ -296,30 +262,13 @@ class RepoContributorsActivity : AppCompatActivity() {
 //
 //            invalidate()
 //        }
-        count = 0
     }
 
-    private fun updateContributions() {
-        binding.loadingLottie.resumeAnimation()
-        binding.loadingLottie.visibility = View.VISIBLE
-        binding.repoContributeFrame.visibility = View.GONE
-        refresh = false
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@RepoContributorsActivity.isFinishing) {
-                val resultRepoDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.updateContribute(repoName, token)
-                }
-                val resultRepo = resultRepoDeferred.await()
-                checkUpdate(resultRepo)
-            }
-        }
-    }
 
     /*    그래프 x축을 contributor의 이름으로 변경하는 코드
           x축 label을 githubId의 앞의 4글자를 기입하여 곂치는 문제 해결
      */
-    class MyXAxisFormatter(contributors: ArrayList<GitRepoMember>) :
+    class MyXAxisFormatter(contributors: List<GitRepoMember>) :
         ValueFormatter() {
         private val days = contributors.flatMap {
             if (it.github_id!!.length < 4) {
@@ -337,7 +286,7 @@ class RepoContributorsActivity : AppCompatActivity() {
     }
 
     //    막대 위의 커밋수 정수로 변경
-    class ScoreCustomFormatter(contributors: ArrayList<GitRepoMember>) :
+    class ScoreCustomFormatter(contributors: List<GitRepoMember>) :
         ValueFormatter() {
         private val days = contributors.flatMap {
             if (it.github_id!!.length < 4) {
@@ -369,7 +318,7 @@ class RepoContributorsActivity : AppCompatActivity() {
 
             R.id.refresh_button -> {
                 if (refresh) {
-                    updateContributions()
+                    //updateContributions()
                 }
             }
         }

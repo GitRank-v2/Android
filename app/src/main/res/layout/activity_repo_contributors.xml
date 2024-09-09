@@ -5,9 +5,7 @@
 
     <data>
 
-        <variable
-            name="repoContributorsViewmodel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
+
     </data>
 
     <FrameLayout
