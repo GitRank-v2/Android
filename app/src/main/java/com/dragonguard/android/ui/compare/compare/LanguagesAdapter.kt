@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivitySearchFilterBinding
 import com.dragonguard.android.databinding.LanguageListBinding
-import com.dragonguard.android.ui.search.SearchFilterActivity
+import com.dragonguard.android.ui.search.filter.SearchFilterActivity
 import com.google.android.material.chip.Chip
 
 class LanguagesAdapter(

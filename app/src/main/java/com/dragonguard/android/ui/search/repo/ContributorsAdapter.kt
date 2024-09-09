@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.search
+package com.dragonguard.android.ui.search.repo
 
 import android.content.Context
 import android.content.Intent
@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.dragonguard.android.databinding.ContributorsListBinding
 import com.dragonguard.android.data.model.contributors.GitRepoMember
+import com.dragonguard.android.databinding.ContributorsListBinding
 import com.dragonguard.android.ui.profile.UserProfileActivity
 
 /*

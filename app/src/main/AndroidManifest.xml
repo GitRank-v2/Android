@@ -31,7 +31,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.search.SearchFilterActivity"
+            android:name=".ui.search.filter.SearchFilterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
@@ -69,7 +69,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.search.RepoContributorsActivity"
+            android:name=".ui.search.repo.RepoContributorsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

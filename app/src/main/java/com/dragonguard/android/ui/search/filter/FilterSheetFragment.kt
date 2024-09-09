@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.search
+package com.dragonguard.android.ui.search.filter
 
 import android.content.Context
 import android.os.Bundle

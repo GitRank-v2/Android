@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.search
+package com.dragonguard.android.ui.search.filter
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivitySearchFilterBinding
+import com.dragonguard.android.ui.search.SearchActivity
 
 class SearchFilterActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchFilterBinding

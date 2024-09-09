@@ -25,6 +25,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.databinding.ActivitySearchBinding
 import com.dragonguard.android.ui.main.MainActivity
+import com.dragonguard.android.ui.search.filter.SearchFilterActivity
 import com.dragonguard.android.util.HorizontalItemDecorator
 import com.dragonguard.android.util.VerticalItemDecorator
 import kotlinx.coroutines.launch
@@ -336,6 +337,7 @@ class SearchActivity : AppCompatActivity() {
 
 
     //    repo 검색 api 호출 및 결과 출력
+    // API 완성시 주석 제거
     private fun callSearchApi(name: String) {
         binding.loadingLottie.visibility = View.VISIBLE
         binding.loadingLottie.playAnimation()
@@ -343,24 +345,24 @@ class SearchActivity : AppCompatActivity() {
         if (!this@SearchActivity.isFinishing) {
             if (type.isNotBlank()) {
                 if (type == "USERS") {
-                    viewModel.searchUserNames(name, count, type)
-                    count++
+                    //viewModel.searchUserNames(name, count, type)
+                    //count++
                 } else {
                     if (filterResult.toString().isNotEmpty()) {
-                        viewModel.searchRepositoryNamesNoFilters(name, count, type)
+                        //viewModel.searchRepositoryNamesNoFilters(name, count, type)
                     } else {
-                        viewModel.searchRepositoryNamesWithFilters(
+                        /*viewModel.searchRepositoryNamesWithFilters(
                             name,
                             count,
                             filterResult.toString(),
                             type
-                        )
+                        )*/
                     }
-                    count++
+                    //count++
                 }
             } else {
-                viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
-                count++
+                //viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
+                //count++
             }
         }
     }

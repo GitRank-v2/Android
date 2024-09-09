@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.search
+package com.dragonguard.android.ui.search.repo
 
 import android.graphics.Color
 import android.os.Bundle
@@ -13,9 +13,9 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
-import com.dragonguard.android.databinding.ActivityRepoContributorsBinding
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
+import com.dragonguard.android.databinding.ActivityRepoContributorsBinding
 import com.dragonguard.android.viewmodel.Viewmodel
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase

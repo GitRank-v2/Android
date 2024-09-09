@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.databinding.OthersReposListBinding
-import com.dragonguard.android.ui.search.RepoContributorsActivity
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 
 class OthersReposAdapter(
     private val datas: List<String>, private val context: Context,
