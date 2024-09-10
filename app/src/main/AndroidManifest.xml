@@ -19,11 +19,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.profile.ClientReposActivity"
+            android:name=".ui.profile.user.ClientReposActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.profile.UserProfileActivity"
+            android:name=".ui.profile.other.OthersProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

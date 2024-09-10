@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.profile
+package com.dragonguard.android.ui.profile.user
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,22 +10,26 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.databinding.FragmentClientProfileBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.menu.MenuActivity
+import com.dragonguard.android.ui.profile.OthersReposAdapter
+import kotlinx.coroutines.launch
 
 
 class ClientProfileFragment(
-    //private val viewmodel: Viewmodel,
     private val userName: String
 ) : Fragment() {
     private val token = ""
     private lateinit var binding: FragmentClientProfileBinding
     private lateinit var orgAdapter: ClientGitOrgAdapter
     private lateinit var repoAdapter: OthersReposAdapter
+    private lateinit var viewModel: ClientProfileViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,45 +40,55 @@ class ClientProfileFragment(
         main.setSupportActionBar(binding.toolbar)
         main.supportActionBar?.setDisplayShowTitleEnabled(false)
         main.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        viewModel = ClientProfileViewModel()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getClientDetail()
+        initObserver()
+        viewModel.getClientDetail()
     }
 
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    when (state.loadState) {
+                        ClientProfileContract.ClientProfileState.LoadState.Success -> {
+                            Log.d("상태", "성공")
+                            initRecycler()
+                        }
 
-    private fun getClientDetail() {
-        /*val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@ClientProfileFragment.isRemoving) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.getClientDetails(token)
+                        else -> {
+                            Log.d("상태", "실패")
+                        }
+                    }
                 }
-                val result = resultDeferred.await()
-                result?.let {
-                    initRecycler(it)
-                }
-
             }
-        }*/
+        }
     }
 
-    private fun initRecycler(result: ClientDetailModel) {
-        Log.d("결과", "사용자 org: ${result.git_organizations}")
-        Log.d("결과", "사용자 repos: ${result.git_repos}")
+
+    private fun initRecycler() {
+        Log.d(
+            "결과",
+            "사용자 org: ${viewModel.currentState.clientDetail.clientDetail.git_organizations}"
+        )
+        Log.d("결과", "사용자 repos: ${viewModel.currentState.clientDetail.clientDetail.git_repos}")
         if (!this@ClientProfileFragment.isDetached && this@ClientProfileFragment.isAdded) {
-            orgAdapter = ClientGitOrgAdapter(result.git_organizations, requireContext(), token)
+            orgAdapter = ClientGitOrgAdapter(
+                viewModel.currentState.clientDetail.clientDetail.git_organizations,
+                requireContext()
+            )
             binding.memberOrganizaitonList.adapter = orgAdapter
             binding.memberOrganizaitonList.layoutManager = LinearLayoutManager(requireContext())
             orgAdapter.notifyDataSetChanged()
 
             repoAdapter = OthersReposAdapter(
-                result.git_repos,
+                viewModel.currentState.clientDetail.clientDetail.git_repos,
                 requireContext(),
-                token,
-                result.member_profile_image,
+                viewModel.currentState.clientDetail.clientDetail.member_profile_image,
                 userName
             )
             binding.memberRepositoryList.adapter = repoAdapter

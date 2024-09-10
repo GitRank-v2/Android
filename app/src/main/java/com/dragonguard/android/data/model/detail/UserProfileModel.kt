@@ -9,4 +9,6 @@ data class UserProfileModel(
     val pull_requests: Int,
     val rank: Int,
     val reviews: Int
-)
+) {
+    constructor() : this(0, emptyList(), 0, "", "", 0, 0, 0)
+}

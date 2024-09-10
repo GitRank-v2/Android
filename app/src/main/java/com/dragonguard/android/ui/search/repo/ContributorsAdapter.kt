@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.ContributorsListBinding
-import com.dragonguard.android.ui.profile.UserProfileActivity
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 
 /*
  선택한 repo의 contributor들의 정보를 나열하기 위한 recycleradapter
@@ -49,7 +49,7 @@ class ContributorsAdapter(
             binding.contributorProfile.clipToOutline = true
             binding.contributorsLayout.setOnClickListener {
                 if (data1.is_service_member == true) {
-                    Intent(context, UserProfileActivity::class.java).apply {
+                    Intent(context, OthersProfileActivity::class.java).apply {
                         putExtra("userName", data1.github_id)
                         putExtra("token", token)
                     }.run { context.startActivity(this) }

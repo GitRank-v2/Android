@@ -18,7 +18,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
-import com.dragonguard.android.ui.profile.UserProfileActivity
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.ranking.MyOrganizationInternalActivity
 import com.dragonguard.android.ui.ranking.RankingsAdapter
 import kotlinx.coroutines.launch
@@ -441,7 +441,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     .into(binding.firstProfile)
                 binding.firstContribute.text = model.tokens.toString()
                 binding.firstFrame.setOnClickListener {
-                    val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                    val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
                     intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
@@ -484,7 +484,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     .into(binding.secondProfile)
                 binding.secondContribute.text = model.tokens.toString()
                 binding.secondFrame.setOnClickListener {
-                    val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                    val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
                     intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
@@ -527,7 +527,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     .into(binding.thirdProfile)
                 binding.thirdContribute.text = model.tokens.toString()
                 binding.thirdFrame.setOnClickListener {
-                    val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                    val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
                     intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)

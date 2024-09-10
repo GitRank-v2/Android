@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.profile
+package com.dragonguard.android.ui.profile.user
 
 import android.content.Context
 import android.content.Intent
@@ -13,7 +13,6 @@ import com.dragonguard.android.databinding.GitOrganizationListBinding
 
 class ClientGitOrgAdapter(
     private val datas: List<GitOrganization>, private val context: Context,
-    private val token: String
 ) : RecyclerView.Adapter<ClientGitOrgAdapter.ViewHolder>() {
     private lateinit var binding: GitOrganizationListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,7 +36,6 @@ class ClientGitOrgAdapter(
             binding.gitOrgImg.setOnClickListener {
                 Intent(context, ClientReposActivity::class.java).apply {
                     putExtra("orgName", data.name)
-                    putExtra("token", token)
                     putExtra("img", data.profile_image)
                 }.run { context.startActivity(this) }
             }

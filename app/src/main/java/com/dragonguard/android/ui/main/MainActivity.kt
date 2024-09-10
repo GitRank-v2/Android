@@ -18,8 +18,8 @@ import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
-import com.dragonguard.android.ui.profile.ClientProfileFragment
-import com.dragonguard.android.ui.profile.UserProfileActivity
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
+import com.dragonguard.android.ui.profile.user.ClientProfileFragment
 import com.dragonguard.android.ui.ranking.outer.RankingFragment
 import com.dragonguard.android.ui.search.SearchActivity
 import kotlinx.coroutines.CoroutineScope
@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (state.clickUserIcon.clicked) {
                         Log.d("userIcon", "userIcon")
-                        val intent = Intent(applicationContext, UserProfileActivity::class.java)
+                        val intent = Intent(applicationContext, OthersProfileActivity::class.java)
                         intent.putExtra("token", "")
                         intent.putExtra("userName", realModel.github_id)
                         startActivity(intent)
