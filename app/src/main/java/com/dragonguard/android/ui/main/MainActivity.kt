@@ -20,7 +20,7 @@ import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
 import com.dragonguard.android.ui.profile.ClientProfileFragment
 import com.dragonguard.android.ui.profile.UserProfileActivity
-import com.dragonguard.android.ui.ranking.RankingFragment
+import com.dragonguard.android.ui.ranking.outer.RankingFragment
 import com.dragonguard.android.ui.search.SearchActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

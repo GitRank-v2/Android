@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.ranking
+package com.dragonguard.android.ui.ranking.outer
 
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel

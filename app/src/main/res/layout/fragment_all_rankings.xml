@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                tools:context=".ui.ranking.AllRankingsFragment">
+                tools:context=".ui.ranking.outer.AllRankingsFragment">
 
                 <LinearLayout
                     android:id="@+id/top_rankings"

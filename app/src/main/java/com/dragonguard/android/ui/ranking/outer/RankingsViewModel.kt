@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.ranking
+package com.dragonguard.android.ui.ranking.outer
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref

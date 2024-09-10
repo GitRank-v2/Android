@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.ranking
+package com.dragonguard.android.ui.ranking.outer
 
 import android.content.Intent
 import android.os.Bundle
@@ -19,6 +19,8 @@ import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.UserProfileActivity
+import com.dragonguard.android.ui.ranking.MyOrganizationInternalActivity
+import com.dragonguard.android.ui.ranking.RankingsAdapter
 import kotlinx.coroutines.launch
 
 

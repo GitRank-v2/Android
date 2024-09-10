@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.ranking
+package com.dragonguard.android.ui.ranking.outer
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter

@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.ranking
+package com.dragonguard.android.ui.ranking.outer
 
 import android.os.Bundle
 import android.view.LayoutInflater
