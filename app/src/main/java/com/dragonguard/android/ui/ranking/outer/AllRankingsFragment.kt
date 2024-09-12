@@ -19,7 +19,7 @@ import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
-import com.dragonguard.android.ui.ranking.MyOrganizationInternalActivity
+import com.dragonguard.android.ui.ranking.OrganizationInternalActivity
 import com.dragonguard.android.ui.ranking.RankingsAdapter
 import kotlinx.coroutines.launch
 
@@ -548,7 +548,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 binding.firstRanker.visibility = View.VISIBLE
                 binding.firstProfile.setImageResource(R.drawable.company)
                 binding.firstFrame.setOnClickListener {
-                    val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                    val intent = Intent(context, OrganizationInternalActivity::class.java)
                     intent.putExtra("organization", model.name)
                     startActivity(intent)
                 }
@@ -560,7 +560,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 binding.secondRanker.visibility = View.VISIBLE
                 binding.secondProfile.setImageResource(R.drawable.company)
                 binding.secondFrame.setOnClickListener {
-                    val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                    val intent = Intent(context, OrganizationInternalActivity::class.java)
                     intent.putExtra("organization", model.name)
                     startActivity(intent)
                 }
@@ -572,7 +572,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 binding.thirdRanker.visibility = View.VISIBLE
                 binding.thirdProfile.setImageResource(R.drawable.company)
                 binding.thirdFrame.setOnClickListener {
-                    val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                    val intent = Intent(context, OrganizationInternalActivity::class.java)
                     intent.putExtra("organization", model.name)
                     startActivity(intent)
                 }

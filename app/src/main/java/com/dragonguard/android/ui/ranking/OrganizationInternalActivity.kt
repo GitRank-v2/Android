@@ -8,25 +8,25 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
-import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /*
  사용자의 대학교 내의 랭킹을 보여주는 activity
  */
-class MyOrganizationInternalActivity : AppCompatActivity() {
+class OrganizationInternalActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOrganizationInternalRankingBinding
-    private var viewmodel = Viewmodel()
-    private var token = ""
+    private lateinit var viewModel: OrganizationInternalViewModel
     private var orgName = ""
     private var page = 0
     private var position = 0
@@ -40,48 +40,42 @@ class MyOrganizationInternalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding =
             DataBindingUtil.setContentView(this, R.layout.activity_organization_internal_ranking)
-
+        viewModel = OrganizationInternalViewModel()
+        initObserver()
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
 
-        token = intent.getStringExtra("token")!!
         orgName = intent.getStringExtra("organization")!!
         searchOrgId()
     }
 
-    private fun searchOrgId() {
-        binding.progressBar.visibility = View.VISIBLE
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@MyOrganizationInternalActivity.isFinishing) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.searchOrgId(orgName, token)
-                }
-                val result = resultDeferred.await()
-                Log.d("조직 id", "조직 id: $result")
-                if (result != 0L) {
-                    id = result
-                    orgInternalRankings(result)
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.orgId.orgId != -1L) {
+                        orgInternalRankings(state.orgId.orgId)
+                    }
+
+                    if (state.loadState is OrganizationInternalContract.OrganizationInternalState.LoadState.Success) {
+                        checkRankings(state.orgInternalRankings.orgInternalRankings)
+                    }
                 }
             }
         }
     }
 
+    private fun searchOrgId() {
+        binding.progressBar.visibility = View.VISIBLE
+        viewModel.searchOrgId(orgName)
+    }
+
     private fun orgInternalRankings(id: Long) {
         binding.orgInternalName.text = orgName
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@MyOrganizationInternalActivity.isFinishing) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.orgInterRankings(id, page, token)
-                }
-                val result = resultDeferred.await()
-                checkRankings(result)
-            }
-        }
+        viewModel.getOrgInternalRankings(id, page)
     }
 
     private fun checkRankings(result: OrgInternalRankingModel) {
@@ -146,7 +140,7 @@ class MyOrganizationInternalActivity : AppCompatActivity() {
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =
-                RankingsAdapter(orgInternalRankings, this, token)
+                RankingsAdapter(orgInternalRankings, this, viewModel.currentState.token.token)
             binding.orgInternalRanking.adapter = organizationInternalRankingAdapter
             binding.orgInternalRanking.layoutManager = LinearLayoutManager(this)
             binding.orgInternalRanking.visibility = View.VISIBLE

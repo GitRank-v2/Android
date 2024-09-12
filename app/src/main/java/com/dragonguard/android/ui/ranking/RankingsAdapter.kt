@@ -91,7 +91,7 @@ class RankingsAdapter(
                     binding.rankingContribute.text = data1.tokens.toString()
                     binding.rankingItem.setOnClickListener {
                         if (data1.profile_image.isNullOrBlank()) {
-                            val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                            val intent = Intent(context, OrganizationInternalActivity::class.java)
                             intent.putExtra("organization", data1.name)
                             intent.putExtra("token", token)
                             context.startActivity(intent)
