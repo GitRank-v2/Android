@@ -13,9 +13,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.compare.RepoMembersResult
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.FragmentCompareUserBinding
-import com.dragonguard.android.viewmodel.Viewmodel
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -26,18 +26,37 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import kotlinx.coroutines.launch
 
 //선택한 두 Repository의 member들을 비교하기 위한 fragment
-class CompareUserFragment(repoName1: String, repoName2: String) : Fragment() {
+class CompareUserFragment(
+    private val repoName1: String,
+    private val repoName2: String,
+    private val repo1: List<RepoMembersResult>,
+    private val repo2: List<RepoMembersResult>
+) : Fragment() {
 
-    private var repo1 = repoName1
-    private var repo2 = repoName2
-    private var contributors1 = ArrayList<GitRepoMember>()
-    private var contributors2 = ArrayList<GitRepoMember>()
-    private var allContiributors = ArrayList<GitRepoMember>()
+    private val contributors1: ArrayList<GitRepoMember> = repo1.map {
+        GitRepoMember(
+            additions = it.additions,
+            commits = it.commits,
+            deletions = it.deletions,
+            github_id = it.github_id,
+            profile_url = it.profile_url,
+            is_service_member = it.is_service_member
+        )
+    } as ArrayList<GitRepoMember>
+    private val contributors2: ArrayList<GitRepoMember> = repo2.map {
+        GitRepoMember(
+            additions = it.additions,
+            commits = it.commits,
+            deletions = it.deletions,
+            github_id = it.github_id,
+            profile_url = it.profile_url,
+            is_service_member = it.is_service_member
+        )
+    } as ArrayList<GitRepoMember>
     var user1 = ""
     var user2 = ""
     private var count = 0
     private lateinit var binding: FragmentCompareUserBinding
-    private var viewmodel = Viewmodel()
     lateinit var userGroup1: UserSheetfragment
     lateinit var userGroup2: UserSheetfragment
 
@@ -57,13 +76,29 @@ class CompareUserFragment(repoName1: String, repoName2: String) : Fragment() {
         initObserver()
         binding.user1Frame.setOnClickListener {
             userGroup1 =
-                UserSheetfragment(this, contributors1, contributors2, 1, repo1, repo2, binding)
+                UserSheetfragment(
+                    this,
+                    contributors1,
+                    contributors2,
+                    1,
+                    repoName1,
+                    repoName2,
+                    binding
+                )
             userGroup1.show(parentFragmentManager, userGroup1.tag)
         }
 
         binding.user2Frame.setOnClickListener {
             userGroup2 =
-                UserSheetfragment(this, contributors1, contributors2, 2, repo1, repo2, binding)
+                UserSheetfragment(
+                    this,
+                    contributors1,
+                    contributors2,
+                    2,
+                    repoName1,
+                    repoName2,
+                    binding
+                )
             userGroup2.show(parentFragmentManager, userGroup2.tag)
         }
         binding.user1Profile.clipToOutline = true

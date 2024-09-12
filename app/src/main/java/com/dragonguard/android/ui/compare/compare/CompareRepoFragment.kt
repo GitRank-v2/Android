@@ -89,7 +89,7 @@ class CompareRepoFragment(
         binding.repo2User3.clipToOutline = true
         binding.repo2User4.clipToOutline = true
         initObserver()
-        viewModel.requestCompareRepo(repo1, repo2)
+        //viewModel.requestCompareRepo(repo1, repo2)
     }
 
     //activity 구성 이후 화면을 초기화하는 함수
@@ -126,12 +126,12 @@ class CompareRepoFragment(
             } catch (e: Exception) {
                 count++
                 val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
+                //handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
             }
         } else {
             count++
             val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
+            //handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
         }
     }
 
@@ -148,7 +148,7 @@ class CompareRepoFragment(
             )
             count++
             val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
+            //handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
         } else {
             val repoCompareAdapter =
                 RepoCompareAdapter(result.first_repo!!, result.second_repo!!, compareItems)

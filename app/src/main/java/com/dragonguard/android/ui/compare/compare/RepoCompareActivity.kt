@@ -31,7 +31,7 @@ class RepoCompareActivity : AppCompatActivity() {
         initObserver()
         repo1 = intent.getStringExtra("repo1")!!
         repo2 = intent.getStringExtra("repo2")!!
-        viewModel.requestCompareRepoMembers(repo1, repo2)
+        //viewModel.requestCompareRepoMembers(repo1, repo2)
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -59,7 +59,12 @@ class RepoCompareActivity : AppCompatActivity() {
         binding.rankingLottie.visibility = View.GONE
         binding.compareFrame.visibility = View.VISIBLE
         compareRepoFragment = CompareRepoFragment(repo1, repo2, viewModel)
-        compareUserFragment = CompareUserFragment(repo1, repo2)
+        compareUserFragment = CompareUserFragment(
+            repo1,
+            repo2,
+            viewModel.currentState.repoMembers.repoMembers.first_result!!,
+            viewModel.currentState.repoMembers.repoMembers.second_result!!
+        )
         adapter = CompareAdapter(this, viewModel.currentState.token.token)
 
         adapter.addFragment(compareRepoFragment)
