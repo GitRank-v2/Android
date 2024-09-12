@@ -57,7 +57,7 @@ class RepoContributorsActivity : AppCompatActivity() {
 
         repoName = intent.getStringExtra("repoName")!!
 //        Toast.makeText(applicationContext, "reponame = $repoName", Toast.LENGTH_SHORT).show()
-        repoContributors(repoName)
+        searchRepoContributors(repoName)
     }
 
     private fun initObserver() {
@@ -91,12 +91,13 @@ class RepoContributorsActivity : AppCompatActivity() {
     }
 
     //    repo의 contributors 검색
-    fun repoContributors(repoName: String) {
+    private fun searchRepoContributors(repoName: String) {
         binding.loadingLottie.resumeAnimation()
         binding.loadingLottie.visibility = View.VISIBLE
         if (!this@RepoContributorsActivity.isFinishing) {
             Log.d("check", "repoName $repoName")
-            viewModel.getRepoContributors(repoName)
+            // 받아오기
+            //viewModel.getRepoContributors(repoName)
         }
     }
 

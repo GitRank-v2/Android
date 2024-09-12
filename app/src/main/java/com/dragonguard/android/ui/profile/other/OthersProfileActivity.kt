@@ -37,13 +37,13 @@ class OthersProfileActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         supportActionBar?.setTitle(name)
         binding.profileImg.clipToOutline = true
-        othersProfile()
+        getOthersProfile()
 
     }
 
-    private fun othersProfile() {
+    private fun getOthersProfile() {
         Log.d("id", "id = $name")
-        viewModel.getOthersProfile(name)
+        //viewModel.getOthersProfile(name)
     }
 
     private fun initObserver() {

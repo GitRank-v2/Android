@@ -47,7 +47,8 @@ class ClientProfileFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initObserver()
-        viewModel.getClientDetail()
+
+        //viewModel.getClientDetail()
     }
 
     private fun initObserver() {
