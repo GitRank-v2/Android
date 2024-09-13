@@ -8,89 +8,83 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
 import com.dragonguard.android.databinding.FragmentApproveOrgBinding
-import com.dragonguard.android.util.RequestStatus
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
-class ApproveOrgFragment(private val token: String) : Fragment() {
+class ApproveOrgFragment : Fragment() {
     private lateinit var binding: FragmentApproveOrgBinding
-    private var viewmodel = Viewmodel()
+    private lateinit var viewModel: ApproveOrgViewModel
     var page = 0
     private var count = 0
-    private var orgList =
-        ArrayList<ApproveRequestOrgModelItem>()
     private var position = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_approve_org, container, false)
-        binding.approveOrgBinding = viewmodel
+        viewModel = ApproveOrgViewModel()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewmodel.onApproveOrgListener.observe(requireActivity(), Observer {
-            if (viewmodel.onApproveOrgListener.value == true) {
-                Toast.makeText(requireContext(), "승인됨", Toast.LENGTH_SHORT).show()
-                binding.waitingOrgList.adapter?.notifyDataSetChanged()
-                viewmodel.onApproveOrgListener.value = false
-            }
-        })
-
-        viewmodel.onRejectOrgListener.observe(requireActivity(), Observer {
-            if (viewmodel.onRejectOrgListener.value == true) {
-                Toast.makeText(requireContext(), "반려됨", Toast.LENGTH_SHORT).show()
-                binding.waitingOrgList.adapter?.notifyDataSetChanged()
-                viewmodel.onRejectOrgListener.value = false
-            }
-        })
+        initObserver()
     }
 
-    override fun onResume() {
-        super.onResume()
-        requestList()
-    }
-
-    private fun requestList() {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@ApproveOrgFragment.isRemoving && count < 5) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.statusOrgList(RequestStatus.REQUESTED.status, page, token)
-                }
-                val result = resultDeferred.await()
-                if (!result.isEmpty()) {
-                    result.forEach {
-                        if (!orgList.contains(it)) {
-                            orgList.add(it)
-                        }
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.loadState is ApproveOrgContract.ApproveOrgState.LoadState.Success) {
+                        initRecycler()
                     }
-                    initRecycler()
-                } else {
-                    count++
-                    requestList()
+
+                    if (state.approveOrg.status) {
+                        Toast.makeText(requireContext(), "승인됨", Toast.LENGTH_SHORT).show()
+                        viewModel.currentState.requestedOrg.org.removeAt(position)
+                        binding.waitingOrgList.adapter?.notifyDataSetChanged()
+                        viewModel.resetClick()
+                    }
+
+                    if (state.rejectOrg.status) {
+                        Toast.makeText(requireContext(), "반려됨", Toast.LENGTH_SHORT).show()
+                        viewModel.currentState.requestedOrg.org.removeAt(position)
+                        binding.waitingOrgList.adapter?.notifyDataSetChanged()
+                        viewModel.resetClick()
+                    }
+
+
                 }
             }
         }
+
     }
+
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getRequestedOrg(page)
+    }
+
 
     private fun initRecycler() {
         Log.d("count", "count: $count")
         if (page == 0) {
             val adapter =
-                ApproveRequestOrgAdapter(orgList, requireContext(), token, viewmodel, this)
+                ApproveRequestOrgAdapter(
+                    viewModel.currentState.requestedOrg.org,
+                    requireContext(),
+                    viewModel.currentState.token.token,
+                    viewModel,
+                    this
+                )
             binding.waitingOrgList.adapter = adapter
             binding.waitingOrgList.layoutManager = LinearLayoutManager(requireContext())
             adapter.notifyDataSetChanged()
@@ -104,9 +98,7 @@ class ApproveOrgFragment(private val token: String) : Fragment() {
 
     private fun loadMorePosts() {
         if (page != 0) {
-            CoroutineScope(Dispatchers.Main).launch {
-                requestList()
-            }
+            viewModel.getRequestedOrg(page)
         }
     }
 

@@ -11,7 +11,6 @@ import com.dragonguard.android.databinding.ApprovedOrgListBinding
 //승인된 조직 목록 adapter
 class ApprovedOrgAdapter(
     private val datas: ArrayList<ApproveRequestOrgModelItem>, private val context: Context,
-    private val token: String
 ) : RecyclerView.Adapter<ApprovedOrgAdapter.ViewHolder>() {
     private lateinit var binding: ApprovedOrgListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

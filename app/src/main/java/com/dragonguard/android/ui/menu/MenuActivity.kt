@@ -36,12 +36,13 @@ class MenuActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_menu)
         viewModel = MenuViewModel()
         initObserver()
-        viewModel.checkAdmin()
+
+        //viewModel.checkAdmin()
         versionDialog = Dialog(this)
         versionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         versionDialog.setContentView(R.layout.version_dialog)
         val version = versionDialog.findViewById<TextView>(R.id.gitrank_version)
-        version.append("v1.1.3")
+        version.append("v2.0.0")
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -87,7 +88,7 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.withdrawBtn.setOnClickListener {
-            viewModel.withDrawAccount()
+            //viewModel.withDrawAccount()
         }
     }
 

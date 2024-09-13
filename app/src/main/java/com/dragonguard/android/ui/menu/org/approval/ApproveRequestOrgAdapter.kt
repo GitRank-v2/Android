@@ -6,19 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
 import com.dragonguard.android.databinding.ApproveRequestListBinding
-import com.dragonguard.android.util.RequestStatus
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 //승인 요청중인 조직 목록 adapter
 class ApproveRequestOrgAdapter(
     private var datas: ArrayList<ApproveRequestOrgModelItem>,
     private val context: Context,
     private val token: String,
-    private val viewmodel: Viewmodel,
+    private val viewModel: ApproveOrgViewModel,
     private val frag: ApproveOrgFragment
 ) : RecyclerView.Adapter<ApproveRequestOrgAdapter.ViewHolder>() {
     private var count = 0
@@ -40,11 +34,11 @@ class ApproveRequestOrgAdapter(
             binding.requestOrgType.text = data1.type
             binding.emailEndpoint.text = data1.email_endpoint
             binding.approveOrgBtn.setOnClickListener {
-                approveApproval(data1, RequestStatus.ACCEPTED, current)
+                approveApproval(data1, current)
                 notifyDataSetChanged()
             }
             binding.rejectOrgBtn.setOnClickListener {
-                rejectApproval(data1, RequestStatus.DENIED, current)
+                rejectApproval(data1, current)
                 notifyDataSetChanged()
             }
         }
@@ -64,42 +58,17 @@ class ApproveRequestOrgAdapter(
 
     private fun approveApproval(
         data1: ApproveRequestOrgModelItem,
-        status: RequestStatus,
         currentPosition: Int
     ) {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (count < 5) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.approveOrgRequest(data1.id, status.status, token)
-                }
-                val result = resultDeferred.await()
-                datas.removeAt(currentPosition)
-                notifyItemRemoved(currentPosition)
-                viewmodel.onApproveOrgListener.value = true
-                count = 0
-            }
-        }
+        viewModel.clickApprove(data1.id, currentPosition)
     }
 
     private fun rejectApproval(
         data1: ApproveRequestOrgModelItem,
-        status: RequestStatus,
         currentPosition: Int
     ) {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (count < 5) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.approveOrgRequest(data1.id, status.status, token)
-                }
-                val result = resultDeferred.await()
-                datas.removeAt(currentPosition)
-                notifyItemRemoved(currentPosition)
-                viewmodel.onRejectOrgListener.value = true
-                count = 0
-            }
-        }
+        viewModel.clickReject(data1.id, currentPosition)
+
     }
 
 }
