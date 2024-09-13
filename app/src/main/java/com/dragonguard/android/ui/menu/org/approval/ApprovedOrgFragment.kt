@@ -32,7 +32,6 @@ class ApprovedOrgFragment(private val token: String) : Fragment() {
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_approved_org, container, false)
-        binding.approvedOrgViewmodel = viewmodel
         return binding.root
     }
 

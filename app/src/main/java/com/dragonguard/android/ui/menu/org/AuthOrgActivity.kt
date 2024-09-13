@@ -1,7 +1,6 @@
 package com.dragonguard.android.ui.menu.org
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -13,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityAuthOrgBinding
@@ -28,7 +28,7 @@ class AuthOrgActivity : AppCompatActivity() {
                     val orgId = orgIntent.getLongExtra("orgId", -1)
                     val endPoint = orgIntent.getStringExtra("endPoint")
 //            Toast.makeText(applicationContext, requestKey, Toast.LENGTH_SHORT).show()
-                    if(orgName != null && orgId != -1L && endPoint!=null) {
+                    if (orgName != null && orgId != -1L && endPoint != null) {
                         binding.orgNameEdit.setText(orgName)
                         binding.orgNameEdit.isEnabled = true
                         organizationId = orgId
@@ -52,7 +52,6 @@ class AuthOrgActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_auth_org)
-        binding.authOrgViewmodel = viewmodel
 
         token = intent.getStringExtra("token")!!
 
@@ -62,7 +61,7 @@ class AuthOrgActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         supportActionBar?.title = "   조직 인증"
 
-        val arr1 : MutableList<String> = mutableListOf("선택하세요")
+        val arr1: MutableList<String> = mutableListOf("선택하세요")
         arr1.apply {
             add("대학교")
             add("고등학교")
@@ -72,22 +71,23 @@ class AuthOrgActivity : AppCompatActivity() {
         val spinnerAdapter = ArrayAdapter<String>(applicationContext, R.layout.spinner_list, arr1)
         binding.orgTypeSpinner.adapter = spinnerAdapter
         binding.orgTypeSpinner.setSelection(0)
-        binding.orgTypeSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if(position != 0) {
-                    binding.orgNameEdit.isEnabled = true
+        binding.orgTypeSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    if (position != 0) {
+                        binding.orgNameEdit.isEnabled = true
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-        }
 
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.orgNameEdit.windowToken, 0)
@@ -107,25 +107,31 @@ class AuthOrgActivity : AppCompatActivity() {
 
 
         binding.authOrgBtn.setOnClickListener {
-            if(binding.orgNameEdit.text.toString().isNotBlank() && binding.orgEmailEdit.text.toString().isNotBlank() && binding.orgTypeSpinner.selectedItem.toString().isNotBlank()) {
+            if (binding.orgNameEdit.text.toString()
+                    .isNotBlank() && binding.orgEmailEdit.text.toString()
+                    .isNotBlank() && binding.orgTypeSpinner.selectedItem.toString().isNotBlank()
+            ) {
                 var orgType = ""
                 when (binding.orgTypeSpinner.selectedItem.toString()) {
                     "대학교" -> {
                         orgType = "UNIVERSITY"
                     }
+
                     "회사" -> {
                         orgType = "COMPANY"
                     }
+
                     "고등학교" -> {
                         orgType = "HIGH_SCHOOL"
                     }
+
                     "etc" -> {
                         orgType = "ETC"
                     }
                 }
-                if(binding.orgEmailEdit.text.toString().contains("@")) {
+                if (binding.orgEmailEdit.text.toString().contains("@")) {
                     val email = binding.orgEmailEdit.text.toString().split("@")
-                    if(email[1] != emailEndPoint) {
+                    if (email[1] != emailEndPoint) {
                         Toast.makeText(this, "조직의 이메일 주소를 정확히 입력해 주세요!", Toast.LENGTH_SHORT).show()
                     } else {
                         addOrgMember()
@@ -133,13 +139,20 @@ class AuthOrgActivity : AppCompatActivity() {
 
                 }
             } else {
-                Toast.makeText(applicationContext, "miss!! name: ${binding.orgNameEdit.text}, email: ${binding.orgEmailEdit.text}, type: ${binding.orgTypeSpinner.selectedItem}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext,
+                    "miss!! name: ${binding.orgNameEdit.text}, email: ${binding.orgEmailEdit.text}, type: ${binding.orgTypeSpinner.selectedItem}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
     private fun addOrgMember() {
-        Log.d("request","miss!! name: ${binding.orgNameEdit.text}, email: ${binding.orgEmailEdit.text}" )
+        Log.d(
+            "request",
+            "miss!! name: ${binding.orgNameEdit.text}, email: ${binding.orgEmailEdit.text}"
+        )
         moveToEmailAuth()
     }
 

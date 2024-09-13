@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-        <variable
-            name="menuViewmodel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
-    </data>
 
 
     <LinearLayout
@@ -23,7 +16,6 @@
             android:layout_height="0dp"
             android:layout_weight="0.3"
             android:background="@android:color/transparent" />
-
 
 
         <LinearLayout
