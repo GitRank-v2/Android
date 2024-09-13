@@ -5,13 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityMenuBinding
 import com.dragonguard.android.ui.main.MainActivity
@@ -19,10 +21,6 @@ import com.dragonguard.android.ui.menu.criterion.CriterionActivity
 import com.dragonguard.android.ui.menu.faq.FaqActivity
 import com.dragonguard.android.ui.menu.org.AuthOrgActivity
 import com.dragonguard.android.ui.menu.org.approval.ApprovalOrgActivity
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /*
@@ -30,14 +28,15 @@ import kotlinx.coroutines.launch
  */
 class MenuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMenuBinding
-    private var viewmodel = Viewmodel()
+    private lateinit var viewModel: MenuViewModel
     private lateinit var versionDialog: Dialog
     private var token = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_menu)
-
-        checkAdmin()
+        viewModel = MenuViewModel()
+        initObserver()
+        viewModel.checkAdmin()
         versionDialog = Dialog(this)
         versionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         versionDialog.setContentView(R.layout.version_dialog)
@@ -74,7 +73,7 @@ class MenuActivity : AppCompatActivity() {
 
 //        버전버튼 누르면 dialog 띄움
         binding.version.setOnClickListener {
-            showDialog()
+            versionDialog.show()
         }
 
         binding.organizationAuth.setOnClickListener {
@@ -88,34 +87,30 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.withdrawBtn.setOnClickListener {
-            withDraw()
+            viewModel.withDrawAccount()
         }
     }
 
-    private fun checkAdmin() {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@MenuActivity.isFinishing) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.checkAdmin(token)
-                }
-                val result = resultDeferred.await()
-                Log.d("admin", "admin: $result")
-                if (result) {
-                    binding.adminFun.visibility = View.VISIBLE
-                    binding.withdrawFrame.visibility = View.GONE
-                } else {
-                    binding.adminFun.visibility = View.GONE
-                    binding.withdrawFrame.visibility = View.VISIBLE
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.admin.isAdmin) {
+                        binding.organizationAuth.visibility = View.VISIBLE
+                        binding.organizationApprove.visibility = View.VISIBLE
+                    } else {
+                        binding.organizationAuth.visibility = View.GONE
+                        binding.organizationApprove.visibility = View.GONE
+                    }
+
+                    if (state.withDraw.isSuccess) {
+                        withDraw()
+                    }
                 }
             }
         }
     }
 
-    //    버전 정보 보여주는 dialog 띄우기
-    private fun showDialog() {
-        versionDialog.show()
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -130,24 +125,12 @@ class MenuActivity : AppCompatActivity() {
     }
 
     private fun withDraw() {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@MenuActivity.isFinishing) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.withDrawAccount(token)
-                }
-                val result = resultDeferred.await()
-                Log.d("withdraw", "withdraw: $result")
-                if (result) {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        val intent = Intent(applicationContext, MainActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                        intent.putExtra("logout", true)
-                        startActivity(intent)
-                    }, 1000)
-                }
-            }
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtra("logout", true)
+            startActivity(intent)
+        }, 1000)
     }
 }
