@@ -40,19 +40,19 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.AuthEmailActivity"
+            android:name=".ui.menu.org.auth.AuthEmailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.AuthOrgActivity"
+            android:name=".ui.menu.org.auth.AuthOrgActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.RegistOrgActivity"
+            android:name=".ui.menu.org.regist.RegistOrgActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.SearchOrganizationActivity"
+            android:name=".ui.menu.org.search.SearchOrganizationActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />

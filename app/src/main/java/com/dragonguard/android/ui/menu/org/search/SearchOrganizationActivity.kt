@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.menu.org
+package com.dragonguard.android.ui.menu.org.search
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,22 +11,23 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.databinding.ActivitySearchOrganizationBinding
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
-import com.dragonguard.android.viewmodel.Viewmodel
+import com.dragonguard.android.databinding.ActivitySearchOrganizationBinding
+import com.dragonguard.android.ui.menu.org.regist.RegistOrgActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class SearchOrganizationActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchOrganizationBinding
     lateinit var searchOrgAdapter: SearchOrganizationAdapter
-    private var token = ""
-    private var viewmodel = Viewmodel()
+    private lateinit var viewModel: SearchOrganizationViewModel
     private var position = 0
     private var count = 0
     private var type = ""
@@ -38,9 +39,8 @@ class SearchOrganizationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search_organization)
-        binding.searchOrganizationBinding = viewmodel
-
-        token = intent.getStringExtra("token")!!
+        viewModel = SearchOrganizationViewModel()
+        initObserver()
         chosenType = intent?.getStringExtra("type")
         if (chosenType != null) {
             when (chosenType) {
@@ -97,8 +97,8 @@ class SearchOrganizationActivity : AppCompatActivity() {
         }
         //        검색 아이콘 눌렀을때 검색 구현
         binding.searchIcon.setOnClickListener {
-            if (!viewmodel.onSearchListener.value.isNullOrEmpty()) {
-                if (lastSearch != viewmodel.onSearchListener.value!! || typeChanged) {
+            if (!binding.searchName.text.isNullOrEmpty()) {
+                if (lastSearch != binding.searchName.text.toString() || typeChanged) {
                     orgNames.clear()
                     binding.searchResult.visibility = View.GONE
                     count = 0
@@ -106,8 +106,8 @@ class SearchOrganizationActivity : AppCompatActivity() {
                     typeChanged = false
                 }
                 changable = true
-                lastSearch = viewmodel.onSearchListener.value!!
-                getOrganizationNames(viewmodel.onSearchListener.value!!)
+                lastSearch = binding.searchName.text.toString()
+                getOrganizationNames(binding.searchName.text.toString())
                 binding.searchResult.visibility = View.VISIBLE
                 binding.searchName.isFocusable = true
             } else {
@@ -119,14 +119,14 @@ class SearchOrganizationActivity : AppCompatActivity() {
         //        edittext에 엔터를 눌렀을때 검색되게 하는 리스너
         binding.searchName.setOnEditorActionListener { textView, i, keyEvent ->
             if (i == EditorInfo.IME_ACTION_SEARCH) {
-                if (!viewmodel.onSearchListener.value.isNullOrEmpty()) {
+                if (!binding.searchName.text.isNullOrEmpty()) {
                     Log.d("enter click", "edittext 클릭함")
                     val search = binding.searchName.text!!
                     binding.searchName.setText(search)
                     binding.searchName.setSelection(binding.searchName.length())
                     if (search.isNotEmpty()) {
                         closeKeyboard()
-                        if (lastSearch != viewmodel.onSearchListener.value!! || typeChanged) {
+                        if (lastSearch != binding.searchName.text.toString() || typeChanged) {
                             orgNames.clear()
                             binding.searchResult.visibility = View.GONE
                             count = 0
@@ -134,8 +134,8 @@ class SearchOrganizationActivity : AppCompatActivity() {
                             typeChanged = false
                         }
                         changable = true
-                        lastSearch = viewmodel.onSearchListener.value!!
-                        getOrganizationNames(viewmodel.onSearchListener.value!!)
+                        lastSearch = binding.searchName.text.toString()
+                        getOrganizationNames(binding.searchName.text.toString())
                         binding.searchResult.visibility = View.VISIBLE
                         binding.searchName.isFocusable = true
                     } else {
@@ -155,37 +155,30 @@ class SearchOrganizationActivity : AppCompatActivity() {
 
         binding.noneOrganization.setOnClickListener {
             val intent = Intent(applicationContext, RegistOrgActivity::class.java)
-            intent.putExtra("token", token)
+            //intent.putExtra("token", token)
             startActivity(intent)
         }
     }
 
-    fun getOrganizationNames(name: String) {
-        Log.d("org 검색", "이름 $name type $type  count $count")
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@SearchOrganizationActivity.isFinishing) {
-                if (type.isBlank()) {
-                    type = "UNIVERSITY"
-                }
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.getOrgNames(name, token, type, count)
-                }
-                val result = resultDeferred.await()
-                if (checkSearchResult(result)) {
-                    initRecycler()
-                } else {
-                    val secondDeferred = coroutine.async(Dispatchers.IO) {
-                        viewmodel.getOrgNames(name, token, type, count)
-                    }
-                    val second = secondDeferred.await()
-                    if (checkSearchResult(second)) {
-                        initRecycler()
-                    } else {
-                        binding.progressBar.visibility = View.GONE
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.state is SearchOrganizationContract.SearchOrganizationState.LoadState.Success) {
+                        if (checkSearchResult(state.orgNames.names)) {
+                            initRecycler()
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private fun getOrganizationNames(name: String) {
+        Log.d("org 검색", "이름 $name type $type  count $count")
+        if (type.isBlank()) {
+            type = "UNIVERSITY"
+            viewModel.searchOrgNames(name, type, count)
         }
     }
 
@@ -219,7 +212,8 @@ class SearchOrganizationActivity : AppCompatActivity() {
         Log.d("count", "count: $count")
         if (count == 0) {
             binding.orgListTitle.text = "$type 목록"
-            searchOrgAdapter = SearchOrganizationAdapter(orgNames, this, token)
+            searchOrgAdapter =
+                SearchOrganizationAdapter(orgNames, this, viewModel.currentState.token.token)
             binding.searchResult.adapter = searchOrgAdapter
             binding.searchResult.layoutManager = LinearLayoutManager(this)
             searchOrgAdapter.notifyDataSetChanged()

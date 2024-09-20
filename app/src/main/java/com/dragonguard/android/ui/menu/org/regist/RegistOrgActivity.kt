@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.menu.org
+package com.dragonguard.android.ui.menu.org.regist
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,24 +9,21 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityRegistOrgBinding
 import com.dragonguard.android.ui.menu.MenuActivity
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class RegistOrgActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistOrgBinding
-    private var token = ""
-    private var viewmodel = Viewmodel()
-    private var registLimit = 0
+    private lateinit var viewModel: RegistOrgViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_regist_org)
-
+        initObserver()
         val arr1: MutableList<String> = mutableListOf("선택하세요")
         arr1.apply {
             add("대학교")
@@ -38,7 +35,6 @@ class RegistOrgActivity : AppCompatActivity() {
         binding.orgTypeSpinner.adapter = spinnerAdapter
         binding.orgTypeSpinner.setSelection(0)
 
-        token = intent.getStringExtra("token")!!
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
@@ -84,29 +80,30 @@ class RegistOrgActivity : AppCompatActivity() {
         }
     }
 
-    private fun registOrg(name: String, orgType: String, orgEmail: String) {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@RegistOrgActivity.isFinishing) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.registerOrg(name, orgType, orgEmail, token)
-                }
-                val result = resultDeferred.await()
-                if (result.id == 0L) {
-                    if (registLimit < 3) {
-                        registLimit++
-                        registOrg(name, orgType, orgEmail)
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.state is RegistOrgContract.RegistOrgState.LoadState.Success) {
+                        if (state.registResult.result.id != 0L) {
+                            Toast.makeText(
+                                applicationContext,
+                                "${binding.orgNameEdit.text} 등록 요청 완료!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            val intent = Intent(applicationContext, MenuActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            startActivity(intent)
+                        }
                     }
-                } else {
-                    Toast.makeText(applicationContext, "$name 등록 요청 완료!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(applicationContext, MenuActivity::class.java)
-                    intent.putExtra("token", token)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    startActivity(intent)
                 }
             }
         }
+    }
+
+    private fun registOrg(name: String, orgType: String, emailEndPoint: String) {
+        viewModel.requestRegistOrg(name, orgType, emailEndPoint)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

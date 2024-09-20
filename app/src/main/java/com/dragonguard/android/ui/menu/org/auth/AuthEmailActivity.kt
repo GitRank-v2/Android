@@ -1,7 +1,6 @@
-package com.dragonguard.android.ui.menu.org
+package com.dragonguard.android.ui.menu.org.auth
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -9,11 +8,12 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.dragonguard.android.R
-import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.databinding.ActivityAuthEmailBinding
+import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.viewmodel.Viewmodel
 import com.dragonguard.android.viewmodel.Viewmodel.Companion.MIllIS_IN_FUTURE
 import com.dragonguard.android.viewmodel.Viewmodel.Companion.TICK_INTERVAL
@@ -51,13 +51,13 @@ class AuthEmailActivity : AppCompatActivity() {
 
         val coroutine = CoroutineScope(Dispatchers.Main)
         coroutine.launch {
-            if(!this@AuthEmailActivity.isFinishing) {
+            if (!this@AuthEmailActivity.isFinishing) {
                 val resultDeferred = coroutine.async(Dispatchers.IO) {
                     viewmodel.addOrgMember(orgId, email, token)
                 }
                 val result = resultDeferred.await()
 //                Toast.makeText(applicationContext, result.toString(), Toast.LENGTH_SHORT).show()
-                if(result != -1L) {
+                if (result != -1L) {
                     emailAuthId = result
                     setUpCountDownTimer()
                     timer.start()
@@ -70,7 +70,7 @@ class AuthEmailActivity : AppCompatActivity() {
             reset = false
             timer.cancel()
             setUpCountDownTimer()
-            if(reset) {
+            if (reset) {
                 sendEmail()
             } else {
                 deleteEmail()
@@ -78,8 +78,11 @@ class AuthEmailActivity : AppCompatActivity() {
             }
         }
         viewmodel.onAuthEmailListener.observe(this, Observer {
-            if(viewmodel.onAuthEmailListener.value.toString().length ==5) {
-                Log.d("request", "code: ${binding.emailCode.text}, token: $token, orgId: $emailAuthId")
+            if (viewmodel.onAuthEmailListener.value.toString().length == 5) {
+                Log.d(
+                    "request",
+                    "code: ${binding.emailCode.text}, token: $token, orgId: $emailAuthId"
+                )
                 authEmail()
             }
         })
@@ -89,10 +92,15 @@ class AuthEmailActivity : AppCompatActivity() {
         val coroutine = CoroutineScope(Dispatchers.Main)
         coroutine.launch {
             val resultDeferred = coroutine.async(Dispatchers.IO) {
-                viewmodel.emailAuthResult(emailAuthId, binding.emailCode.text.toString(), orgId ,token)
+                viewmodel.emailAuthResult(
+                    emailAuthId,
+                    binding.emailCode.text.toString(),
+                    orgId,
+                    token
+                )
             }
             val result = resultDeferred.await()
-            if(result) {
+            if (result) {
                 Toast.makeText(applicationContext, "$orgName 인증되었습니다!!", Toast.LENGTH_SHORT).show()
                 val intent = Intent(applicationContext, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -108,7 +116,7 @@ class AuthEmailActivity : AppCompatActivity() {
     private fun deleteEmail() {
         val coroutine = CoroutineScope(Dispatchers.Main)
         coroutine.launch {
-            if(!this@AuthEmailActivity.isFinishing) {
+            if (!this@AuthEmailActivity.isFinishing) {
                 val resultDeferred = coroutine.async(Dispatchers.IO) {
                     viewmodel.deleteLateEmailCode(emailAuthId, token)
                 }
@@ -121,12 +129,12 @@ class AuthEmailActivity : AppCompatActivity() {
     private fun sendEmail() {
         val coroutine = CoroutineScope(Dispatchers.Main)
         coroutine.launch {
-            if(!this@AuthEmailActivity.isFinishing) {
+            if (!this@AuthEmailActivity.isFinishing) {
                 val resultDeferred = coroutine.async(Dispatchers.IO) {
                     viewmodel.sendEmailAuth(token)
                 }
                 val result = resultDeferred.await()
-                if(result != -1L) {
+                if (result != -1L) {
                     emailAuthId = result
                     timer.start()
                 }
@@ -142,8 +150,8 @@ class AuthEmailActivity : AppCompatActivity() {
     private fun setUpCountDownTimer() {
         timer = object : CountDownTimer(MIllIS_IN_FUTURE, TICK_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
-                val minute = millisUntilFinished/60000L
-                val second = millisUntilFinished%60000L/1000L
+                val minute = millisUntilFinished / 60000L
+                val second = millisUntilFinished % 60000L / 1000L
                 binding.remainTime.text = "${minute}:${second}"
                 viewmodel.timerJob.start()
             }

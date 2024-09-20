@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.menu.org
+package com.dragonguard.android.ui.menu.org.search
 
 import android.content.Context
 import android.content.Intent
@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.dragonguard.android.databinding.RepositoryListBinding
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.data.model.org.OrganizationNamesModelItem
+import com.dragonguard.android.databinding.RepositoryListBinding
+import com.dragonguard.android.ui.menu.org.auth.AuthOrgActivity
 
 class SearchOrganizationAdapter(
     private val datas: OrganizationNamesModel,

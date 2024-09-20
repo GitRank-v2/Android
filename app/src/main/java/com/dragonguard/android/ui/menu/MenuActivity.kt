@@ -19,8 +19,8 @@ import com.dragonguard.android.databinding.ActivityMenuBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.menu.criterion.CriterionActivity
 import com.dragonguard.android.ui.menu.faq.FaqActivity
-import com.dragonguard.android.ui.menu.org.AuthOrgActivity
 import com.dragonguard.android.ui.menu.org.approval.ApprovalOrgActivity
+import com.dragonguard.android.ui.menu.org.auth.AuthOrgActivity
 import kotlinx.coroutines.launch
 
 /*
@@ -30,7 +30,6 @@ class MenuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMenuBinding
     private lateinit var viewModel: MenuViewModel
     private lateinit var versionDialog: Dialog
-    private var token = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_menu)
@@ -49,7 +48,6 @@ class MenuActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
 
-        token = intent.getStringExtra("token")!!
 
 //        로그아웃버튼 누르면 로그아웃 기능
         binding.logout.setOnClickListener {
@@ -79,12 +77,11 @@ class MenuActivity : AppCompatActivity() {
 
         binding.organizationAuth.setOnClickListener {
             val intent = Intent(applicationContext, AuthOrgActivity::class.java)
-            intent.putExtra("token", token)
+            intent.putExtra("token", viewModel.currentState.token.token)
             startActivity(intent)
         }
         binding.organizationApprove.setOnClickListener {
             val intent = Intent(applicationContext, ApprovalOrgActivity::class.java)
-            intent.putExtra("token", token)
             startActivity(intent)
         }
         binding.withdrawBtn.setOnClickListener {

@@ -1,4 +1,4 @@
-package com.dragonguard.android.ui.menu.org
+package com.dragonguard.android.ui.menu.org.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityAuthOrgBinding
-import com.dragonguard.android.viewmodel.Viewmodel
+import com.dragonguard.android.ui.menu.org.search.SearchOrganizationActivity
 
 class AuthOrgActivity : AppCompatActivity() {
     private val activityResultLauncher: ActivityResultLauncher<Intent> =
@@ -45,7 +45,6 @@ class AuthOrgActivity : AppCompatActivity() {
             }
         }
     private lateinit var binding: ActivityAuthOrgBinding
-    private val viewmodel = Viewmodel()
     private var token = ""
     private var organizationId: Long = 0
     private var emailEndPoint = ""
@@ -111,24 +110,6 @@ class AuthOrgActivity : AppCompatActivity() {
                     .isNotBlank() && binding.orgEmailEdit.text.toString()
                     .isNotBlank() && binding.orgTypeSpinner.selectedItem.toString().isNotBlank()
             ) {
-                var orgType = ""
-                when (binding.orgTypeSpinner.selectedItem.toString()) {
-                    "대학교" -> {
-                        orgType = "UNIVERSITY"
-                    }
-
-                    "회사" -> {
-                        orgType = "COMPANY"
-                    }
-
-                    "고등학교" -> {
-                        orgType = "HIGH_SCHOOL"
-                    }
-
-                    "etc" -> {
-                        orgType = "ETC"
-                    }
-                }
                 if (binding.orgEmailEdit.text.toString().contains("@")) {
                     val email = binding.orgEmailEdit.text.toString().split("@")
                     if (email[1] != emailEndPoint) {
