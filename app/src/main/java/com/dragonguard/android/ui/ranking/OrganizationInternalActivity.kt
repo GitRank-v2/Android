@@ -70,12 +70,12 @@ class OrganizationInternalActivity : AppCompatActivity() {
 
     private fun searchOrgId() {
         binding.progressBar.visibility = View.VISIBLE
-        viewModel.searchOrgId(orgName)
+        //viewModel.searchOrgId(orgName)
     }
 
     private fun orgInternalRankings(id: Long) {
         binding.orgInternalName.text = orgName
-        viewModel.getOrgInternalRankings(id, page)
+        //viewModel.getOrgInternalRankings(id, page)
     }
 
     private fun checkRankings(result: OrgInternalRankingModel) {

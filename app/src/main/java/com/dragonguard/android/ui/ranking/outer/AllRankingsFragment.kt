@@ -92,7 +92,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
 
             "고등학교" -> {
                 viewModel.setTypeName("고등학교")
-                viewModel.getHighSchoolRanking(page)
+                //viewModel.getHighSchoolRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
                     requireActivity(),

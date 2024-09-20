@@ -1,23 +1,19 @@
 package com.dragonguard.android.ui.history
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
-import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.databinding.ActivityTokenHistoryBinding
+import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 class TokenHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTokenHistoryBinding
@@ -36,9 +32,10 @@ class TokenHistoryActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
 
         token = intent.getStringExtra("token")!!
-        callTokenHistory()
+        //callTokenHistory()
     }
 
+    /*
     private fun callTokenHistory() {
         val coroutine = CoroutineScope(Dispatchers.Main)
         coroutine.launch {
@@ -51,6 +48,7 @@ class TokenHistoryActivity : AppCompatActivity() {
             }
         }
     }
+    */
 
     private fun initRecycler(result: ArrayList<TokenHistoryModelItem>) {
         tokenAdapter = TokenListAdapter(result, this@TokenHistoryActivity)
