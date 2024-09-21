@@ -139,7 +139,6 @@ class AuthOrgActivity : AppCompatActivity() {
 
     private fun moveToEmailAuth() {
         val intent = Intent(applicationContext, AuthEmailActivity::class.java)
-        intent.putExtra("token", token)
         intent.putExtra("orgId", organizationId)
         intent.putExtra("email", binding.orgEmailEdit.text.toString())
         intent.putExtra("orgName", binding.orgNameEdit.text.toString())
