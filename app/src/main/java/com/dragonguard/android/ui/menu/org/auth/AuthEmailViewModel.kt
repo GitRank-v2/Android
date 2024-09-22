@@ -9,7 +9,6 @@ import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
-import com.dragonguard.android.viewmodel.Viewmodel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,8 +50,8 @@ class AuthEmailViewModel :
 
     private fun setUpCountDownTimer(): CountDownTimer {
         return object : CountDownTimer(
-            Viewmodel.MIllIS_IN_FUTURE,
-            Viewmodel.TICK_INTERVAL
+            MIllIS_IN_FUTURE,
+            TICK_INTERVAL
         ) {
             override fun onTick(millisUntilFinished: Long) {
                 val minute = millisUntilFinished / 60000L

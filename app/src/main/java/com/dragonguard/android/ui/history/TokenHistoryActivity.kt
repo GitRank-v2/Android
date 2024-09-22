@@ -13,12 +13,12 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
 import com.dragonguard.android.databinding.ActivityTokenHistoryBinding
 import com.dragonguard.android.ui.main.MainActivity
-import com.dragonguard.android.viewmodel.Viewmodel
 
 class TokenHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTokenHistoryBinding
     private var token = ""
-    var viewmodel = Viewmodel()
+
+    //var viewmodel = Viewmodel()
     private lateinit var tokenAdapter: TokenListAdapter
     private var refresh = true
 
