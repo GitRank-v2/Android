@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="repoCompareViewModel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
-
-    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.3"
-            android:background="@android:color/transparent"/>
+            android:background="@android:color/transparent" />
 
 
         <LinearLayout
@@ -38,14 +31,17 @@
                 android:layout_height="0dp"
                 android:layout_weight="1.5"
                 android:weightSum="5">
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.1"/>
+                    android:layout_weight="0.1" />
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="4.8">
+
                     <androidx.appcompat.widget.AppCompatButton
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -58,10 +54,11 @@
                         android:id="@+id/repo_compare1"
                         android:textSize="20sp"
                         android:fontFamily="@font/ibm_semibold"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3" />
                 </LinearLayout>
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
@@ -72,17 +69,20 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.1"/>
+                    android:layout_weight="0.1" />
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_weight="4.8"
                     android:weightSum="5">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="4">
+
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/repo_compare2"
                             android:layout_width="match_parent"

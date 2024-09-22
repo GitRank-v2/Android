@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.databinding.OthersReposListBinding
-import com.dragonguard.android.ui.search.RepoContributorsActivity
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 
 class OthersReposAdapter(
-    private val datas: List<String>, private val context: Context,
-    private val token: String, private val img: String, private val userName: String
+    private val datas: List<String>,
+    private val context: Context,
+    private val img: String,
+    private val userName: String
 ) : RecyclerView.Adapter<OthersReposAdapter.ViewHolder>() {
     private lateinit var binding: OthersReposListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,7 +40,6 @@ class OthersReposAdapter(
             binding.repoContributeImg.setOnClickListener {
                 Intent(context, RepoContributorsActivity::class.java).apply {
                     putExtra("repoName", data)
-                    putExtra("token", token)
                 }.run { context.startActivity(this) }
             }
 

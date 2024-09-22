@@ -3,19 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="searchOrganizationBinding"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
-    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="3.4"
-        tools:context=".ui.menu.org.SearchOrganizationActivity">
+        tools:context=".ui.menu.org.search.SearchOrganizationActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -58,7 +52,6 @@
                     android:background="@drawable/search_border"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
-                    android:text="@={searchOrganizationBinding.onSearchListener}"
                     android:textColor="@color/black"
                     android:textSize="25dp" />
 
@@ -87,15 +80,17 @@
                 android:layout_weight="0.5"
                 android:orientation="horizontal"
                 android:weightSum="5">
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.05"/>
+                    android:layout_weight="0.05" />
 
                 <HorizontalScrollView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="3.3">
+
                     <RadioGroup
                         android:id="@+id/org_group"
                         android:layout_width="match_parent"
@@ -118,6 +113,7 @@
                             android:fontFamily="@font/ibm_semibold"
                             android:text="고등학교"
                             android:textSize="18sp" />
+
                         <RadioButton
                             android:id="@+id/org_type2"
                             android:layout_width="wrap_content"
@@ -125,6 +121,7 @@
                             android:fontFamily="@font/ibm_semibold"
                             android:text="회사"
                             android:textSize="18sp" />
+
                         <RadioButton
                             android:id="@+id/org_type3"
                             android:layout_width="wrap_content"
@@ -135,7 +132,6 @@
 
                     </RadioGroup>
                 </HorizontalScrollView>
-
 
 
                 <androidx.appcompat.widget.AppCompatButton

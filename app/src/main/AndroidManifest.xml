@@ -13,16 +13,17 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".GitRankApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.profile.ClientReposActivity"
+            android:name=".ui.profile.user.ClientReposActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.profile.UserProfileActivity"
+            android:name=".ui.profile.other.OthersProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -30,7 +31,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.search.SearchFilterActivity"
+            android:name=".ui.search.filter.SearchFilterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
@@ -39,19 +40,19 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.AuthEmailActivity"
+            android:name=".ui.menu.org.auth.AuthEmailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.AuthOrgActivity"
+            android:name=".ui.menu.org.auth.AuthOrgActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.RegistOrgActivity"
+            android:name=".ui.menu.org.regist.RegistOrgActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.menu.org.SearchOrganizationActivity"
+            android:name=".ui.menu.org.search.SearchOrganizationActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
@@ -68,11 +69,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.search.RepoContributorsActivity"
+            android:name=".ui.search.repo.RepoContributorsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.ranking.MyOrganizationInternalActivity"
+            android:name=".ui.ranking.OrganizationInternalActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -113,10 +114,6 @@
                     android:scheme="gitrank" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.basic.LoadingActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.main.MainActivity"
             android:screenOrientation="portrait"

@@ -1,6 +1,5 @@
 package com.dragonguard.android.ui.compare.search
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -9,78 +8,77 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.databinding.ActivitySearchBinding
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.*
+import com.dragonguard.android.databinding.ActivitySearchBinding
+import kotlinx.coroutines.launch
 
 class CompareSearchActivity : AppCompatActivity() {
     private lateinit var compareRepositoryAdapter: SearchCompareRepoAdapter
     private lateinit var binding: ActivitySearchBinding
-    var viewmodel = Viewmodel()
+    private lateinit var viewModel: CompareSearchViewModel
     private var position = 0
     private var repoNames = ArrayList<RepoSearchResultModel>()
     private var count = 0
     private var changed = true
     private var lastSearch = ""
     private var repoCount = 0
-    private var token = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
-        binding.searchViewModel = viewmodel
-
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
+        viewModel = CompareSearchViewModel()
+        initObserver()
 
-        token = intent.getStringExtra("token")!!
         repoCount = intent.getIntExtra("count", 0)
         if (repoCount == 0) {
             supportActionBar?.setTitle("첫번째 Repository")
         } else {
             supportActionBar?.setTitle("두번째 Repository")
         }
-//        Toast.makeText(this, "$repoCount", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "$repoCount", Toast.LENGTH_SHORT).show()
 
-        viewmodel.onOptionListener.observe(this, Observer {
+        /*viewmodel.onOptionListener.observe(this, Observer {
 
-/*            화면전환 테스트
+            화면전환 테스트
             val intent = Intent(applicationContext, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             startActivity(intent)
- */
 
-        })
+        })*/
 
 
-//        edittext에 엔터를 눌렀을때 검색되게 하는 리스너
+        //edittext에 엔터를 눌렀을때 검색되게 하는 리스너
         binding.searchName.setOnEditorActionListener { textView, i, keyEvent ->
             if (i == EditorInfo.IME_ACTION_SEARCH) {
-                if (!viewmodel.onSearchListener.value.isNullOrEmpty()) {
+                closeKeyboard()
+                if (!binding.searchName.text.isNullOrEmpty()) {
                     Log.d("enter click", "edittext 클릭함")
-                    val search = binding.searchName.text!!
-                    binding.searchName.setText(search)
-                    binding.searchName.setSelection(binding.searchName.length())
+                    val search = binding.searchName.text!!.toString()
+                    binding.searchName.setSelection(search.length)
                     if (search.isNotEmpty()) {
-                        closeKeyboard()
-                        if (lastSearch != viewmodel.onSearchListener.value!!) {
+                        if (lastSearch != search) {
+                            lastSearch = search
                             repoNames.clear()
                             binding.searchResult.visibility = View.GONE
                             count = 0
                             position = 0
                         }
                         changed = true
-                        lastSearch = viewmodel.onSearchListener.value!!
                         Log.d("api 시도", "callSearchApi 실행")
-                        callSearchApi(viewmodel.onSearchListener.value!!)
+                        callSearchApi(lastSearch)
                         binding.searchResult.visibility = View.VISIBLE
                         binding.searchName.isFocusable = true
                     } else {
@@ -90,7 +88,7 @@ class CompareSearchActivity : AppCompatActivity() {
                             "엔터 검색어를 입력하세요!!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        closeKeyboard()
+
                     }
 
                 }
@@ -101,87 +99,46 @@ class CompareSearchActivity : AppCompatActivity() {
 
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    when (it.loadState) {
+                        is CompareSearchContract.CompareSearchState.LoadState.Loading -> {
+                            binding.loadingLottie.visibility = View.VISIBLE
+                        }
+
+                        is CompareSearchContract.CompareSearchState.LoadState.Success -> {
+                            binding.loadingLottie.visibility = View.GONE
+                            repoNames.addAll(it.searchResults.searchResults)
+                            initRecycler()
+                        }
+
+                        is CompareSearchContract.CompareSearchState.LoadState.Error -> {
+                            binding.loadingLottie.visibility = View.GONE
+                        }
+                    }
+                }
             }
         }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        closeKeyboard()
-        return super.dispatchTouchEvent(ev)
-    }
-
-    //    edittext의 키보드 제거
-    fun closeKeyboard() {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
     }
 
     //    repo 검색 api 호출 및 결과 출력
     private fun callSearchApi(name: String) {
         binding.loadingLottie.visibility = View.VISIBLE
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            if (!this@CompareSearchActivity.isFinishing) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.getSearchRepoResult(name, count, "REPOSITORIES", token)
-                }
-                val result = resultDeferred.await()
-                delay(1000)
-                if (!checkSearchResult(result)) {
-                    val secondDeferred = coroutine.async(Dispatchers.IO) {
-                        viewmodel.getSearchRepoResult(name, count, "REPOSITORIES", token)
-                    }
-                    val second = secondDeferred.await()
-                    if (checkSearchResult(second)) {
-                        initRecycler()
-                    } else {
-                        binding.loadingLottie.visibility = View.GONE
-                    }
-                } else {
-                    initRecycler()
-                }
-            }
-        }
+        //viewModel.searchRepo(name, count)
     }
-
-    //    api 호출결과 판별 및 출력
-    private fun checkSearchResult(searchResult: ArrayList<RepoSearchResultModel>): Boolean {
-        return when (searchResult.isNullOrEmpty()) {
-            true -> {
-                if (changed) {
-                    changed = false
-                    false
-                } else {
-                    true
-                }
-            }
-
-            false -> {
-                changed = false
-                Log.d("api 시도", "api 성공$searchResult")
-                for (i in 0 until searchResult.size) {
-                    val compare = repoNames.filter { it.name == searchResult[i].name }
-                    if (compare.isEmpty()) {
-                        repoNames.add(searchResult[i])
-                    }
-                }
-                true
-            }
-        }
-
-    }
-
 
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()
     private fun initRecycler() {
         Log.d("count", "count: $count")
         if (count == 0) {
-            compareRepositoryAdapter = SearchCompareRepoAdapter(repoNames, this, repoCount, token)
+            compareRepositoryAdapter = SearchCompareRepoAdapter(
+                repoNames,
+                this,
+                repoCount,
+                viewModel.currentState.token.token
+            )
             binding.searchResult.adapter = compareRepositoryAdapter
             binding.searchResult.layoutManager = LinearLayoutManager(this)
             compareRepositoryAdapter.notifyDataSetChanged()
@@ -200,10 +157,7 @@ class CompareSearchActivity : AppCompatActivity() {
         if (binding.loadingLottie.visibility == View.GONE && count != 0) {
             binding.loadingLottie.visibility = View.VISIBLE
             changed = true
-            CoroutineScope(Dispatchers.Main).launch {
-                Log.d("api 시도", "callSearchApi 실행  load more")
-                callSearchApi(lastSearch)
-            }
+            callSearchApi(lastSearch)
         }
     }
 
@@ -227,4 +181,26 @@ class CompareSearchActivity : AppCompatActivity() {
             }
         })
     }
+
+    //    edittext의 키보드 제거
+    private fun closeKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        closeKeyboard()
+        return super.dispatchTouchEvent(ev)
+    }
+
+
 }

@@ -1,9 +1,9 @@
 package com.dragonguard.android.data.model.rankings
 
-data class OrganizationRankingModelItem(
-    val email_endpoint: String?,
-    val id: Long?,
-    val name: String?,
-    val organization_type: String?,
-    val token_sum: Long?
+abstract class OrganizationRankingModelItem(
+    open val email_endpoint: String?,
+    open val id: Long?,
+    open val name: String?,
+    open val organization_type: String?,
+    open val token_sum: Long?
 )

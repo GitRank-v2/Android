@@ -7,24 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentApprovedOrgBinding
-import com.dragonguard.android.util.RequestStatus
-import com.dragonguard.android.viewmodel.Viewmodel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
-class ApprovedOrgFragment(private val token: String) : Fragment() {
+class ApprovedOrgFragment : Fragment() {
     private lateinit var binding: FragmentApprovedOrgBinding
-    private var viewmodel = Viewmodel()
+    private lateinit var viewModel: ApprovedOrgViewModel
     private var count = 0
     private var page = 0
-    private var orgList =
-        ArrayList<com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem>()
     private var position = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,64 +28,51 @@ class ApprovedOrgFragment(private val token: String) : Fragment() {
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_approved_org, container, false)
-        binding.approvedOrgViewmodel = viewmodel
+        viewModel = ApprovedOrgViewModel()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        initObserver()
     }
 
-    override fun onResume() {
-        super.onResume()
-        requestList()
-    }
-
-    private fun requestList() {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        Log.d("요청", "승인된 요청")
-        coroutine.launch {
-            if (!this@ApprovedOrgFragment.isRemoving && count < 3) {
-                val resultDeferred = coroutine.async(Dispatchers.IO) {
-                    viewmodel.statusOrgList(RequestStatus.ACCEPTED.status, page, token)
-                }
-                val result = resultDeferred.await()
-                if (!result.isEmpty()) {
-                    result.forEach {
-                        if (!orgList.contains(it)) {
-                            orgList.add(it)
-                        }
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.state is ApprovedOrgContract.ApprovedOrgState.LoadState.Success) {
+                        initRecycler()
                     }
-                    initRecycler()
-                } else {
-                    count++
-                    requestList()
                 }
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getApprovedOrg(page)
+    }
+
+
     private fun initRecycler() {
         Log.d("count", "count: $count")
         if (page == 0) {
-            val adapter = ApprovedOrgAdapter(orgList, requireContext(), token)
+            val adapter =
+                ApprovedOrgAdapter(viewModel.currentState.approvedOrg.approvedOrg, requireContext())
             binding.acceptedOrgList.adapter = adapter
             binding.acceptedOrgList.layoutManager = LinearLayoutManager(requireContext())
-            adapter.notifyDataSetChanged()
-            binding.acceptedOrgList.visibility = View.VISIBLE
         }
-        Log.d("list", "결과 : $orgList")
+        Log.d("list", "결과 : ${viewModel.currentState.approvedOrg.approvedOrg}")
         page++
         binding.acceptedOrgList.adapter?.notifyDataSetChanged()
+        binding.acceptedOrgList.visibility = View.VISIBLE
         initScrollListener()
     }
 
     private fun loadMorePosts() {
         if (page != 0) {
-            CoroutineScope(Dispatchers.Main).launch {
-                requestList()
-            }
+            viewModel.getApprovedOrg(page)
         }
     }
 

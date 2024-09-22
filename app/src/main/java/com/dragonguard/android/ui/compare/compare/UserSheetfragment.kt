@@ -5,14 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.FragmentCompareUserBinding
 import com.dragonguard.android.databinding.UserSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class UserSheetfragment(
     private val context: CompareUserFragment,
-    private val firstList: ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>,
-    private val second: ArrayList<com.dragonguard.android.data.model.contributors.GitRepoMember>,
+    private val firstList: ArrayList<GitRepoMember>,
+    private val second: ArrayList<GitRepoMember>,
     private val type: Int,
     private val repo1: String,
     private val repo2: String,

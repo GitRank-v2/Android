@@ -6,20 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityApprovalOrgBinding
-import com.dragonguard.android.viewmodel.Viewmodel
 
 class ApprovalOrgActivity : AppCompatActivity() {
     private lateinit var binding: ActivityApprovalOrgBinding
-    private var viewmodel = Viewmodel()
-    private lateinit var approveFragment: ApproveOrgFragment
-    private lateinit var approvedFragment: ApprovedOrgFragment
-    private var token = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_approval_org)
-        binding.approvalOrgViewmodel = viewmodel
 
-        token = intent.getStringExtra("token")!!
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
@@ -27,11 +21,9 @@ class ApprovalOrgActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         supportActionBar?.title = "조직 등록 요청 승인"
 
-        approveFragment = ApproveOrgFragment(token)
-        approvedFragment = ApprovedOrgFragment(token)
 
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(R.id.approve_org_list, ApproveOrgFragment(token))
+        transaction.add(R.id.approve_org_list, ApproveOrgFragment())
             .commit()
 
         binding.bottomNavigation.setOnItemSelectedListener {
@@ -39,14 +31,14 @@ class ApprovalOrgActivity : AppCompatActivity() {
                 R.id.approve_request_btn -> {
                     supportActionBar?.title = "승인 대기중인 조직 목록"
                     val transactionN = supportFragmentManager.beginTransaction()
-                    transactionN.replace(R.id.approve_org_list, ApproveOrgFragment(token))
+                    transactionN.replace(R.id.approve_org_list, ApproveOrgFragment())
                         .commit()
                 }
 
                 R.id.approve_finished_btn -> {
                     supportActionBar?.title = "승인된 조직 목록"
                     val transactionN = supportFragmentManager.beginTransaction()
-                    transactionN.replace(R.id.approve_org_list, ApprovedOrgFragment(token))
+                    transactionN.replace(R.id.approve_org_list, ApprovedOrgFragment())
                         .commit()
                 }
             }

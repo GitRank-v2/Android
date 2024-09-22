@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
-import com.dragonguard.android.databinding.RankingListBinding
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
+import com.dragonguard.android.databinding.RankingListBinding
 import com.dragonguard.android.ui.main.MainActivity
-import com.dragonguard.android.ui.profile.UserProfileActivity
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 
 class RankingsAdapter(
     private val rankings: List<*>,
@@ -67,7 +67,7 @@ class RankingsAdapter(
                     }
                     binding.rankingItem.setOnClickListener {
                         val mContext = context as MainActivity
-                        val intent = Intent(context, UserProfileActivity::class.java)
+                        val intent = Intent(context, OthersProfileActivity::class.java)
                         intent.putExtra("userName", data1.github_id)
                         intent.putExtra("token", token)
                         context.startActivity(intent)
@@ -91,12 +91,12 @@ class RankingsAdapter(
                     binding.rankingContribute.text = data1.tokens.toString()
                     binding.rankingItem.setOnClickListener {
                         if (data1.profile_image.isNullOrBlank()) {
-                            val intent = Intent(context, MyOrganizationInternalActivity::class.java)
+                            val intent = Intent(context, OrganizationInternalActivity::class.java)
                             intent.putExtra("organization", data1.name)
                             intent.putExtra("token", token)
                             context.startActivity(intent)
                         } else {
-                            val intent = Intent(context, UserProfileActivity::class.java)
+                            val intent = Intent(context, OthersProfileActivity::class.java)
                             intent.putExtra("userName", data1.github_id)
                             intent.putExtra("token", token)
                             context.startActivity(intent)

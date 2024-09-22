@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="authEamilViewmodel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
-    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="3.4"
-        tools:context=".ui.menu.org.AuthEmailActivity">
+        tools:context=".ui.menu.org.auth.AuthEmailActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -90,7 +83,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:fontFamily="@font/ibm_semibold"
-                        android:text="@={authEamilViewmodel.onAuthEmailListener}"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 

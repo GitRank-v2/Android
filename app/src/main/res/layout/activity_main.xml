@@ -3,22 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="mainViewModel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
-    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".ui.main.MainActivity">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <FrameLayout
                 android:id="@+id/content_frame"
                 android:layout_width="match_parent"
@@ -29,7 +25,7 @@
                     android:layout_gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:lottie_rawRes="@raw/splash_screen"/>
+                    app:lottie_rawRes="@raw/splash_screen" />
 
             </FrameLayout>
         </LinearLayout>

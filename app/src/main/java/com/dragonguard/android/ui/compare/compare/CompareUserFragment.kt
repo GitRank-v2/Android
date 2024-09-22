@@ -3,41 +3,60 @@ package com.dragonguard.android.ui.compare.compare
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
+import com.dragonguard.android.data.model.compare.RepoMembersResult
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.FragmentCompareUserBinding
-import com.dragonguard.android.viewmodel.Viewmodel
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 //선택한 두 Repository의 member들을 비교하기 위한 fragment
-class CompareUserFragment(repoName1: String, repoName2: String, token: String) : Fragment() {
+class CompareUserFragment(
+    private val repoName1: String,
+    private val repoName2: String,
+    private val repo1: List<RepoMembersResult>,
+    private val repo2: List<RepoMembersResult>
+) : Fragment() {
 
-    private var repo1 = repoName1
-    private var repo2 = repoName2
-    private var contributors1 = ArrayList<GitRepoMember>()
-    private var contributors2 = ArrayList<GitRepoMember>()
-    private var allContiributors = ArrayList<GitRepoMember>()
+    private val contributors1: ArrayList<GitRepoMember> = repo1.map {
+        GitRepoMember(
+            additions = it.additions,
+            commits = it.commits,
+            deletions = it.deletions,
+            github_id = it.github_id,
+            profile_url = it.profile_url,
+            is_service_member = it.is_service_member
+        )
+    } as ArrayList<GitRepoMember>
+    private val contributors2: ArrayList<GitRepoMember> = repo2.map {
+        GitRepoMember(
+            additions = it.additions,
+            commits = it.commits,
+            deletions = it.deletions,
+            github_id = it.github_id,
+            profile_url = it.profile_url,
+            is_service_member = it.is_service_member
+        )
+    } as ArrayList<GitRepoMember>
     var user1 = ""
     var user2 = ""
     private var count = 0
     private lateinit var binding: FragmentCompareUserBinding
-    private var viewmodel = Viewmodel()
-    private val token = token
     lateinit var userGroup1: UserSheetfragment
     lateinit var userGroup2: UserSheetfragment
 
@@ -48,111 +67,53 @@ class CompareUserFragment(repoName1: String, repoName2: String, token: String) :
         // Inflate the layout for this fragment
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_compare_user, container, false)
-        binding.compareUserViewmodel = viewmodel
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateUI()
-    }
-
-    //activity 구성 이후 화면을 초기화하는 함수
-    private fun updateUI() {
+        initObserver()
         binding.user1Frame.setOnClickListener {
             userGroup1 =
-                UserSheetfragment(this, contributors1, contributors2, 1, repo1, repo2, binding)
+                UserSheetfragment(
+                    this,
+                    contributors1,
+                    contributors2,
+                    1,
+                    repoName1,
+                    repoName2,
+                    binding
+                )
             userGroup1.show(parentFragmentManager, userGroup1.tag)
         }
+
         binding.user2Frame.setOnClickListener {
             userGroup2 =
-                UserSheetfragment(this, contributors1, contributors2, 2, repo1, repo2, binding)
+                UserSheetfragment(
+                    this,
+                    contributors1,
+                    contributors2,
+                    2,
+                    repoName1,
+                    repoName2,
+                    binding
+                )
             userGroup2.show(parentFragmentManager, userGroup2.tag)
         }
         binding.user1Profile.clipToOutline = true
         binding.user2Profile.clipToOutline = true
-        repoContributors(repo1, repo2)
+        initGraph()
 
 
         getActivity()?.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     }
 
-    /*
-    두 Repository의 멤버를 비교하는 API를 호출하는 함수
-    호출 후 이상유무를 확인하는 함수 호출
-     */
-    fun repoContributors(repoName1: String, repoName2: String) {
-        val coroutine = CoroutineScope(Dispatchers.Main)
-        coroutine.launch {
-            val resultDeferred = coroutine.async(Dispatchers.IO) {
-                viewmodel.postCompareRepoMembersRequest(repoName1, repoName2, token)
-            }
-            val result = resultDeferred.await()
-//            Toast.makeText(applicationContext, "result = ${result.size}",Toast.LENGTH_SHORT).show()
-            checkContributors(result)
-        }
-    }
+    //activity 구성 이후 화면을 초기화하는 함수
+    private fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-    /*
-    검색한 결과가 잘 왔는지 확인하는 함수
-    이상없으면 spinner에 두 Repository의 github id 리스트 넣는 함수 호출
-     */
-    fun checkContributors(result: CompareRepoMembersResponseModel) {
-        if ((result.first_result != null) && (result.second_result != null)) {
-            if (result.first_result.isEmpty()) {
-                count++
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ repoContributors(repo1, repo2) }, 5000)
-            } else {
-                var compare1: MutableList<GitRepoMember>
-                for (i in 0 until result.first_result.size) {
-                    compare1 =
-                        contributors1.filter { it.github_id == result.first_result[i].github_id }
-                            .toMutableList()
-                    if (compare1.isEmpty()) {
-                        contributors1.add(
-                            GitRepoMember(
-                                result.first_result[i].additions,
-                                result.first_result[i].commits,
-                                result.first_result[i].deletions,
-                                result.first_result[i].github_id,
-                                result.first_result[i].is_service_member,
-                                result.first_result[i].profile_url
-                            )
-                        )
-                    } else {
-                        compare1.clear()
-                    }
-                }
-                var compare2: MutableList<GitRepoMember>
-                for (i in 0 until result.second_result.size) {
-                    compare2 =
-                        contributors2.filter { it.github_id == result.second_result[i].github_id }
-                            .toMutableList()
-                    if (compare2.isEmpty()) {
-                        contributors2.add(
-                            com.dragonguard.android.data.model.contributors.GitRepoMember(
-                                result.second_result[i].additions,
-                                result.second_result[i].commits,
-                                result.second_result[i].deletions,
-                                result.second_result[i].github_id,
-                                result.second_result[i].is_service_member,
-                                result.second_result[i].profile_url
-                            )
-                        )
-                    } else {
-                        compare2.clear()
-                    }
-                }
-                allContiributors.addAll(contributors1)
-                allContiributors.addAll(contributors2)
-            }
-        } else {
-            if (count < 10) {
-                count++
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ repoContributors(repo1, repo2) }, 5000)
             }
         }
     }
@@ -178,14 +139,14 @@ class CompareUserFragment(repoName1: String, repoName2: String, token: String) :
         val commitEntries2 = ArrayList<BarEntry>()
         val codeEntries1 = ArrayList<BarEntry>()
         val codeEntries2 = ArrayList<BarEntry>()
-//        Toast.makeText(requireContext(), "${user2Cont.commits} ${user2Cont.additions}  ${user2Cont.deletions}", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "${user2Cont.commits} ${user2Cont.additions}  ${user2Cont.deletions}", Toast.LENGTH_SHORT).show()
         commitEntries1.add(BarEntry(1.toFloat(), user1Cont.commits!!.toFloat()))
         codeEntries1.add(BarEntry(1.toFloat(), user1Cont.additions!!.toFloat()))
         codeEntries1.add(BarEntry(2.toFloat(), user1Cont.deletions!!.toFloat()))
         commitEntries1.add(BarEntry(2.toFloat(), user2Cont.commits!!.toFloat()))
         codeEntries2.add(BarEntry(1.toFloat(), user2Cont.additions!!.toFloat()))
         codeEntries2.add(BarEntry(2.toFloat(), user2Cont.deletions!!.toFloat()))
-//        Toast.makeText(requireContext(), "entries1 : $entries1", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "entries1 : $entries1", Toast.LENGTH_SHORT).show()
 
         val commitSet1 = BarDataSet(commitEntries1, user1)
         commitSet1.colors = listOf(Color.rgb(176, 225, 255), Color.rgb(0, 0, 128))
@@ -317,18 +278,6 @@ class CompareUserFragment(repoName1: String, repoName2: String, token: String) :
     /*    그래프 x축을 contributor의 이름으로 변경하는 코드
           x축 label을 githubId의 앞의 4글자를 기입하여 곂치는 문제 해결
      */
-    class CommitsFormatter() : ValueFormatter() {
-        private val days = listOf("commits")
-
-        //        private val days = listOf( "additions", "deletions")
-        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-            return days.getOrNull(value.toInt() - 1) ?: value.toString()
-        }
-
-        override fun getFormattedValue(value: Float): String {
-            return "" + value.toInt()
-        }
-    }
 
     class CodeFormatter() : ValueFormatter() {
         private val days = listOf("additions", "deletions")

@@ -1,6 +1,8 @@
 package com.dragonguard.android.data.repository
 
 import android.util.Log
+import com.dragonguard.android.GitRankApplication.Companion.getString
+import com.dragonguard.android.R
 import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
@@ -51,7 +53,7 @@ class ApiRepository {
         .retryOnConnectionFailure(true)
         .build()
 
-    private val retrofit = Retrofit.Builder().baseUrl("")
+    private val retrofit = Retrofit.Builder().baseUrl(getString(R.string.base_url))
         .client(okHttpClient)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
@@ -144,7 +146,8 @@ class ApiRepository {
 
     //사용자의 정보를 받아오기 위한 함수
     fun getUserInfo(token: String): UserInfoModel {
-        val userInfo = api.getUserInfo("Bearer $token")
+        Log.d("user token", "token: $token")
+        val userInfo = api.getUserInfo("Bearer: $token")
         var userResult = UserInfoModel(
             null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null
@@ -155,7 +158,7 @@ class ApiRepository {
             Log.d("result", "사용자 정보 요청 결과 : ${result.code()}")
             userResult = result.body()!!
         } catch (e: Exception) {
-            Log.d("error", "사용자 정보 요청 에러 : ${e.message}")
+            Log.d("userinfo error", "사용자 정보 요청 에러 : ${e.message}")
             return userResult
         }
         return userResult

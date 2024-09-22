@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="authOrgViewmodel"
-            type="com.dragonguard.android.viewmodel.Viewmodel" />
-    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="3.4"
-        tools:context=".ui.menu.org.AuthOrgActivity">
+        tools:context=".ui.menu.org.auth.AuthOrgActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -51,7 +44,8 @@
                     android:fontFamily="@font/ibm_semibold"
                     android:text="조직 타입"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:layout_weight="0.15" />
 
                 <View
                     android:layout_width="0dp"
@@ -88,7 +82,8 @@
                     android:fontFamily="@font/ibm_semibold"
                     android:text="조직 이름"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:layout_weight="0.15" />
 
                 <View
                     android:layout_width="0dp"
@@ -129,20 +124,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ibm_semibold"
-                    android:text="사용자 이메일"
+                    android:text="이메일"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:layout_weight="0.3" />
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.25" />
 
-                <com.dragonguard.android.custom.edittext.CustomEdittext
+                <com.dragonguard.android.util.CustomEdittext
                     android:id="@+id/org_email_edit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
+                    android:layout_weight="3.5"
                     android:background="@drawable/search_border"
                     android:fontFamily="@font/ibm_semibold"
                     android:hint="이메일"

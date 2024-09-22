@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.data.model.search.UserNameModelItem
 import com.dragonguard.android.databinding.RepositoryListBinding
-import com.dragonguard.android.ui.profile.UserProfileActivity
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 
 //검색한 레포지토리 나열하는 리사이클러뷰 어댑터 구현
 class RepositoryProfileAdapter(
@@ -76,7 +77,7 @@ class RepositoryProfileAdapter(
                     itemView.setOnClickListener {
                         Log.d("users", "user = $data")
                         if (data.is_service_member) {
-                            Intent(context, UserProfileActivity::class.java).apply {
+                            Intent(context, OthersProfileActivity::class.java).apply {
                                 putExtra("userName", data.name)
                                 putExtra("token", token)
                             }.run { context.startActivity(this) }
