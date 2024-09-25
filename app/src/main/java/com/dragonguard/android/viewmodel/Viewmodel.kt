@@ -15,9 +15,6 @@ import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
 import com.dragonguard.android.data.model.klip.WalletAddressModel
-import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
-import com.dragonguard.android.data.model.klip.WalletAuthResponseModel
-import com.dragonguard.android.data.model.klip.WalletAuthResultModel
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.OrgApprovalModel
@@ -129,13 +126,13 @@ class Viewmodel : ViewModel() {
         return repository.getTotalUsersRankings(page, size, token)
     }
 
-    fun postWalletAuth(body: WalletAuthRequestModel): WalletAuthResponseModel {
+    /*fun postWalletAuth(body: WalletAuthRequestModel): WalletAuthResponseModel {
         return repository.postWalletAuth(body)
     }
 
     fun getWalletAuthResult(key: String): WalletAuthResultModel {
         return repository.getAuthResult(key)
-    }
+    }*/
 
     fun getTokenHistory(token: String): ArrayList<TokenHistoryModelItem>? {
         return repository.getTokenHistory(token)
