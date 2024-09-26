@@ -29,12 +29,7 @@ class SearchViewModel :
             when (event) {
                 is SearchContract.SearchEvent.GetUserNames -> {
                     setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getUserNames(
-                        event.name,
-                        event.count,
-                        event.type,
-                        pref.getJwtToken("")
-                    )
+                    val result = repository.getUserNames(event.name, event.count, event.type)
                     setState {
                         copy(
                             searchState = SearchContract.SearchState.LoadState.UserSuccess,
@@ -45,12 +40,7 @@ class SearchViewModel :
 
                 is SearchContract.SearchEvent.GetRepositoryNamesNoFilters -> {
                     setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getRepositoryNames(
-                        event.name,
-                        event.count,
-                        event.type,
-                        pref.getJwtToken("")
-                    )
+                    val result = repository.getRepositoryNames(event.name, event.count, event.type)
                     setState {
                         copy(
                             searchState = SearchContract.SearchState.LoadState.RepoSuccess,
@@ -66,7 +56,6 @@ class SearchViewModel :
                         event.count,
                         event.filters,
                         event.type,
-                        pref.getJwtToken("")
                     )
                     setState {
                         copy(

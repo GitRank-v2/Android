@@ -29,11 +29,8 @@ class ApprovedOrgViewModel :
             when (event) {
                 is ApprovedOrgContract.ApprovedOrgEvent.GetApprovedOrg -> {
                     setState { copy(state = ApprovedOrgContract.ApprovedOrgState.LoadState.Loading) }
-                    val result = repository.statusOrgList(
-                        RequestStatus.ACCEPTED.status,
-                        event.page,
-                        currentState.token.token
-                    )
+                    val result =
+                        repository.statusOrgList(RequestStatus.ACCEPTED.status, event.page)
                     setState {
                         copy(
                             state = ApprovedOrgContract.ApprovedOrgState.LoadState.Success,

@@ -7,6 +7,7 @@ import androidx.annotation.StringRes
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.JwtInterceptor
 import com.dragonguard.android.util.NetworkChecker
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -39,10 +40,11 @@ class GitRankApplication : Application() {
 
         private lateinit var moshi: Moshi
 
-        private val okHttpClient = OkHttpClient.Builder()
+        private var okHttpClient = OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(18, TimeUnit.SECONDS)
             .writeTimeout(18, TimeUnit.SECONDS)
+            .addInterceptor(JwtInterceptor())
             .retryOnConnectionFailure(true)
             .build()
 
@@ -64,5 +66,19 @@ class GitRankApplication : Application() {
         fun getPref(): IdPreference = pref
         fun getRepository(): ApiRepository = repository
         fun getService(): GitRankService = service
+        fun setService() {
+            okHttpClient = OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(18, TimeUnit.SECONDS)
+                .writeTimeout(18, TimeUnit.SECONDS)
+                .addInterceptor(JwtInterceptor())
+                .retryOnConnectionFailure(true)
+                .build()
+            retrofit = Retrofit.Builder().baseUrl(getString(R.string.base_url))
+                .client(okHttpClient)
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .build()
+            service = retrofit.create(GitRankService::class.java)
+        }
     }
 }

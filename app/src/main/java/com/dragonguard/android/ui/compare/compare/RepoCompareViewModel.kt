@@ -40,7 +40,7 @@ class RepoCompareViewModel :
                         CompareRepoRequestModel(
                             event.repo1,
                             event.repo2
-                        ), currentState.token.token
+                        )
                     )
                     setState {
                         copy(
@@ -57,7 +57,7 @@ class RepoCompareViewModel :
                         CompareRepoRequestModel(
                             event.repo1,
                             event.repo2
-                        ), currentState.token.token
+                        )
                     )
                     setState {
                         copy(

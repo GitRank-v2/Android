@@ -31,8 +31,11 @@ class RegistOrgViewModel :
                 is RegistOrgContract.RegistOrgEvent.RequestRegistOrg -> {
                     setState { copy(state = RegistOrgContract.RegistOrgState.LoadState.Loading) }
                     val result = repository.postRegistOrg(
-                        RegistOrgModel(event.orgName, event.orgType, event.orgEndPoint),
-                        currentState.token.token
+                        RegistOrgModel(
+                            event.orgName,
+                            event.orgType,
+                            event.orgEndPoint
+                        )
                     )
                     setState {
                         copy(

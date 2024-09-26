@@ -25,7 +25,7 @@ class ClientProfileViewModel :
         when (event) {
             is ClientProfileContract.ClientProfileEvent.GetClientDetail -> {
                 setState { copy(loadState = ClientProfileContract.ClientProfileState.LoadState.Loading) }
-                val result = repository.getClientDetails(currentState.token.token)
+                val result = repository.getClientDetails()
                 result?.let {
                     setState {
                         copy(

@@ -29,18 +29,14 @@ class RepoContributorsViewModel :
                 is RepoContributorsContract.RepoContributorsEvent.GetRepoContributors -> {
                     setState { copy(loadState = RepoContributorsContract.RepoContributorsState.LoadState.Loading) }
                     val result =
-                        repository.getRepoContributors(event.repoName, currentState.token.token)
-                    if (result != null) {
-                        setState {
-                            copy(
-                                loadState = RepoContributorsContract.RepoContributorsState.LoadState.Success,
-                                repoState = RepoContributorsContract.RepoContributorsState.RepoContributeState(
-                                    result
-                                )
+                        repository.getRepoContributors(event.repoName)
+                    setState {
+                        copy(
+                            loadState = RepoContributorsContract.RepoContributorsState.LoadState.Success,
+                            repoState = RepoContributorsContract.RepoContributorsState.RepoContributeState(
+                                result
                             )
-                        }
-                    } else {
-                        setEffect { RepoContributorsContract.RepoContributorsEffect.ShowToast }
+                        )
                     }
                 }
             }

@@ -25,7 +25,7 @@ class OthersProfileViewModel :
         when (event) {
             is OthersProfileContract.UserProfileEvent.GetOthersProfile -> {
                 setState { copy(loadState = OthersProfileContract.UserProfileState.LoadState.Loading) }
-                val result = repository.otherProfile(event.name, currentState.token.token)
+                val result = repository.otherProfile(event.name)
                 result?.let {
                     setState {
                         copy(

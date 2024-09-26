@@ -27,12 +27,8 @@ class CompareSearchViewModel :
             when (event) {
                 is CompareSearchContract.CompareSearchEvent.SearchRepo -> {
                     setState { copy(loadState = CompareSearchContract.CompareSearchState.LoadState.Loading) }
-                    val result = repository.getRepositoryNames(
-                        event.name,
-                        event.count,
-                        REPOSITORIES,
-                        pref.getJwtToken("")
-                    )
+                    val result =
+                        repository.getRepositoryNames(event.name, event.count, REPOSITORIES)
                     setState {
                         copy(
                             loadState = CompareSearchContract.CompareSearchState.LoadState.Success,

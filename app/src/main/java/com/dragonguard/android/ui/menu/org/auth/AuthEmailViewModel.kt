@@ -78,8 +78,7 @@ class AuthEmailViewModel :
             when (event) {
                 is AuthEmailContract.AuthEmailEvent.RequestAuthEmail -> {
                     val result = repository.addOrgMember(
-                        AddOrgMemberModel(event.email, event.orgId),
-                        pref.getJwtToken("")
+                        AddOrgMemberModel(event.email, event.orgId)
                     )
                     if (result != -1L) {
                         setState {
@@ -96,12 +95,8 @@ class AuthEmailViewModel :
                 }
 
                 is AuthEmailContract.AuthEmailEvent.CheckEmailCode -> {
-                    val result = repository.emailAuthResult(
-                        event.emailAuthId,
-                        event.code,
-                        event.orgId,
-                        pref.getJwtToken("")
-                    )
+                    val result =
+                        repository.emailAuthResult(event.emailAuthId, event.code, event.orgId)
                     if (result) {
                         setState { copy(state = AuthEmailContract.AuthEmailState.LoadState.Success) }
                     } else {
@@ -110,7 +105,7 @@ class AuthEmailViewModel :
                 }
 
                 is AuthEmailContract.AuthEmailEvent.DeleteLateEmailCode -> {
-                    val result = repository.deleteEmailCode(event.emailAuthId, pref.getJwtToken(""))
+                    val result = repository.deleteEmailCode(event.emailAuthId)
                     setState {
                         copy(
                             resetTimer = AuthEmailContract.AuthEmailState.ResetTimer(result),
@@ -120,7 +115,7 @@ class AuthEmailViewModel :
                 }
 
                 is AuthEmailContract.AuthEmailEvent.SendEmailAuth -> {
-                    val result = repository.sendEmailAuth(pref.getJwtToken(""))
+                    val result = repository.sendEmailAuth()
                     if (result != -1L) {
                         setState {
                             copy(

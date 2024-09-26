@@ -27,12 +27,12 @@ class MenuViewModel :
         viewModelScope.launch {
             when (event) {
                 is MenuContract.MenuEvent.CheckAdmin -> {
-                    val result = repository.checkAdmin(currentState.token.token)
+                    val result = repository.checkAdmin()
                     setState { copy(admin = MenuContract.MenuState.AdminState(result)) }
                 }
 
                 is MenuContract.MenuEvent.WithDrawAccount -> {
-                    val result = repository.withDrawAccount(currentState.token.token)
+                    val result = repository.withDrawAccount()
                     setState { copy(withDraw = MenuContract.MenuState.WithDrawState(result)) }
                 }
             }

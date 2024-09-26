@@ -30,7 +30,7 @@ class OrganizationInternalViewModel :
         viewModelScope.launch {
             when (event) {
                 is OrganizationInternalContract.OrganizationInternalEvent.SearchOrgId -> {
-                    val result = repository.searchOrgId(event.orgName, currentState.token.token)
+                    val result = repository.searchOrgId(event.orgName)
                     setState {
                         copy(
                             orgId = OrganizationInternalContract.OrganizationInternalState.OrgId(
@@ -42,11 +42,7 @@ class OrganizationInternalViewModel :
 
                 is OrganizationInternalContract.OrganizationInternalEvent.GetOrgInternalRankings -> {
                     setState { copy(loadState = OrganizationInternalContract.OrganizationInternalState.LoadState.Loading) }
-                    val result = repository.orgInternalRankings(
-                        event.orgId,
-                        event.page,
-                        currentState.token.token
-                    )
+                    val result = repository.orgInternalRankings(event.orgId, event.page)
                     setState {
                         copy(
                             loadState = OrganizationInternalContract.OrganizationInternalState.LoadState.Success,

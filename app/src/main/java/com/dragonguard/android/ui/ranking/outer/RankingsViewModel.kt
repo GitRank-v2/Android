@@ -31,7 +31,7 @@ class RankingsViewModel :
             when (event) {
                 is RankingsContract.RankingsEvent.GetTotalUserRanking -> {
                     setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
-                    repository.getTotalUsersRankings(event.page, event.size, pref.getJwtToken(""))
+                    repository.getTotalUsersRankings(event.page, event.size)
                         .let { rankings ->
                             setState {
                                 copy(
@@ -55,7 +55,7 @@ class RankingsViewModel :
 
                 is RankingsContract.RankingsEvent.GetTotalOrganizationRanking -> {
                     setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
-                    repository.allOrgRanking(event.page, pref.getJwtToken("")).let { rankings ->
+                    repository.allOrgRanking(event.page).let { rankings ->
                         setState {
                             copy(
                                 loadState = RankingsContract.RankingsState.LoadState.Success,
@@ -77,7 +77,7 @@ class RankingsViewModel :
 
                 is RankingsContract.RankingsEvent.GetCompanyRanking -> {
                     setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
-                    repository.typeOrgRanking(COMPANY, event.page, pref.getJwtToken(""))
+                    repository.typeOrgRanking(COMPANY, event.page)
                         .let { rankings ->
                             setState {
                                 copy(
@@ -100,7 +100,7 @@ class RankingsViewModel :
 
                 is RankingsContract.RankingsEvent.GetUniversityRanking -> {
                     setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
-                    repository.typeOrgRanking(UNIVERSITY, event.page, pref.getJwtToken(""))
+                    repository.typeOrgRanking(UNIVERSITY, event.page)
                         .let { rankings ->
                             setState {
                                 copy(
@@ -123,7 +123,7 @@ class RankingsViewModel :
 
                 is RankingsContract.RankingsEvent.GetHighSchoolRanking -> {
                     setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
-                    repository.typeOrgRanking(HIGH_SCHOOL, event.page, pref.getJwtToken(""))
+                    repository.typeOrgRanking(HIGH_SCHOOL, event.page)
                         .let { rankings ->
                             setState {
                                 copy(
@@ -146,7 +146,7 @@ class RankingsViewModel :
 
                 is RankingsContract.RankingsEvent.GetEtcRanking -> {
                     setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
-                    repository.typeOrgRanking(ETC, event.page, pref.getJwtToken(""))
+                    repository.typeOrgRanking(ETC, event.page)
                         .let { rankings ->
                             setState {
                                 copy(

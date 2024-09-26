@@ -30,11 +30,7 @@ class ApproveOrgViewModel :
         when (event) {
             is ApproveOrgContract.ApproveOrgEvent.GetRequestedOrg -> {
                 setState { copy(loadState = ApproveOrgContract.ApproveOrgState.LoadState.Loading) }
-                val result = repository.statusOrgList(
-                    RequestStatus.REQUESTED.status,
-                    event.page,
-                    currentState.token.token
-                )
+                val result = repository.statusOrgList(RequestStatus.REQUESTED.status, event.page)
                 setState {
                     copy(
                         loadState = ApproveOrgContract.ApproveOrgState.LoadState.Success,
@@ -49,7 +45,7 @@ class ApproveOrgViewModel :
                     OrgApprovalModel(
                         RequestStatus.ACCEPTED.status,
                         event.orgId
-                    ), currentState.token.token
+                    )
                 )
                 setState {
                     copy(
@@ -63,10 +59,7 @@ class ApproveOrgViewModel :
             is ApproveOrgContract.ApproveOrgEvent.ClickReject -> {
                 setState { copy(rejectOrg = ApproveOrgContract.ApproveOrgState.RejectOrg(true)) }
                 val result = repository.approveOrgRequest(
-                    OrgApprovalModel(
-                        RequestStatus.DENIED.status,
-                        event.orgId
-                    ), currentState.token.token
+                    OrgApprovalModel(RequestStatus.DENIED.status, event.orgId)
                 )
                 setState {
                     copy(

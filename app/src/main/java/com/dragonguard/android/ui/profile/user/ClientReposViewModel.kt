@@ -25,7 +25,7 @@ class ClientReposViewModel :
         when (event) {
             is ClientReposContract.ClientReposEvent.GetGithubOrgRepos -> {
                 setState { copy(loadState = ClientReposContract.ClientReposState.LoadState.Loading) }
-                val result = repository.userGitOrgRepoList(event.orgName, currentState.token.token)
+                val result = repository.userGitOrgRepoList(event.orgName)
                 result?.let {
                     setState {
                         copy(

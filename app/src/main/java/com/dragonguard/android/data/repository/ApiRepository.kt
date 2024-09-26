@@ -39,7 +39,6 @@ class ApiRepository {
         name: String,
         count: Int,
         type: String,
-        token: String
     ): ArrayList<RepoSearchResultModel> {
         var repoNames: ArrayList<RepoSearchResultModel> =
             arrayListOf()
@@ -50,7 +49,7 @@ class ApiRepository {
 
         Log.d("api 호출", "$count 페이지 검색")
 
-        val repoName = service.getRepoName(queryMap, "Bearer $token")
+        val repoName = service.getRepoName(queryMap)
         try {
             val result = repoName.execute()
             Log.d("result", "레포 필터없는 검색 결과: ${result.code()}}")
@@ -67,7 +66,6 @@ class ApiRepository {
         count: Int,
         filters: String,
         type: String,
-        token: String
     ): ArrayList<RepoSearchResultModel> {
         var repoNames: ArrayList<RepoSearchResultModel> =
             arrayListOf()
@@ -79,7 +77,7 @@ class ApiRepository {
         Log.d("api 호출", "이름: $name, type: $type filters: $filters")
         Log.d("api 호출", "$count 페이지 검색")
 
-        val repoName = service.getRepoName(queryMap, "Bearer $token")
+        val repoName = service.getRepoName(queryMap)
         try {
             val result = repoName.execute()
             Log.d("result", "레포 필터별 검색: ${result.code()}")
@@ -91,12 +89,7 @@ class ApiRepository {
         return repoNames
     }
 
-    fun getUserNames(
-        name: String,
-        count: Int,
-        type: String,
-        token: String
-    ): ArrayList<UserNameModelItem> {
+    fun getUserNames(name: String, count: Int, type: String): ArrayList<UserNameModelItem> {
         var repoNames: ArrayList<UserNameModelItem> =
             arrayListOf()
         val queryMap = mutableMapOf<String, String>()
@@ -106,7 +99,7 @@ class ApiRepository {
 
         Log.d("api 호출", "$count 페이지 검색")
 
-        val repoName = service.getUserName(queryMap, "Bearer $token")
+        val repoName = service.getUserName(queryMap)
         try {
             val result = repoName.execute()
             Log.d("result", "사용자 검색 결과: ${result.code()}")
@@ -119,9 +112,8 @@ class ApiRepository {
     }
 
     //사용자의 정보를 받아오기 위한 함수
-    fun getUserInfo(token: String): UserInfoModel {
-        Log.d("user token", "token: $token")
-        val userInfo = service.getUserInfo("Bearer: $token")
+    fun getUserInfo(): UserInfoModel {
+        val userInfo = service.getUserInfo()
         var userResult = UserInfoModel(
             null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null
@@ -138,8 +130,8 @@ class ApiRepository {
         return userResult
     }
 
-    fun getClientDetails(token: String): ClientDetailModel? {
-        val userDetails = service.getMemberDetails("Bearer $token")
+    fun getClientDetails(): ClientDetailModel? {
+        val userDetails = service.getMemberDetails()
         return try {
             val result = userDetails.execute()
             Log.d("error", "client 정보 요청 주소 : ${userDetails.request().url}")
@@ -152,11 +144,8 @@ class ApiRepository {
     }
 
     //Repository의 기여자들의 정보를 받아오기 위한 함수
-    fun getRepoContributors(
-        repoName: String,
-        token: String
-    ): RepoContributorsModel? {
-        val repoContributors = service.getRepoContributors(repoName, "Bearer $token")
+    fun getRepoContributors(repoName: String): RepoContributorsModel {
+        val repoContributors = service.getRepoContributors(repoName)
         var repoContResult = RepoContributorsModel(null, null)
         try {
             val result = repoContributors.execute()
@@ -174,18 +163,14 @@ class ApiRepository {
     }
 
     //klip wallet을 등록한 모든 사용자의 토큰에 따른 등수를 받아오는 함수
-    fun getTotalUsersRankings(
-        page: Int,
-        size: Int,
-        token: String
-    ): ArrayList<TotalUsersRankingModelItem> {
+    fun getTotalUsersRankings(page: Int, size: Int): ArrayList<TotalUsersRankingModelItem> {
         var rankingResult =
             ArrayList<TotalUsersRankingModelItem>()
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$page")
         queryMap.put("size", "$size")
         queryMap.put("sort", "tokens,DESC")
-        val ranking = service.getTotalUsersRanking(queryMap, "Bearer $token")
+        val ranking = service.getTotalUsersRanking(queryMap)
         try {
             val result = ranking.execute()
             Log.d("result", "유저랭킹 api 결과 ${result.code()}")
@@ -198,10 +183,9 @@ class ApiRepository {
     }
 
     //사용자의 토큰 부여 내역을 확인하기 위한 함수
-    fun getTokenHistory(token: String): ArrayList<TokenHistoryModelItem>? {
-        val tokenHistory = service.getTokenHistory("Bearer $token")
-        var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? =
-            null
+    fun getTokenHistory(): ArrayList<TokenHistoryModelItem>? {
+        val tokenHistory = service.getTokenHistory()
+        var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? = null
         try {
             val result = tokenHistory.execute()
             Log.d("result", "토큰 부여 내역 결과 ${result.code()}")
@@ -214,11 +198,8 @@ class ApiRepository {
     }
 
     //klip wallet address를 서버에 등록하기 위한 함수
-    fun postWalletAddress(
-        body: WalletAddressModel,
-        token: String
-    ): Boolean {
-        val walletAddress = service.postWalletAddress(body, "Bearer $token")
+    fun postWalletAddress(body: WalletAddressModel): Boolean {
+        val walletAddress = service.postWalletAddress(body)
         return try {
             val result = walletAddress.execute()
             Log.d("dd", "지갑주소 전송 결과 : ${result.code()} ${body.wallet_address}")
@@ -272,13 +253,9 @@ class ApiRepository {
     */
 
     //두 Repository의 구성원들의 기여도를 받아오기 위한 함수
-    fun postCompareRepoMembersRequest(
-        body: CompareRepoRequestModel,
-        token: String
-    ): CompareRepoMembersResponseModel {
-        Log.d("token", "token: $token")
+    fun postCompareRepoMembersRequest(body: CompareRepoRequestModel): CompareRepoMembersResponseModel {
         var compareRepoResult = CompareRepoMembersResponseModel(null, null)
-        val compareRepoMembers = service.postCompareRepoMembers(body, "Bearer $token")
+        val compareRepoMembers = service.postCompareRepoMembers(body)
         try {
             val result = compareRepoMembers.execute()
             Log.d("token", "사용자 비교 결과 ${result.code()}")
@@ -292,13 +269,9 @@ class ApiRepository {
     }
 
     //두 Repository의 정보를 받아오기 위한 함수
-    fun postCompareRepoRequest(
-        body: CompareRepoRequestModel,
-        token: String
-    ): CompareRepoResponseModel {
-        Log.d("token", "token: $token")
+    fun postCompareRepoRequest(body: CompareRepoRequestModel): CompareRepoResponseModel {
         var compareRepoResult = CompareRepoResponseModel(null, null)
-        val compareRepo = service.postCompareRepo(body, "Bearer $token")
+        val compareRepo = service.postCompareRepo(body)
         try {
             val result = compareRepo.execute()
             Log.d("token", "레포 비교 결과 ${result.code()}")
@@ -324,8 +297,8 @@ class ApiRepository {
         return newToken
     }
 
-    fun postCommits(token: String) {
-        val postCommit = service.postCommits("Bearer $token")
+    fun postCommits() {
+        val postCommit = service.postCommits()
         try {
             val result = postCommit.execute()
             Log.d("postCommits", "commit 업데이트 결과 ${result.code()}")
@@ -334,18 +307,13 @@ class ApiRepository {
         }
     }
 
-    fun getOrgNames(
-        name: String,
-        token: String,
-        count: Int,
-        type: String
-    ): OrganizationNamesModel {
+    fun getOrgNames(name: String, count: Int, type: String): OrganizationNamesModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$count")
         queryMap.put("name", name)
         queryMap.put("type", type)
         queryMap.put("size", "10")
-        val getOrgNames = service.getOrgNames(queryMap, "Bearer $token")
+        val getOrgNames = service.getOrgNames(queryMap)
         var orgNames = OrganizationNamesModel()
         orgNames.add(
             OrganizationNamesModelItem(
@@ -367,8 +335,8 @@ class ApiRepository {
         }
     }
 
-    fun postRegistOrg(body: RegistOrgModel, token: String): RegistOrgResultModel {
-        val postRegist = service.postOrgRegist(body, "Bearer $token")
+    fun postRegistOrg(body: RegistOrgModel): RegistOrgResultModel {
+        val postRegist = service.postOrgRegist(body)
         var registResult = RegistOrgResultModel(0)
         return try {
             val result = postRegist.execute()
@@ -381,8 +349,8 @@ class ApiRepository {
         }
     }
 
-    fun addOrgMember(body: AddOrgMemberModel, token: String): Long {
-        val addOrg = service.postAddOrgMember(body, "Bearer $token")
+    fun addOrgMember(body: AddOrgMemberModel): Long {
+        val addOrg = service.postAddOrgMember(body)
         return try {
             val result = addOrg.execute()
             Log.d("status", "조직 멤버 추가 결과 : ${result.code()}")
@@ -393,8 +361,8 @@ class ApiRepository {
         }
     }
 
-    fun sendEmailAuth(token: String): Long {
-        val sendEmail = service.postAuthEmail("Bearer $token")
+    fun sendEmailAuth(): Long {
+        val sendEmail = service.postAuthEmail()
         return try {
             val result = sendEmail.execute()
             Log.d("status", "이메일 인증 시도 결과 : ${result.code()}")
@@ -405,12 +373,12 @@ class ApiRepository {
         }
     }
 
-    fun emailAuthResult(id: Long, code: String, orgId: Long, token: String): Boolean {
+    fun emailAuthResult(id: Long, code: String, orgId: Long): Boolean {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("id", id.toString())
         queryMap.put("code", code)
         queryMap.put("organizationId", orgId.toString())
-        val emailAuth = service.getEmailAuthResult(queryMap, "Bearer $token")
+        val emailAuth = service.getEmailAuthResult(queryMap)
         return try {
             val result = emailAuth.execute()
             Log.d("status", "이메일 인증 결과 : ${result.code()}")
@@ -421,8 +389,8 @@ class ApiRepository {
         }
     }
 
-    fun deleteEmailCode(id: Long, token: String): Boolean {
-        val delete = service.deleteEmailCode(id, "Bearer $token")
+    fun deleteEmailCode(id: Long): Boolean {
+        val delete = service.deleteEmailCode(id)
         return try {
             val result = delete.execute()
             Log.d("status", "이메일 인증 코드 삭제 성공: ${result.code()}")
@@ -433,8 +401,8 @@ class ApiRepository {
         }
     }
 
-    fun searchOrgId(orgName: String, token: String): Long {
-        val searchId = service.getOrgId(orgName, "Bearer $token")
+    fun searchOrgId(orgName: String): Long {
+        val searchId = service.getOrgId(orgName)
         val resultId = 0L
         return try {
             val result = searchId.execute()
@@ -446,20 +414,16 @@ class ApiRepository {
         }
     }
 
-    fun orgInternalRankings(
-        id: Long,
-        count: Int,
-        token: String
-    ): OrgInternalRankingModel {
+    fun orgInternalRankings(id: Long, count: Int): OrgInternalRankingModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("organizationId", id.toString())
         queryMap.put("page", count.toString())
         queryMap.put("size", "20")
 
         val orgRankings = OrgInternalRankingModel()
-        val orgInternal = service.getOrgInternalRankings(queryMap, "Bearer $token")
 
         return try {
+            val orgInternal = service.getOrgInternalRankings(queryMap)
             val result = orgInternal.execute()
             Log.d("error", "조직 내 사용자들의 랭킹 조회 결과: ${result.code()} ")
             return result.body()!!
@@ -469,14 +433,14 @@ class ApiRepository {
         }
     }
 
-    fun typeOrgRanking(type: String, page: Int, token: String): OrganizationRankingModel {
+    fun typeOrgRanking(type: String, page: Int): OrganizationRankingModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("type", type)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
 
         val orgRankings = OrganizationRankingModel()
-        val orgTotal = service.getOrgRankings(queryMap, "Bearer $token")
+        val orgTotal = service.getOrgRankings(queryMap)
         return try {
             val result = orgTotal.execute()
             Log.d("error", "$type 조회 결과: ${result.code()} ")
@@ -487,12 +451,12 @@ class ApiRepository {
         }
     }
 
-    fun allOrgRanking(page: Int, token: String): OrganizationRankingModel {
+    fun allOrgRanking(page: Int): OrganizationRankingModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
         val orgRankings = OrganizationRankingModel()
-        val orgTotal = service.getAllOrgRankings(queryMap, "Bearer $token")
+        val orgTotal = service.getAllOrgRankings(queryMap)
         return try {
             val result = orgTotal.execute()
             Log.d("error", "전체 조직 랭킹 조회 결과: ${result.code()} ")
@@ -504,8 +468,8 @@ class ApiRepository {
     }
 
 
-    fun checkAdmin(token: String): Boolean {
-        val check = service.getPermissionState("Bearer $token")
+    fun checkAdmin(): Boolean {
+        val check = service.getPermissionState()
         try {
             val result = check.execute()
             if (result.isSuccessful) {
@@ -525,8 +489,8 @@ class ApiRepository {
         return false
     }
 
-    fun approveOrgRequest(body: OrgApprovalModel, token: String): ApproveRequestOrgModel {
-        val approve = service.postOrgApproval(body, "Bearer $token")
+    fun approveOrgRequest(body: OrgApprovalModel): ApproveRequestOrgModel {
+        val approve = service.postOrgApproval(body)
         try {
             val result = approve.execute()
             Log.d("result", "admin ${result.code()}")
@@ -537,14 +501,14 @@ class ApiRepository {
         return ApproveRequestOrgModel()
     }
 
-    fun statusOrgList(status: String, page: Int, token: String): ApproveRequestOrgModel {
+    fun statusOrgList(status: String, page: Int): ApproveRequestOrgModel {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("status", status)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
 
         val statusOrg = ApproveRequestOrgModel()
-        val orgList = service.getOrgStatus(queryMap, "Bearer $token")
+        val orgList = service.getOrgStatus(queryMap)
         return try {
             val result = orgList.execute()
             Log.d("result", "승인된 조직 조회 결과: ${result.code()} ")
@@ -555,8 +519,8 @@ class ApiRepository {
         }
     }
 
-    fun userGitOrgRepoList(orgName: String, token: String): GithubOrgReposModel? {
-        val repoList = service.getOrgRepoList(orgName, "Bearer $token")
+    fun userGitOrgRepoList(orgName: String): GithubOrgReposModel? {
+        val repoList = service.getOrgRepoList(orgName)
         return try {
             val result = repoList.execute()
             Log.d("result", "git org 레포 리스트 조회 결과: ${result.code()}")
@@ -567,8 +531,8 @@ class ApiRepository {
         }
     }
 
-    fun otherProfile(githubId: String, token: String): UserProfileModel? {
-        val profile = service.getOthersProfile(githubId, "Bearer $token")
+    fun otherProfile(githubId: String): UserProfileModel? {
+        val profile = service.getOthersProfile(githubId)
         return try {
             val result = profile.execute()
             Log.d("result", "타인의 프로필 호출 결과 ${result.code()}")
@@ -580,13 +544,9 @@ class ApiRepository {
         }
     }
 
-    fun manualCompareMembers(
-        body: CompareRepoRequestModel,
-        token: String
-    ): CompareRepoMembersResponseModel {
-        Log.d("token", "token: $token")
+    fun manualCompareMembers(body: CompareRepoRequestModel): CompareRepoMembersResponseModel {
         var compareRepoResult = CompareRepoMembersResponseModel(null, null)
-        val compareRepoMembers = service.postCompareRepoMembersUpdate(body, "Bearer $token")
+        val compareRepoMembers = service.postCompareRepoMembersUpdate(body)
         try {
             val result = compareRepoMembers.execute()
             Log.d("result", "레포 비교 업데이트 멤버 결과 ${result.code()}")
@@ -598,10 +558,9 @@ class ApiRepository {
         return compareRepoResult
     }
 
-    fun manualCompareRepo(body: CompareRepoRequestModel, token: String): CompareRepoResponseModel {
-        Log.d("token", "token: $token")
+    fun manualCompareRepo(body: CompareRepoRequestModel): CompareRepoResponseModel {
         var compareRepoResult = CompareRepoResponseModel(null, null)
-        val compareRepo = service.postCompareRepoUpdate(body, "Bearer $token")
+        val compareRepo = service.postCompareRepoUpdate(body)
         try {
             val result = compareRepo.execute()
             Log.d("result", "레포 비교 업데이트 결과 ${result.code()}")
@@ -613,8 +572,8 @@ class ApiRepository {
         return compareRepoResult
     }
 
-    fun manualContribute(repoName: String, token: String): RepoContributorsModel {
-        val repoContributors = service.getRepoContributorsUpdate(repoName, "Bearer $token")
+    fun manualContribute(repoName: String): RepoContributorsModel {
+        val repoContributors = service.getRepoContributorsUpdate(repoName)
         var repoContResult = RepoContributorsModel(null, null)
         try {
             val result = repoContributors.execute()
@@ -627,10 +586,9 @@ class ApiRepository {
         return repoContResult
     }
 
-    fun manualToken(token: String): ArrayList<TokenHistoryModelItem>? {
-        val tokenHistory = service.updateToken("Bearer $token")
-        var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? =
-            null
+    fun manualToken(): ArrayList<TokenHistoryModelItem>? {
+        val tokenHistory = service.updateToken()
+        var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? = null
         try {
             val result = tokenHistory.execute()
             Log.d("result", "블록체인 부여내역 업데이트 결과 ${result.code()}")
@@ -642,8 +600,8 @@ class ApiRepository {
         return tokenHistoryResult
     }
 
-    fun manualUserInfo(token: String): UserInfoModel {
-        val userInfo = service.userInfoUpdate("Bearer $token")
+    fun manualUserInfo(): UserInfoModel {
+        val userInfo = service.userInfoUpdate()
         var userResult = UserInfoModel(
             null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null
@@ -659,8 +617,8 @@ class ApiRepository {
         return userResult
     }
 
-    fun getLoginState(token: String): Boolean? {
-        val authState = service.getLoginAuthState("Bearer $token")
+    fun getLoginState(): Boolean? {
+        val authState = service.getLoginAuthState()
 
         return try {
             val result = authState.execute()
@@ -676,9 +634,8 @@ class ApiRepository {
         }
     }
 
-    fun withDrawAccount(token: String): Boolean {
-        val withDraw = service.postWithDraw("Bearer $token")
-        Log.d("token", "token: $token")
+    fun withDrawAccount(): Boolean {
+        val withDraw = service.postWithDraw()
         return try {
             val result = withDraw.execute()
             Log.d("token", "code: ${result.code()}")

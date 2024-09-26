@@ -38,7 +38,7 @@ class MainViewModel :
                             loadState = MainContract.MainState.LoadState.Loading
                         )
                     }
-                    val userInfo = repository.getUserInfo(pref.getJwtToken(""))
+                    val userInfo = repository.getUserInfo()
                     setState {
                         copy(
                             loadState = MainContract.MainState.LoadState.Success,
