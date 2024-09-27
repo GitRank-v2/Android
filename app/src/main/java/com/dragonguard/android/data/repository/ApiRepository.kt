@@ -10,22 +10,24 @@ import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.model.detail.UserProfileModel
-import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
-import com.dragonguard.android.data.model.klip.WalletAddressModel
+import com.dragonguard.android.data.model.klip.TokenHistoryModel
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.OrgApprovalModel
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
-import com.dragonguard.android.data.model.org.OrganizationNamesModelItem
 import com.dragonguard.android.data.model.org.RegistOrgModel
 import com.dragonguard.android.data.model.org.RegistOrgResultModel
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.model.rankings.OrganizationRankingModel
-import com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem
-import com.dragonguard.android.data.model.search.RepoSearchResultModel
-import com.dragonguard.android.data.model.search.UserNameModelItem
+import com.dragonguard.android.data.model.rankings.TotalUsersRankingModel
+import com.dragonguard.android.data.model.search.RepoNameModel
+import com.dragonguard.android.data.model.search.UserNameModel
 import com.dragonguard.android.data.model.token.RefreshTokenModel
-import retrofit2.HttpException
+import com.dragonguard.android.util.DataResult
+import com.dragonguard.android.util.handleAdminApi
+import com.dragonguard.android.util.handleApi
+import com.dragonguard.android.util.handleLoginApi
+import com.dragonguard.android.util.handleWithdrawApi
 
 /*
  서버에 요청하는 모든 api들의 호출부분
@@ -35,40 +37,26 @@ class ApiRepository {
     private val service = getService()
 
     //Repository 검색을 위한 함수
-    fun getRepositoryNames(
+    suspend fun getRepositoryNames(
         name: String,
         count: Int,
         type: String,
-    ): ArrayList<RepoSearchResultModel> {
-        var repoNames: ArrayList<RepoSearchResultModel> =
-            arrayListOf()
+    ): DataResult<RepoNameModel> {
+
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
         queryMap.put("name", name)
         queryMap.put("type", type)
+        return handleApi({ service.getRepoName(queryMap) }) { it }
 
-        Log.d("api 호출", "$count 페이지 검색")
-
-        val repoName = service.getRepoName(queryMap)
-        try {
-            val result = repoName.execute()
-            Log.d("result", "레포 필터없는 검색 결과: ${result.code()}}")
-            repoNames = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "레포 필터없는 검색 error: ${e.message}")
-            return repoNames
-        }
-        return repoNames
     }
 
-    fun getRepositoryNamesWithFilters(
+    suspend fun getRepositoryNamesWithFilters(
         name: String,
         count: Int,
         filters: String,
         type: String,
-    ): ArrayList<RepoSearchResultModel> {
-        var repoNames: ArrayList<RepoSearchResultModel> =
-            arrayListOf()
+    ): DataResult<RepoNameModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
         queryMap.put("name", name)
@@ -76,114 +64,42 @@ class ApiRepository {
         queryMap.put("filters", filters)
         Log.d("api 호출", "이름: $name, type: $type filters: $filters")
         Log.d("api 호출", "$count 페이지 검색")
-
-        val repoName = service.getRepoName(queryMap)
-        try {
-            val result = repoName.execute()
-            Log.d("result", "레포 필터별 검색: ${result.code()}")
-            repoNames = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "레포 필터별 검색: ${e.message}")
-            return repoNames
-        }
-        return repoNames
+        return handleApi({ service.getRepoName(queryMap) }) { it }
     }
 
-    fun getUserNames(name: String, count: Int, type: String): ArrayList<UserNameModelItem> {
-        var repoNames: ArrayList<UserNameModelItem> =
-            arrayListOf()
+    suspend fun getUserNames(name: String, count: Int, type: String): DataResult<UserNameModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
         queryMap.put("name", name)
         queryMap.put("type", type)
-
-        Log.d("api 호출", "$count 페이지 검색")
-
-        val repoName = service.getUserName(queryMap)
-        try {
-            val result = repoName.execute()
-            Log.d("result", "사용자 검색 결과: ${result.code()}")
-            repoNames = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "사용자 검색 error: ${e.message}")
-            return repoNames
-        }
-        return repoNames
+        return handleApi({ service.getUserName(queryMap) }) { it }
     }
 
     //사용자의 정보를 받아오기 위한 함수
-    fun getUserInfo(): UserInfoModel {
-        val userInfo = service.getUserInfo()
-        var userResult = UserInfoModel(
-            null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null
-        )
-        try {
-            val result = userInfo.execute()
-            Log.d("error", "사용자 정보 요청 주소 : ${userInfo.request().url}")
-            Log.d("result", "사용자 정보 요청 결과 : ${result.code()}")
-            userResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("userinfo error", "사용자 정보 요청 에러 : ${e.message}")
-            return userResult
-        }
-        return userResult
+    suspend fun getUserInfo(): DataResult<UserInfoModel> {
+        return handleApi({ service.getUserInfo() }) { it }
     }
 
-    fun getClientDetails(): ClientDetailModel? {
-        val userDetails = service.getMemberDetails()
-        return try {
-            val result = userDetails.execute()
-            Log.d("error", "client 정보 요청 주소 : ${userDetails.request().url}")
-            Log.d("result", "client 정보 요청 결과 : ${result.code()}")
-            result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "client 정보 요청 에러 : ${e.message}")
-            return null
-        }
+    suspend fun getClientDetails(): DataResult<ClientDetailModel> {
+        return handleApi({ service.getMemberDetails() }) { it }
     }
 
     //Repository의 기여자들의 정보를 받아오기 위한 함수
-    fun getRepoContributors(repoName: String): RepoContributorsModel {
-        val repoContributors = service.getRepoContributors(repoName)
-        var repoContResult = RepoContributorsModel(null, null)
-        try {
-            val result = repoContributors.execute()
-//            if(result.code() == 204) {
-//                Log.d("error", "레포 상세조회 결과 ${result.code()}")
-//                return null
-//            }
-            Log.d("error", "레포 상세조회 결과 ${result.code()}")
-            repoContResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "레포 상세조회 에러 ${e.message}")
-            return repoContResult
-        }
-        return repoContResult
+    suspend fun getRepoContributors(repoName: String): DataResult<RepoContributorsModel> {
+        return handleApi({ service.getRepoContributors(repoName) }) { it }
     }
 
     //klip wallet을 등록한 모든 사용자의 토큰에 따른 등수를 받아오는 함수
-    fun getTotalUsersRankings(page: Int, size: Int): ArrayList<TotalUsersRankingModelItem> {
-        var rankingResult =
-            ArrayList<TotalUsersRankingModelItem>()
+    suspend fun getTotalUsersRankings(page: Int, size: Int): DataResult<TotalUsersRankingModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$page")
         queryMap.put("size", "$size")
         queryMap.put("sort", "tokens,DESC")
-        val ranking = service.getTotalUsersRanking(queryMap)
-        try {
-            val result = ranking.execute()
-            Log.d("result", "유저랭킹 api 결과 ${result.code()}")
-            rankingResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "유저랭킹 api 에러 ${e.message}")
-            return rankingResult
-        }
-        return rankingResult
+        return handleApi({ service.getTotalUsersRanking(queryMap) }) { it }
     }
 
     //사용자의 토큰 부여 내역을 확인하기 위한 함수
-    fun getTokenHistory(): ArrayList<TokenHistoryModelItem>? {
+    /*fun getTokenHistory(): ArrayList<TokenHistoryModelItem>? {
         val tokenHistory = service.getTokenHistory()
         var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? = null
         try {
@@ -195,10 +111,10 @@ class ApiRepository {
             return null
         }
         return tokenHistoryResult
-    }
+    }*/
 
     //klip wallet address를 서버에 등록하기 위한 함수
-    fun postWalletAddress(body: WalletAddressModel): Boolean {
+    /*fun postWalletAddress(body: WalletAddressModel): Boolean {
         val walletAddress = service.postWalletAddress(body)
         return try {
             val result = walletAddress.execute()
@@ -208,7 +124,7 @@ class ApiRepository {
             Log.d("dd", "결과 실패")
             false
         }
-    }
+    }*/
 
     /*
     //kilp wallet address의 정보제공을 위한 함수
@@ -253,397 +169,139 @@ class ApiRepository {
     */
 
     //두 Repository의 구성원들의 기여도를 받아오기 위한 함수
-    fun postCompareRepoMembersRequest(body: CompareRepoRequestModel): CompareRepoMembersResponseModel {
-        var compareRepoResult = CompareRepoMembersResponseModel(null, null)
-        val compareRepoMembers = service.postCompareRepoMembers(body)
-        try {
-            val result = compareRepoMembers.execute()
-            Log.d("token", "사용자 비교 결과 ${result.code()}")
-            compareRepoResult = result.body()!!
-
-        } catch (e: Exception) {
-            Log.d("token", "사용자 비교 실패 ${e.message}")
-            return compareRepoResult
-        }
-        return compareRepoResult
+    suspend fun postCompareRepoMembersRequest(body: CompareRepoRequestModel): DataResult<CompareRepoMembersResponseModel> {
+        return handleApi({ service.postCompareRepoMembers(body) }) { it }
     }
 
     //두 Repository의 정보를 받아오기 위한 함수
-    fun postCompareRepoRequest(body: CompareRepoRequestModel): CompareRepoResponseModel {
-        var compareRepoResult = CompareRepoResponseModel(null, null)
-        val compareRepo = service.postCompareRepo(body)
-        try {
-            val result = compareRepo.execute()
-            Log.d("token", "레포 비교 결과 ${result.code()}")
-            compareRepoResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("token", "레포 비교 실패 ${e.message}")
-            return compareRepoResult
-        }
-        return compareRepoResult
+    suspend fun postCompareRepoRequest(body: CompareRepoRequestModel): DataResult<CompareRepoResponseModel> {
+        return handleApi({ service.postCompareRepo(body) }) { it }
     }
 
-    fun getNewAccessToken(access: String, refresh: String): RefreshTokenModel {
-        var newToken = RefreshTokenModel(null, null, null)
-        val getToken = service.getNewAccessToken(access, refresh)
-        try {
-            val result = getToken.execute()
-            newToken = result.body()!!
-            Log.d("e", "access token 받아오기 결과 ${result.code()} ")
-        } catch (e: Exception) {
-            Log.d("e", "access token 받아오기 실패 ${e.message}")
-            return newToken
-        }
-        return newToken
+    suspend fun getNewAccessToken(access: String, refresh: String): DataResult<RefreshTokenModel> {
+        return handleApi({ service.getNewAccessToken(access, refresh) }) { it }
     }
 
-    fun postCommits() {
-        val postCommit = service.postCommits()
-        try {
-            val result = postCommit.execute()
-            Log.d("postCommits", "commit 업데이트 결과 ${result.code()}")
-        } catch (e: Exception) {
-            Log.d("e", "commit 업데이트 실패 ${e.message}")
-        }
+    suspend fun postCommits(): DataResult<Unit> {
+        return handleApi({ service.postCommits() }) { it }
     }
 
-    fun getOrgNames(name: String, count: Int, type: String): OrganizationNamesModel {
+    suspend fun getOrgNames(
+        name: String,
+        count: Int,
+        type: String
+    ): DataResult<OrganizationNamesModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$count")
         queryMap.put("name", name)
         queryMap.put("type", type)
         queryMap.put("size", "10")
-        val getOrgNames = service.getOrgNames(queryMap)
-        var orgNames = OrganizationNamesModel()
-        orgNames.add(
-            OrganizationNamesModelItem(
-                null,
-                null,
-                null,
-                null,
-                null
-            )
-        )
-        return try {
-            val result = getOrgNames.execute()
-            Log.d("error", "조직 이름 찾기 결과 : ${result.code()}")
-            orgNames = result.body()!!
-            orgNames
-        } catch (e: Exception) {
-            Log.d("error", "조직 이름 찾기 error : ${e.message}")
-            orgNames
-        }
+        return handleApi({ service.getOrgNames(queryMap) }) { it }
     }
 
-    fun postRegistOrg(body: RegistOrgModel): RegistOrgResultModel {
-        val postRegist = service.postOrgRegist(body)
-        var registResult = RegistOrgResultModel(0)
-        return try {
-            val result = postRegist.execute()
-            Log.d("error", "RegisterOrganization error: ${result.code()}}")
-            registResult = result.body()!!
-            registResult
-        } catch (e: Exception) {
-            Log.d("error", "RegisterOrganization error: ${e.message}")
-            registResult
-        }
+    suspend fun postRegistOrg(body: RegistOrgModel): DataResult<RegistOrgResultModel> {
+        return handleApi({ service.postOrgRegist(body) }) { it }
     }
 
-    fun addOrgMember(body: AddOrgMemberModel): Long {
-        val addOrg = service.postAddOrgMember(body)
-        return try {
-            val result = addOrg.execute()
-            Log.d("status", "조직 멤버 추가 결과 : ${result.code()}")
-            result.body()!!.id
-        } catch (e: Exception) {
-            Log.d("status", "조직 멤버 추가 error : ${e.message}")
-            -1
-        }
+    suspend fun addOrgMember(body: AddOrgMemberModel): DataResult<Long> {
+        return handleApi({ service.postAddOrgMember(body) }) { it.id }
     }
 
-    fun sendEmailAuth(): Long {
-        val sendEmail = service.postAuthEmail()
-        return try {
-            val result = sendEmail.execute()
-            Log.d("status", "이메일 인증 시도 결과 : ${result.code()}")
-            result.body()!!.id
-        } catch (e: Exception) {
-            Log.d("status", "이메일 인증 시도 error : ${e.message}")
-            -1L
-        }
+    suspend fun sendEmailAuth(): DataResult<Long> {
+        return handleApi({ service.postAuthEmail() }) { it.id }
     }
 
-    fun emailAuthResult(id: Long, code: String, orgId: Long): Boolean {
+    suspend fun emailAuthResult(id: Long, code: String, orgId: Long): DataResult<Boolean> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("id", id.toString())
         queryMap.put("code", code)
         queryMap.put("organizationId", orgId.toString())
-        val emailAuth = service.getEmailAuthResult(queryMap)
-        return try {
-            val result = emailAuth.execute()
-            Log.d("status", "이메일 인증 결과 : ${result.code()}")
-            result.body()!!.is_valid_code
-        } catch (e: Exception) {
-            Log.d("status", "이메일 인증 결과 error : ${e.message}")
-            false
-        }
+        return handleApi({ service.getEmailAuthResult(queryMap) }) { it.is_valid_code }
     }
 
-    fun deleteEmailCode(id: Long): Boolean {
-        val delete = service.deleteEmailCode(id)
-        return try {
-            val result = delete.execute()
-            Log.d("status", "이메일 인증 코드 삭제 성공: ${result.code()}")
-            true
-        } catch (e: Exception) {
-            Log.d("status", "이메일 인증 코드 삭제 실패: ${e.message}")
-            false
-        }
+    suspend fun deleteEmailCode(id: Long): DataResult<Unit> {
+        return handleApi({ service.deleteEmailCode(id) }) { it }
     }
 
-    fun searchOrgId(orgName: String): Long {
-        val searchId = service.getOrgId(orgName)
-        val resultId = 0L
-        return try {
-            val result = searchId.execute()
-            Log.d("status", "조직 id 검색 결과: ${result.code()}")
-            return result.body()!!.id
-        } catch (e: Exception) {
-            Log.d("status", "조직 id 검색 실패: ${e.message}")
-            resultId
-        }
+    suspend fun searchOrgId(orgName: String): DataResult<Long> {
+        return handleApi({ service.getOrgId(orgName) }) { it.id }
     }
 
-    fun orgInternalRankings(id: Long, count: Int): OrgInternalRankingModel {
+    suspend fun orgInternalRankings(id: Long, count: Int): DataResult<OrgInternalRankingModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("organizationId", id.toString())
         queryMap.put("page", count.toString())
         queryMap.put("size", "20")
-
-        val orgRankings = OrgInternalRankingModel()
-
-        return try {
-            val orgInternal = service.getOrgInternalRankings(queryMap)
-            val result = orgInternal.execute()
-            Log.d("error", "조직 내 사용자들의 랭킹 조회 결과: ${result.code()} ")
-            return result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "조직 내 사용자들의 랭킹 조회 실패: ${e.message} ")
-            return orgRankings
-        }
+        return handleApi({ service.getOrgInternalRankings(queryMap) }) { it }
     }
 
-    fun typeOrgRanking(type: String, page: Int): OrganizationRankingModel {
+    suspend fun typeOrgRanking(type: String, page: Int): DataResult<OrganizationRankingModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("type", type)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
-
-        val orgRankings = OrganizationRankingModel()
-        val orgTotal = service.getOrgRankings(queryMap)
-        return try {
-            val result = orgTotal.execute()
-            Log.d("error", "$type 조회 결과: ${result.code()} ")
-            return result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "$type 조회 실패: ${e.message} ")
-            return orgRankings
-        }
+        return handleApi({ service.getOrgRankings(queryMap) }) { it }
     }
 
-    fun allOrgRanking(page: Int): OrganizationRankingModel {
+    suspend fun allOrgRanking(page: Int): DataResult<OrganizationRankingModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
-        val orgRankings = OrganizationRankingModel()
-        val orgTotal = service.getAllOrgRankings(queryMap)
-        return try {
-            val result = orgTotal.execute()
-            Log.d("error", "전체 조직 랭킹 조회 결과: ${result.code()} ")
-            return result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "전체 조직 랭킹 조회 실패: ${e.message} ")
-            return orgRankings
-        }
+        return handleApi({ service.getAllOrgRankings(queryMap) }) { it }
     }
 
 
-    fun checkAdmin(): Boolean {
-        val check = service.getPermissionState()
-        try {
-            val result = check.execute()
-            if (result.isSuccessful) {
-                return true
-            } else if (result.code() == 403) {
-                Log.d("error", "admin error result ${result.code()}")
-                return false
-            }
-        } catch (e: HttpException) {
-            if (e.code() == 403) {
-                Log.d("error", "admin error ${e.code()}")
-                return false
-            }
-        } catch (e: Exception) {
-            Log.d("error", "admin error")
-        }
-        return false
+    suspend fun checkAdmin(): DataResult<Boolean> {
+        return handleAdminApi { service.getPermissionState() }
+
     }
 
-    fun approveOrgRequest(body: OrgApprovalModel): ApproveRequestOrgModel {
-        val approve = service.postOrgApproval(body)
-        try {
-            val result = approve.execute()
-            Log.d("result", "admin ${result.code()}")
-            return result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "admin error ${e.message}")
-        }
-        return ApproveRequestOrgModel()
+    suspend fun approveOrgRequest(body: OrgApprovalModel): DataResult<ApproveRequestOrgModel> {
+        return handleApi({ service.postOrgApproval(body) }) { it }
     }
 
-    fun statusOrgList(status: String, page: Int): ApproveRequestOrgModel {
+    suspend fun statusOrgList(status: String, page: Int): DataResult<ApproveRequestOrgModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("status", status)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
-
-        val statusOrg = ApproveRequestOrgModel()
-        val orgList = service.getOrgStatus(queryMap)
-        return try {
-            val result = orgList.execute()
-            Log.d("result", "승인된 조직 조회 결과: ${result.code()} ")
-            return result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "승인된 조직 조회 실패: ${e.message} ")
-            return statusOrg
-        }
+        return handleApi({ service.getOrgStatus(queryMap) }) { it }
     }
 
-    fun userGitOrgRepoList(orgName: String): GithubOrgReposModel? {
-        val repoList = service.getOrgRepoList(orgName)
-        return try {
-            val result = repoList.execute()
-            Log.d("result", "git org 레포 리스트 조회 결과: ${result.code()}")
-            result.body()
-        } catch (e: Exception) {
-            Log.d("error", "git org 레포 리스트 조회 실패: ${e.message}")
-            null
-        }
+    suspend fun userGitOrgRepoList(orgName: String): DataResult<GithubOrgReposModel> {
+        return handleApi({ service.getOrgRepoList(orgName) }) { it }
     }
 
-    fun otherProfile(githubId: String): UserProfileModel? {
-        val profile = service.getOthersProfile(githubId)
-        return try {
-            val result = profile.execute()
-            Log.d("result", "타인의 프로필 호출 결과 ${result.code()}")
-            Log.d("result", "타인의 프로필 호출 결과 ${result.message()}")
-            result.body()
-        } catch (e: Exception) {
-            Log.d("error", "타인의 프로필 조회 실패: ${e.message}")
-            null
-        }
+    suspend fun otherProfile(githubId: String): DataResult<UserProfileModel> {
+        return handleApi({ service.getOthersProfile(githubId) }) { it }
     }
 
-    fun manualCompareMembers(body: CompareRepoRequestModel): CompareRepoMembersResponseModel {
-        var compareRepoResult = CompareRepoMembersResponseModel(null, null)
-        val compareRepoMembers = service.postCompareRepoMembersUpdate(body)
-        try {
-            val result = compareRepoMembers.execute()
-            Log.d("result", "레포 비교 업데이트 멤버 결과 ${result.code()}")
-            compareRepoResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "레포 비교 업데이트 멤버 에러 ${e.message}")
-            return compareRepoResult
-        }
-        return compareRepoResult
+    suspend fun manualCompareMembers(body: CompareRepoRequestModel): DataResult<CompareRepoMembersResponseModel> {
+        return handleApi({ service.postCompareRepoMembersUpdate(body) }) { it }
     }
 
-    fun manualCompareRepo(body: CompareRepoRequestModel): CompareRepoResponseModel {
-        var compareRepoResult = CompareRepoResponseModel(null, null)
-        val compareRepo = service.postCompareRepoUpdate(body)
-        try {
-            val result = compareRepo.execute()
-            Log.d("result", "레포 비교 업데이트 결과 ${result.code()}")
-            compareRepoResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "레포 비교 업데이트 에러 ${e.message}")
-            return compareRepoResult
-        }
-        return compareRepoResult
+    suspend fun manualCompareRepo(body: CompareRepoRequestModel): DataResult<CompareRepoResponseModel> {
+        return handleApi({ service.postCompareRepoUpdate(body) }) { it }
     }
 
-    fun manualContribute(repoName: String): RepoContributorsModel {
-        val repoContributors = service.getRepoContributorsUpdate(repoName)
-        var repoContResult = RepoContributorsModel(null, null)
-        try {
-            val result = repoContributors.execute()
-            Log.d("result", "레포 상세조회 업데이트 결과 ${result.code()}")
-            repoContResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "레포 상세조회 업데이트 에러 ${e.message}")
-            return repoContResult
-        }
-        return repoContResult
+    suspend fun manualContribute(repoName: String): DataResult<RepoContributorsModel> {
+        return handleApi({ service.getRepoContributorsUpdate(repoName) }) { it }
     }
 
-    fun manualToken(): ArrayList<TokenHistoryModelItem>? {
-        val tokenHistory = service.updateToken()
-        var tokenHistoryResult: ArrayList<TokenHistoryModelItem>? = null
-        try {
-            val result = tokenHistory.execute()
-            Log.d("result", "블록체인 부여내역 업데이트 결과 ${result.code()}")
-            tokenHistoryResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "블록체인 부여내역 업데이트 오류 ${e.message}")
-            return null
-        }
-        return tokenHistoryResult
+    suspend fun manualToken(): DataResult<TokenHistoryModel> {
+        return handleApi({ service.updateToken() }) { it }
     }
 
-    fun manualUserInfo(): UserInfoModel {
-        val userInfo = service.userInfoUpdate()
-        var userResult = UserInfoModel(
-            null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null
-        )
-        try {
-            val result = userInfo.execute()
-            Log.d("result", "사용자 정보 업데이트 결과 : ${result.code()}")
-            userResult = result.body()!!
-        } catch (e: Exception) {
-            Log.d("error", "사용자 정보 업데이트 에러 : ${e.message}")
-            return userResult
-        }
-        return userResult
+    suspend fun manualUserInfo(): DataResult<UserInfoModel> {
+        return handleApi({ service.userInfoUpdate() }) { it }
     }
 
-    fun getLoginState(): Boolean? {
-        val authState = service.getLoginAuthState()
-
-        return try {
-            val result = authState.execute()
-            Log.d("result", "로그인 상태 확인 결과: ${result.code()}")
-            if (result.code() == 200) {
-                return result.body()!!.is_login_user
-            } else {
-                return null
-            }
-        } catch (e: Exception) {
-            Log.d("error", "로그인 상태 확인 오류: ${e.message}")
-            false
-        }
+    suspend fun getLoginState(): DataResult<Boolean?> {
+        return handleLoginApi { service.getLoginAuthState() }
     }
 
-    fun withDrawAccount(): Boolean {
-        val withDraw = service.postWithDraw()
-        return try {
-            val result = withDraw.execute()
-            Log.d("token", "code: ${result.code()}")
-            result.code() == 204
-        } catch (e: Exception) {
-            Log.d("error", "회원 탈퇴 실패 오류: ${e.message}")
-            false
-        }
+    suspend fun withDrawAccount(): DataResult<Boolean> {
+        return handleWithdrawApi { service.postWithDraw() }
 
     }
 }
