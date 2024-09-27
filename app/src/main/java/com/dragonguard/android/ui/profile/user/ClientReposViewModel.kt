@@ -1,11 +1,15 @@
 package com.dragonguard.android.ui.profile.user
 
+import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
+import kotlinx.coroutines.launch
 
 class ClientReposViewModel :
     BaseViewModel<ClientReposContract.ClientReposEvent, ClientReposContract.ClientReposStates, ClientReposContract.ClientReposEffect>() {
@@ -22,16 +26,21 @@ class ClientReposViewModel :
     }
 
     override fun handleEvent(event: ClientReposContract.ClientReposEvent) {
-        when (event) {
-            is ClientReposContract.ClientReposEvent.GetGithubOrgRepos -> {
-                setState { copy(loadState = ClientReposContract.ClientReposState.LoadState.Loading) }
-                val result = repository.userGitOrgRepoList(event.orgName)
-                result?.let {
-                    setState {
-                        copy(
-                            loadState = ClientReposContract.ClientReposState.LoadState.Success,
-                            githubOrgRepos = ClientReposContract.ClientReposState.GithubOrgRepos(it)
-                        )
+        viewModelScope.launch {
+            when (event) {
+                is ClientReposContract.ClientReposEvent.GetGithubOrgRepos -> {
+                    setState { copy(loadState = ClientReposContract.ClientReposState.LoadState.Loading) }
+                    repository.userGitOrgRepoList(event.orgName).onSuccess {
+                        setState {
+                            copy(
+                                loadState = ClientReposContract.ClientReposState.LoadState.Success,
+                                githubOrgRepos = ClientReposContract.ClientReposState.GithubOrgRepos(
+                                    it
+                                )
+                            )
+                        }
+                    }.onFail {
+
                     }
                 }
             }

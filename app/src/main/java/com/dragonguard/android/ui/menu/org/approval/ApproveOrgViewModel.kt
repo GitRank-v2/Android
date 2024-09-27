@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.menu.org.approval
 
+import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
@@ -8,6 +9,9 @@ import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.RequestStatus
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
+import kotlinx.coroutines.launch
 
 class ApproveOrgViewModel :
     BaseViewModel<ApproveOrgContract.ApproveOrgEvent, ApproveOrgContract.ApproveOrgStates, ApproveOrgContract.ApproveOrgEffect>() {
@@ -27,55 +31,68 @@ class ApproveOrgViewModel :
     }
 
     override fun handleEvent(event: ApproveOrgContract.ApproveOrgEvent) {
-        when (event) {
-            is ApproveOrgContract.ApproveOrgEvent.GetRequestedOrg -> {
-                setState { copy(loadState = ApproveOrgContract.ApproveOrgState.LoadState.Loading) }
-                val result = repository.statusOrgList(RequestStatus.REQUESTED.status, event.page)
-                setState {
-                    copy(
-                        loadState = ApproveOrgContract.ApproveOrgState.LoadState.Success,
-                        requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(result)
-                    )
-                }
-            }
+        viewModelScope.launch {
+            when (event) {
+                is ApproveOrgContract.ApproveOrgEvent.GetRequestedOrg -> {
+                    setState { copy(loadState = ApproveOrgContract.ApproveOrgState.LoadState.Loading) }
+                    repository.statusOrgList(RequestStatus.REQUESTED.status, event.page).onSuccess {
+                        setState {
+                            copy(
+                                loadState = ApproveOrgContract.ApproveOrgState.LoadState.Success,
+                                requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(it)
+                            )
+                        }
+                    }.onFail {
 
-            is ApproveOrgContract.ApproveOrgEvent.ClickApprove -> {
-                setState { copy(approveOrg = ApproveOrgContract.ApproveOrgState.ApproveOrg(true)) }
-                val result = repository.approveOrgRequest(
-                    OrgApprovalModel(
-                        RequestStatus.ACCEPTED.status,
-                        event.orgId
-                    )
-                )
-                setState {
-                    copy(
-                        approveFinish = ApproveOrgContract.ApproveOrgState.ApproveFinish(
-                            event.position
+                    }
+
+                }
+
+                is ApproveOrgContract.ApproveOrgEvent.ClickApprove -> {
+                    setState { copy(approveOrg = ApproveOrgContract.ApproveOrgState.ApproveOrg(true)) }
+                    repository.approveOrgRequest(
+                        OrgApprovalModel(
+                            RequestStatus.ACCEPTED.status,
+                            event.orgId
                         )
-                    )
-                }
-            }
+                    ).onSuccess {
+                        setState {
+                            copy(
+                                approveFinish = ApproveOrgContract.ApproveOrgState.ApproveFinish(
+                                    event.position
+                                )
+                            )
+                        }
+                    }.onFail {
 
-            is ApproveOrgContract.ApproveOrgEvent.ClickReject -> {
-                setState { copy(rejectOrg = ApproveOrgContract.ApproveOrgState.RejectOrg(true)) }
-                val result = repository.approveOrgRequest(
-                    OrgApprovalModel(RequestStatus.DENIED.status, event.orgId)
-                )
-                setState {
-                    copy(
-                        approveFinish = ApproveOrgContract.ApproveOrgState.ApproveFinish(
-                            event.position
+                    }
+
+                }
+
+                is ApproveOrgContract.ApproveOrgEvent.ClickReject -> {
+                    setState { copy(rejectOrg = ApproveOrgContract.ApproveOrgState.RejectOrg(true)) }
+                    repository.approveOrgRequest(
+                        OrgApprovalModel(RequestStatus.DENIED.status, event.orgId)
+                    ).onSuccess {
+                        setState {
+                            copy(
+                                approveFinish = ApproveOrgContract.ApproveOrgState.ApproveFinish(
+                                    event.position
+                                )
+                            )
+                        }
+                    }.onFail {
+
+                    }
+                }
+
+                is ApproveOrgContract.ApproveOrgEvent.ResetClick -> {
+                    setState {
+                        copy(
+                            approveOrg = ApproveOrgContract.ApproveOrgState.ApproveOrg(false),
+                            rejectOrg = ApproveOrgContract.ApproveOrgState.RejectOrg(false)
                         )
-                    )
-                }
-            }
-
-            is ApproveOrgContract.ApproveOrgEvent.ResetClick -> {
-                setState {
-                    copy(
-                        approveOrg = ApproveOrgContract.ApproveOrgState.ApproveOrg(false),
-                        rejectOrg = ApproveOrgContract.ApproveOrgState.RejectOrg(false)
-                    )
+                    }
                 }
             }
         }

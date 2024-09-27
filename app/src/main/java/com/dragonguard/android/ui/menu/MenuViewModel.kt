@@ -6,6 +6,9 @@ import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onError
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class MenuViewModel :
@@ -27,13 +30,20 @@ class MenuViewModel :
         viewModelScope.launch {
             when (event) {
                 is MenuContract.MenuEvent.CheckAdmin -> {
-                    val result = repository.checkAdmin()
-                    setState { copy(admin = MenuContract.MenuState.AdminState(result)) }
+                    repository.checkAdmin().onSuccess {
+                        setState { copy(admin = MenuContract.MenuState.AdminState(it)) }
+                    }.onFail {
+
+                    }
+
                 }
 
                 is MenuContract.MenuEvent.WithDrawAccount -> {
-                    val result = repository.withDrawAccount()
-                    setState { copy(withDraw = MenuContract.MenuState.WithDrawState(result)) }
+                    repository.withDrawAccount().onSuccess {
+                        setState { copy(withDraw = MenuContract.MenuState.WithDrawState(it)) }
+                    }.onError {
+
+                    }
                 }
             }
         }

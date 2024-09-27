@@ -7,6 +7,8 @@ import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class MainViewModel :
@@ -38,14 +40,15 @@ class MainViewModel :
                             loadState = MainContract.MainState.LoadState.Loading
                         )
                     }
-                    val userInfo = repository.getUserInfo()
-                    setState {
-                        copy(
-                            loadState = MainContract.MainState.LoadState.Success,
-                            userInfo = MainContract.MainState.UserInfo(
-                                userInfo
+                    repository.getUserInfo().onSuccess {
+                        setState {
+                            copy(
+                                loadState = MainContract.MainState.LoadState.Success,
+                                userInfo = MainContract.MainState.UserInfo(it)
                             )
-                        )
+                        }
+                    }.onFail {
+
                     }
                 }
 
@@ -60,18 +63,18 @@ class MainViewModel :
                 }
 
                 is MainContract.MainEvent.GetNewToken -> {
-                    val result =
-                        repository.getNewAccessToken(pref.getJwtToken(""), pref.getRefreshToken(""))
-                    setState {
-                        copy(
-                            newAccessToken = MainContract.MainState.NewAccessToken(
-                                result.access_token
-                            ),
-                            newRefreshToken = MainContract.MainState.NewRefreshToken(
-                                result.refresh_token
-                            )
-                        )
+                    repository.getNewAccessToken(pref.getJwtToken(""), pref.getRefreshToken(""))
+                        .onSuccess {
+                            setState {
+                                copy(
+                                    newAccessToken = MainContract.MainState.NewAccessToken(it.access_token),
+                                    newRefreshToken = MainContract.MainState.NewRefreshToken(it.refresh_token)
+                                )
+                            }
+                        }.onFail {
+
                     }
+
                 }
 
                 is MainContract.MainEvent.Logout -> {

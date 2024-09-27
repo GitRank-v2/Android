@@ -8,6 +8,8 @@ import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.RequestStatus
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class ApprovedOrgViewModel :
@@ -29,14 +31,17 @@ class ApprovedOrgViewModel :
             when (event) {
                 is ApprovedOrgContract.ApprovedOrgEvent.GetApprovedOrg -> {
                     setState { copy(state = ApprovedOrgContract.ApprovedOrgState.LoadState.Loading) }
-                    val result =
-                        repository.statusOrgList(RequestStatus.ACCEPTED.status, event.page)
-                    setState {
-                        copy(
-                            state = ApprovedOrgContract.ApprovedOrgState.LoadState.Success,
-                            approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(result)
-                        )
+                    repository.statusOrgList(RequestStatus.ACCEPTED.status, event.page).onSuccess {
+                        setState {
+                            copy(
+                                state = ApprovedOrgContract.ApprovedOrgState.LoadState.Success,
+                                approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(it)
+                            )
+                        }
+                    }.onFail {
+
                     }
+
                 }
             }
         }

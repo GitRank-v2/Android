@@ -6,6 +6,8 @@ import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class CompareSearchViewModel :
@@ -27,15 +29,17 @@ class CompareSearchViewModel :
             when (event) {
                 is CompareSearchContract.CompareSearchEvent.SearchRepo -> {
                     setState { copy(loadState = CompareSearchContract.CompareSearchState.LoadState.Loading) }
-                    val result =
-                        repository.getRepositoryNames(event.name, event.count, REPOSITORIES)
-                    setState {
-                        copy(
-                            loadState = CompareSearchContract.CompareSearchState.LoadState.Success,
-                            searchResults = CompareSearchContract.CompareSearchState.SearchResults(
-                                currentState.searchResults.searchResults + result
+                    repository.getRepositoryNames(event.name, event.count, REPOSITORIES).onSuccess {
+                        setState {
+                            copy(
+                                loadState = CompareSearchContract.CompareSearchState.LoadState.Success,
+                                searchResults = CompareSearchContract.CompareSearchState.SearchResults(
+                                    currentState.searchResults.searchResults + it
+                                )
                             )
-                        )
+                        }
+                    }.onFail {
+
                     }
                 }
             }

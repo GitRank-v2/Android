@@ -45,7 +45,7 @@ suspend fun <T : Any> handleAdminApi(
                 throw NullPointerException(NETWORK_EXCEPTION_BODY_IS_NULL)
             }
         } else if (response.code() == 403) {
-            DataResult.Success(true)
+            DataResult.Success(false)
         } else {
             getFailDataResult(body, response)
         }

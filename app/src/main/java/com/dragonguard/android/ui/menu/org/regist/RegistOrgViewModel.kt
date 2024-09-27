@@ -8,6 +8,8 @@ import com.dragonguard.android.data.model.org.RegistOrgResultModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class RegistOrgViewModel :
@@ -30,20 +32,21 @@ class RegistOrgViewModel :
             when (event) {
                 is RegistOrgContract.RegistOrgEvent.RequestRegistOrg -> {
                     setState { copy(state = RegistOrgContract.RegistOrgState.LoadState.Loading) }
-                    val result = repository.postRegistOrg(
+                    repository.postRegistOrg(
                         RegistOrgModel(
                             event.orgName,
                             event.orgType,
                             event.orgEndPoint
                         )
-                    )
-                    setState {
-                        copy(
-                            state = RegistOrgContract.RegistOrgState.LoadState.Success,
-                            registResult = RegistOrgContract.RegistOrgState.RegistResult(
-                                result
+                    ).onSuccess {
+                        setState {
+                            copy(
+                                state = RegistOrgContract.RegistOrgState.LoadState.Success,
+                                registResult = RegistOrgContract.RegistOrgState.RegistResult(it)
                             )
-                        )
+                        }
+                    }.onFail {
+
                     }
                 }
             }

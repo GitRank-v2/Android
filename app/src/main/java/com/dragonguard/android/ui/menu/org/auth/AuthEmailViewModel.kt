@@ -9,6 +9,8 @@ import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,56 +79,72 @@ class AuthEmailViewModel :
         viewModelScope.launch {
             when (event) {
                 is AuthEmailContract.AuthEmailEvent.RequestAuthEmail -> {
-                    val result = repository.addOrgMember(
-                        AddOrgMemberModel(event.email, event.orgId)
-                    )
-                    if (result != -1L) {
-                        setState {
-                            copy(
-                                emailAuthId = AuthEmailContract.AuthEmailState.EmailAuthId(result),
-                                countDownTimer = AuthEmailContract.AuthEmailState.CountDownTimer(
-                                    setUpCountDownTimer()
-                                ),
-                                timeOver = AuthEmailContract.AuthEmailState.TimeOver(false)
-                            )
+                    repository.addOrgMember(AddOrgMemberModel(event.email, event.orgId)).onSuccess {
+                        if (it != -1L) {
+                            setState {
+                                copy(
+                                    emailAuthId = AuthEmailContract.AuthEmailState.EmailAuthId(it),
+                                    countDownTimer = AuthEmailContract.AuthEmailState.CountDownTimer(
+                                        setUpCountDownTimer()
+                                    ),
+                                    timeOver = AuthEmailContract.AuthEmailState.TimeOver(false)
+                                )
+                            }
+                            currentState.timer.timer.start()
                         }
-                        currentState.timer.timer.start()
+                    }.onFail {
+
                     }
                 }
 
                 is AuthEmailContract.AuthEmailEvent.CheckEmailCode -> {
-                    val result =
-                        repository.emailAuthResult(event.emailAuthId, event.code, event.orgId)
-                    if (result) {
-                        setState { copy(state = AuthEmailContract.AuthEmailState.LoadState.Success) }
-                    } else {
-                        setState { copy(state = AuthEmailContract.AuthEmailState.LoadState.Error) }
-                    }
+                    repository.emailAuthResult(event.emailAuthId, event.code, event.orgId)
+                        .onSuccess {
+                            if (it) {
+                                setState { copy(state = AuthEmailContract.AuthEmailState.LoadState.Success) }
+                            } else {
+                                setState { copy(state = AuthEmailContract.AuthEmailState.LoadState.Error) }
+                            }
+                        }.onFail {
+
+                        }
+
                 }
 
                 is AuthEmailContract.AuthEmailEvent.DeleteLateEmailCode -> {
-                    val result = repository.deleteEmailCode(event.emailAuthId)
-                    setState {
-                        copy(
-                            resetTimer = AuthEmailContract.AuthEmailState.ResetTimer(result),
-                        )
-                    }
-                    currentState.countDownTimer.countDownTimer.cancel()
-                }
-
-                is AuthEmailContract.AuthEmailEvent.SendEmailAuth -> {
-                    val result = repository.sendEmailAuth()
-                    if (result != -1L) {
+                    repository.deleteEmailCode(event.emailAuthId).onSuccess {
                         setState {
                             copy(
-                                emailAuthId = AuthEmailContract.AuthEmailState.EmailAuthId(result),
-                                countDownTimer = AuthEmailContract.AuthEmailState.CountDownTimer(
-                                    setUpCountDownTimer()
-                                ),
-                                timeOver = AuthEmailContract.AuthEmailState.TimeOver(false)
+                                resetTimer = AuthEmailContract.AuthEmailState.ResetTimer(true),
+                            )
+                        }
+                        currentState.countDownTimer.countDownTimer.cancel()
+                    }.onFail {
+                        setState {
+                            copy(
+                                resetTimer = AuthEmailContract.AuthEmailState.ResetTimer(false),
                             )
                         }
                     }
+                }
+
+                is AuthEmailContract.AuthEmailEvent.SendEmailAuth -> {
+                    repository.sendEmailAuth().onSuccess {
+                        if (it != -1L) {
+                            setState {
+                                copy(
+                                    emailAuthId = AuthEmailContract.AuthEmailState.EmailAuthId(it),
+                                    countDownTimer = AuthEmailContract.AuthEmailState.CountDownTimer(
+                                        setUpCountDownTimer()
+                                    ),
+                                    timeOver = AuthEmailContract.AuthEmailState.TimeOver(false)
+                                )
+                            }
+                        }
+                    }.onFail {
+
+                    }
+
                 }
             }
         }

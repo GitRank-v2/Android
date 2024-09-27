@@ -6,6 +6,8 @@ import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class SearchViewModel :
@@ -29,24 +31,31 @@ class SearchViewModel :
             when (event) {
                 is SearchContract.SearchEvent.GetUserNames -> {
                     setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getUserNames(event.name, event.count, event.type)
-                    setState {
-                        copy(
-                            searchState = SearchContract.SearchState.LoadState.UserSuccess,
-                            receivedUserNames = SearchContract.SearchState.UserNames(result)
-                        )
+                    repository.getUserNames(event.name, event.count, event.type).onSuccess {
+                        setState {
+                            copy(
+                                searchState = SearchContract.SearchState.LoadState.UserSuccess,
+                                receivedUserNames = SearchContract.SearchState.UserNames(it)
+                            )
+                        }
+                    }.onFail {
+
                     }
                 }
 
                 is SearchContract.SearchEvent.GetRepositoryNamesNoFilters -> {
                     setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getRepositoryNames(event.name, event.count, event.type)
-                    setState {
-                        copy(
-                            searchState = SearchContract.SearchState.LoadState.RepoSuccess,
-                            receivedRepoNames = SearchContract.SearchState.RepoNames(result)
-                        )
+                    repository.getRepositoryNames(event.name, event.count, event.type).onSuccess {
+                        setState {
+                            copy(
+                                searchState = SearchContract.SearchState.LoadState.RepoSuccess,
+                                receivedRepoNames = SearchContract.SearchState.RepoNames(it)
+                            )
+                        }
+                    }.onFail {
+
                     }
+
                 }
 
                 is SearchContract.SearchEvent.GetRepositoryNamesWithFilters -> {
@@ -56,12 +65,15 @@ class SearchViewModel :
                         event.count,
                         event.filters,
                         event.type,
-                    )
-                    setState {
-                        copy(
-                            searchState = SearchContract.SearchState.LoadState.RepoSuccess,
-                            receivedRepoNames = SearchContract.SearchState.RepoNames(result)
-                        )
+                    ).onSuccess {
+                        setState {
+                            copy(
+                                searchState = SearchContract.SearchState.LoadState.RepoSuccess,
+                                receivedRepoNames = SearchContract.SearchState.RepoNames(it)
+                            )
+                        }
+                    }.onFail {
+
                     }
                 }
 

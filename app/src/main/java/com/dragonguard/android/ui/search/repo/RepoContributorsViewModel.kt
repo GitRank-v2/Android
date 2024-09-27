@@ -7,6 +7,8 @@ import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class RepoContributorsViewModel :
@@ -28,16 +30,19 @@ class RepoContributorsViewModel :
             when (event) {
                 is RepoContributorsContract.RepoContributorsEvent.GetRepoContributors -> {
                     setState { copy(loadState = RepoContributorsContract.RepoContributorsState.LoadState.Loading) }
-                    val result =
-                        repository.getRepoContributors(event.repoName)
-                    setState {
-                        copy(
-                            loadState = RepoContributorsContract.RepoContributorsState.LoadState.Success,
-                            repoState = RepoContributorsContract.RepoContributorsState.RepoContributeState(
-                                result
+                    repository.getRepoContributors(event.repoName).onSuccess {
+                        setState {
+                            copy(
+                                loadState = RepoContributorsContract.RepoContributorsState.LoadState.Success,
+                                repoState = RepoContributorsContract.RepoContributorsState.RepoContributeState(
+                                    it
+                                )
                             )
-                        )
+                        }
+                    }.onFail {
+
                     }
+
                 }
             }
         }
