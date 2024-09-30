@@ -12,8 +12,6 @@ class RepoContributorsContract {
     }
 
     sealed class RepoContributorsState {
-
-
         data class RepoContributeState(val repoState: RepoContributorsModel) :
             RepoContributorsState()
 

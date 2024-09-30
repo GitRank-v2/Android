@@ -10,6 +10,8 @@ class SearchOrganizationContract {
     sealed class SearchOrganizationEvent : UiEvent {
         data class SearchOrgNames(val name: String, val type: String, val count: Int) :
             SearchOrganizationEvent()
+
+        data object AddReceivedOrgNames : SearchOrganizationEvent()
     }
 
     sealed class SearchOrganizationState {
@@ -20,6 +22,7 @@ class SearchOrganizationContract {
     data class SearchOrganizationStates(
         val state: LoadState,
         val orgNames: SearchOrganizationState.OrgNames,
+        val receivedOrgNames: SearchOrganizationState.OrgNames,
         val token: SearchOrganizationState.Token
     ) : UiState
 

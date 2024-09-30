@@ -57,6 +57,7 @@ class ApprovedOrgFragment : Fragment() {
 
 
     private fun initRecycler() {
+        viewModel.addReceivedOrg()
         Log.d("count", "count: $count")
         if (page == 0) {
             val adapter =

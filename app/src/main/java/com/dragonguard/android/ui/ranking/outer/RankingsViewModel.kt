@@ -193,6 +193,27 @@ class RankingsViewModel :
                 is RankingsContract.RankingsEvent.SetType -> {
                     setState { copy(type = RankingsContract.RankingsState.Type(event.type)) }
                 }
+
+                is RankingsContract.RankingsEvent.AddUserRanking -> {
+                    setState {
+                        copy(
+                            rankings = RankingsContract.RankingsState.Rankings.AllUsers.Rankings(
+                                (rankings.ranking + ranking.ranking) as ArrayList<TotalUsersRankingsModel>
+                            )
+                        )
+                    }
+                }
+
+                is RankingsContract.RankingsEvent.AddOrganizationRanking -> {
+                    setState {
+                        copy(
+                            rankings = RankingsContract.RankingsState.Rankings.Organization.Rankings(
+                                (rankings.ranking + ranking.ranking) as ArrayList<TotalOrganizationModel>
+                            )
+                        )
+                    }
+                }
+
             }
         }
     }
@@ -227,6 +248,14 @@ class RankingsViewModel :
 
     fun getEtcRanking(page: Int) {
         setEvent(RankingsContract.RankingsEvent.GetEtcRanking(page))
+    }
+
+    fun addUserRanking() {
+        setEvent(RankingsContract.RankingsEvent.AddUserRanking)
+    }
+
+    fun addOrganizationRanking() {
+        setEvent(RankingsContract.RankingsEvent.AddOrganizationRanking)
     }
 
     companion object {

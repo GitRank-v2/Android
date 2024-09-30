@@ -183,6 +183,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     ranking++
                 }
             }
+            viewModel.addUserRanking()
             initUserRecycler()
         } else {
             binding.rankingLottie.pauseAnimation()
@@ -234,7 +235,8 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     ranking++
                 }
             }
-            initUserRecycler()
+            viewModel.addOrganizationRanking()
+            initOrgRecycler()
         } else {
             binding.rankingLottie.pauseAnimation()
             binding.rankingLottie.visibility = View.GONE

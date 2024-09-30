@@ -21,6 +21,7 @@ class CompareSearchViewModel :
         return CompareSearchContract.CompareSearchStates(
             LoadState.INIT,
             CompareSearchContract.CompareSearchState.Token(pref.getJwtToken("")),
+            CompareSearchContract.CompareSearchState.SearchResults(emptyList()),
             CompareSearchContract.CompareSearchState.SearchResults(emptyList())
         )
     }
@@ -34,8 +35,8 @@ class CompareSearchViewModel :
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
-                                searchResults = CompareSearchContract.CompareSearchState.SearchResults(
-                                    currentState.searchResults.searchResults + it
+                                receivedSearchResult = CompareSearchContract.CompareSearchState.SearchResults(
+                                    it
                                 )
                             )
                         }
@@ -43,12 +44,28 @@ class CompareSearchViewModel :
 
                     }
                 }
+
+                is CompareSearchContract.CompareSearchEvent.AddReceivedRepo -> {
+                    setState {
+                        copy(
+                            searchResults = CompareSearchContract.CompareSearchState.SearchResults(
+                                currentState.searchResults.searchResults + currentState.receivedSearchResult.searchResults
+                            )
+                        )
+                    }
+                }
             }
+
+
         }
     }
 
     fun searchRepo(name: String, count: Int) {
         setEvent(CompareSearchContract.CompareSearchEvent.SearchRepo(name, count))
+    }
+
+    fun addReceivedRepo() {
+        setEvent(CompareSearchContract.CompareSearchEvent.AddReceivedRepo)
     }
 
     companion object {

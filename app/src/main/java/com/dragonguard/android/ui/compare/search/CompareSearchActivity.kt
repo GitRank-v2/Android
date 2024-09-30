@@ -126,6 +126,7 @@ class CompareSearchActivity : AppCompatActivity() {
 
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()
     private fun initRecycler() {
+        viewModel.addReceivedRepo()
         Log.d("count", "count: $count")
         if (count == 0) {
             compareRepositoryAdapter = SearchCompareRepoAdapter(

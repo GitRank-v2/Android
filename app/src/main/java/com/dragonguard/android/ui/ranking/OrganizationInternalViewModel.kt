@@ -25,6 +25,9 @@ class OrganizationInternalViewModel :
             OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
                 OrgInternalRankingModel()
             ),
+            OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
+                OrgInternalRankingModel()
+            ),
             OrganizationInternalContract.OrganizationInternalState.Token(pref.getJwtToken(""))
         )
     }
@@ -53,7 +56,7 @@ class OrganizationInternalViewModel :
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
-                                orgInternalRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
+                                receivedRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
                                     it
                                 )
                             )
@@ -62,6 +65,16 @@ class OrganizationInternalViewModel :
 
                     }
 
+                }
+
+                is OrganizationInternalContract.OrganizationInternalEvent.AddRanking -> {
+                    setState {
+                        copy(
+                            orgInternalRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
+                                (orgInternalRankings.orgInternalRankings + receivedRankings.orgInternalRankings) as OrgInternalRankingModel
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -78,5 +91,9 @@ class OrganizationInternalViewModel :
                 page
             )
         )
+    }
+
+    fun addRanking() {
+        setEvent(OrganizationInternalContract.OrganizationInternalEvent.AddRanking)
     }
 }

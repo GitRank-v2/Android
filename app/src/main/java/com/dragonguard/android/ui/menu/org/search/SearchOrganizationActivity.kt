@@ -21,8 +21,6 @@ import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.databinding.ActivitySearchOrganizationBinding
 import com.dragonguard.android.ui.menu.org.regist.RegistOrgActivity
 import com.dragonguard.android.util.LoadState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SearchOrganizationActivity : AppCompatActivity() {
@@ -179,7 +177,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         Log.d("org 검색", "이름 $name type $type  count $count")
         if (type.isBlank()) {
             type = "UNIVERSITY"
-            viewModel.searchOrgNames(name, type, count)
+            //viewModel.searchOrgNames(name, type, count)
         }
     }
 
@@ -210,6 +208,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
     }
 
     private fun initRecycler() {
+        viewModel.addReceivedOrgNames()
         Log.d("count", "count: $count")
         if (count == 0) {
             binding.orgListTitle.text = "$type 목록"
@@ -251,9 +250,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         if (binding.progressBar.visibility == View.GONE && count != 0) {
             binding.progressBar.visibility = View.VISIBLE
             changable = true
-            CoroutineScope(Dispatchers.Main).launch {
-                getOrganizationNames(lastSearch)
-            }
+            getOrganizationNames(binding.searchName.text.toString())
         }
     }
 

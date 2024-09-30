@@ -138,6 +138,7 @@ class OrganizationInternalActivity : AppCompatActivity() {
 
     private fun initRecycler() {
         Log.d("recycler", "initrecycler()")
+        viewModel.addRanking()
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =

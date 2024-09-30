@@ -12,6 +12,7 @@ class ApproveOrgContract {
         data class ClickApprove(val orgId: Long, val position: Int) : ApproveOrgEvent()
         data class ClickReject(val orgId: Long, val position: Int) : ApproveOrgEvent()
         data object ResetClick : ApproveOrgEvent()
+        data object AddReceivedOrg : ApproveOrgEvent()
     }
 
     sealed class ApproveOrgState {
@@ -26,6 +27,7 @@ class ApproveOrgContract {
     data class ApproveOrgStates(
         val loadState: LoadState,
         val requestedOrg: ApproveOrgState.RequestedOrg,
+        val receivedOrg: ApproveOrgState.RequestedOrg,
         val token: ApproveOrgState.Token,
         val approveOrg: ApproveOrgState.ApproveOrg,
         val rejectOrg: ApproveOrgState.RejectOrg,

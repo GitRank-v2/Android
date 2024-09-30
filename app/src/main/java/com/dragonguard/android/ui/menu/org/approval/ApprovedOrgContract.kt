@@ -9,6 +9,7 @@ import com.dragonguard.android.util.LoadState
 class ApprovedOrgContract {
     sealed class ApprovedOrgEvent : UiEvent {
         data class GetApprovedOrg(val page: Int) : ApprovedOrgEvent()
+        data object AddReceivedOrg : ApprovedOrgEvent()
     }
 
     sealed class ApprovedOrgState {
@@ -19,6 +20,7 @@ class ApprovedOrgContract {
     data class ApprovedOrgStates(
         val state: LoadState,
         val approvedOrg: ApprovedOrgState.ApprovedOrg,
+        val receivedOrg: ApprovedOrgState.ApprovedOrg,
         val token: ApprovedOrgState.Token
     ) : UiState
 

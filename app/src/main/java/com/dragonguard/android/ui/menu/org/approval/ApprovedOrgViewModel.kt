@@ -23,6 +23,7 @@ class ApprovedOrgViewModel :
         return ApprovedOrgContract.ApprovedOrgStates(
             state = LoadState.INIT,
             approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(ApproveRequestOrgModel()),
+            receivedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(ApproveRequestOrgModel()),
             token = ApprovedOrgContract.ApprovedOrgState.Token("")
         )
     }
@@ -36,7 +37,7 @@ class ApprovedOrgViewModel :
                         setState {
                             copy(
                                 state = LoadState.SUCCESS,
-                                approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(it)
+                                receivedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(it)
                             )
                         }
                     }.onFail {
@@ -44,11 +45,25 @@ class ApprovedOrgViewModel :
                     }
 
                 }
+
+                is ApprovedOrgContract.ApprovedOrgEvent.AddReceivedOrg -> {
+                    setState {
+                        copy(
+                            approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(
+                                (approvedOrg.approvedOrg + receivedOrg.approvedOrg) as ApproveRequestOrgModel
+                            )
+                        )
+                    }
+                }
             }
         }
     }
 
     fun getApprovedOrg(page: Int) {
         setEvent(ApprovedOrgContract.ApprovedOrgEvent.GetApprovedOrg(page))
+    }
+
+    fun addReceivedOrg() {
+        setEvent(ApprovedOrgContract.ApprovedOrgEvent.AddReceivedOrg)
     }
 }

@@ -23,6 +23,7 @@ class SearchOrganizationViewModel :
         return SearchOrganizationContract.SearchOrganizationStates(
             LoadState.INIT,
             SearchOrganizationContract.SearchOrganizationState.OrgNames(OrganizationNamesModel()),
+            SearchOrganizationContract.SearchOrganizationState.OrgNames(OrganizationNamesModel()),
             SearchOrganizationContract.SearchOrganizationState.Token("")
         )
     }
@@ -36,13 +37,22 @@ class SearchOrganizationViewModel :
                         setState {
                             copy(
                                 state = LoadState.SUCCESS,
-                                orgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames(
+                                receivedOrgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames(
                                     it
                                 )
                             )
                         }
                     }.onFail {
 
+                    }
+                }
+
+                is SearchOrganizationContract.SearchOrganizationEvent.AddReceivedOrgNames -> {
+                    setState {
+                        copy(
+                            orgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames((orgNames.names + receivedOrgNames.names) as OrganizationNamesModel)
+
+                        )
                     }
                 }
             }
@@ -57,5 +67,9 @@ class SearchOrganizationViewModel :
                 count
             )
         )
+    }
+
+    fun addReceivedOrgNames() {
+        setEvent(SearchOrganizationContract.SearchOrganizationEvent.AddReceivedOrgNames)
     }
 }

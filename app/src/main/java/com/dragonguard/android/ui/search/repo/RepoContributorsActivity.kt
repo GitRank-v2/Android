@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
  */
 class RepoContributorsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRepoContributorsBinding
-    lateinit var contributorsAdapter: ContributorsAdapter
+    private lateinit var contributorsAdapter: ContributorsAdapter
     private var repoName = ""
     private lateinit var viewModel: RepoContributorsViewModel
     private val colorSets = ArrayList<Int>()

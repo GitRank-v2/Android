@@ -71,11 +71,12 @@ class ApproveOrgFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getRequestedOrg(page)
+        //viewModel.getRequestedOrg(page)
     }
 
 
     private fun initRecycler() {
+        viewModel.addReceivedOrg()
         Log.d("count", "count: $count")
         if (page == 0) {
             val adapter =
@@ -99,7 +100,7 @@ class ApproveOrgFragment : Fragment() {
 
     private fun loadMorePosts() {
         if (page != 0) {
-            viewModel.getRequestedOrg(page)
+            //viewModel.getRequestedOrg(page)
         }
     }
 

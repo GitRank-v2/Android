@@ -17,10 +17,11 @@ class RankingsContract {
         data class GetUniversityRanking(val page: Int) : RankingsEvent()
         data class GetHighSchoolRanking(val page: Int) : RankingsEvent()
         data class GetEtcRanking(val page: Int) : RankingsEvent()
+        data object AddUserRanking : RankingsEvent()
+        data object AddOrganizationRanking : RankingsEvent()
     }
 
     sealed class RankingsState {
-
         data class Type(val type: String) : RankingsState()
         sealed class Rankings(val ranking: ArrayList<*>) : RankingsState() {
             sealed class AllUsers(val userRanking: ArrayList<TotalUsersRankingsModel>) :

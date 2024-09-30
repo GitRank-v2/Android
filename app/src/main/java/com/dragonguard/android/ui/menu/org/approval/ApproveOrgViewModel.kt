@@ -24,6 +24,7 @@ class ApproveOrgViewModel :
         return ApproveOrgContract.ApproveOrgStates(
             LoadState.INIT,
             ApproveOrgContract.ApproveOrgState.RequestedOrg(ApproveRequestOrgModel()),
+            ApproveOrgContract.ApproveOrgState.RequestedOrg(ApproveRequestOrgModel()),
             ApproveOrgContract.ApproveOrgState.Token(pref.getJwtToken("")),
             ApproveOrgContract.ApproveOrgState.ApproveOrg(false),
             ApproveOrgContract.ApproveOrgState.RejectOrg(false),
@@ -40,7 +41,7 @@ class ApproveOrgViewModel :
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
-                                requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(it)
+                                receivedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(it)
                             )
                         }
                     }.onFail {
@@ -95,6 +96,16 @@ class ApproveOrgViewModel :
                         )
                     }
                 }
+
+                is ApproveOrgContract.ApproveOrgEvent.AddReceivedOrg -> {
+                    setState {
+                        copy(
+                            requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(
+                                (requestedOrg.org + receivedOrg.org) as ApproveRequestOrgModel
+                            )
+                        )
+                    }
+                }
             }
         }
     }
@@ -113,6 +124,10 @@ class ApproveOrgViewModel :
 
     fun resetClick() {
         setEvent(ApproveOrgContract.ApproveOrgEvent.ResetClick)
+    }
+
+    fun addReceivedOrg() {
+        setEvent(ApproveOrgContract.ApproveOrgEvent.AddReceivedOrg)
     }
 
 }
