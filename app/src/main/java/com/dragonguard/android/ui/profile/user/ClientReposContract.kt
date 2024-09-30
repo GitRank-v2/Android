@@ -4,6 +4,7 @@ import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
+import com.dragonguard.android.util.LoadState
 
 class ClientReposContract {
     sealed class ClientReposEvent : UiEvent {
@@ -11,13 +12,6 @@ class ClientReposContract {
     }
 
     sealed class ClientReposState {
-        sealed class LoadState : ClientReposState() {
-            data object Initial : LoadState()
-            data object Loading : LoadState()
-            data object Success : LoadState()
-            data object Error : LoadState()
-        }
-
         data class GithubOrgRepos(val githubOrgRepos: GithubOrgReposModel) :
             ClientReposState()
 
@@ -25,7 +19,7 @@ class ClientReposContract {
     }
 
     data class ClientReposStates(
-        val loadState: ClientReposState.LoadState,
+        val loadState: LoadState,
         val token: ClientReposState.Token,
         val githubOrgRepos: ClientReposState.GithubOrgRepos
     ) : UiState

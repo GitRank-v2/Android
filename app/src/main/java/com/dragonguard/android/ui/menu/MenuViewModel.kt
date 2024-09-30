@@ -19,7 +19,6 @@ class MenuViewModel :
         pref = getPref()
         repository = getRepository()
         return MenuContract.MenuStates(
-            MenuContract.MenuState.LoadState.Loading,
             MenuContract.MenuState.AdminState(false),
             MenuContract.MenuState.WithDrawState(false),
             MenuContract.MenuState.Token(pref.getJwtToken(""))

@@ -22,6 +22,7 @@ import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.profile.user.ClientProfileFragment
 import com.dragonguard.android.ui.ranking.outer.RankingFragment
 import com.dragonguard.android.ui.search.SearchActivity
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -176,7 +177,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    if (state.loadState is MainContract.MainState.LoadState.Success) {
+                    if (state.loadState == LoadState.SUCCESS) {
                         checkUserInfo(state.userInfo.userInfo)
                     }
 

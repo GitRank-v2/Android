@@ -8,6 +8,7 @@ import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -20,7 +21,7 @@ class RankingsViewModel :
         pref = getPref()
         repository = getRepository()
         return RankingsContract.RankingsStates(
-            RankingsContract.RankingsState.LoadState.Initial,
+            LoadState.INIT,
             RankingsContract.RankingsState.Type(""),
             RankingsContract.RankingsState.Rankings.Organization.Ranking(arrayListOf()),
             RankingsContract.RankingsState.Rankings.Organization.Rankings(arrayListOf()),
@@ -32,11 +33,11 @@ class RankingsViewModel :
         viewModelScope.launch {
             when (event) {
                 is RankingsContract.RankingsEvent.GetTotalUserRanking -> {
-                    setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.getTotalUsersRankings(event.page, event.size).onSuccess {
                         setState {
                             copy(
-                                loadState = RankingsContract.RankingsState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.AllUsers.Ranking(
                                     baseRanking = it.map {
                                         TotalUsersRankingsModel(
@@ -57,11 +58,11 @@ class RankingsViewModel :
                 }
 
                 is RankingsContract.RankingsEvent.GetTotalOrganizationRanking -> {
-                    setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.allOrgRanking(event.page).onSuccess {
                         setState {
                             copy(
-                                loadState = RankingsContract.RankingsState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
                                     baseRanking = it.map {
                                         TotalOrganizationModel(
@@ -81,11 +82,11 @@ class RankingsViewModel :
                 }
 
                 is RankingsContract.RankingsEvent.GetCompanyRanking -> {
-                    setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.typeOrgRanking(COMPANY, event.page).onSuccess {
                         setState {
                             copy(
-                                loadState = RankingsContract.RankingsState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
                                     baseRanking = it.map {
                                         TotalOrganizationModel(
@@ -105,11 +106,11 @@ class RankingsViewModel :
                 }
 
                 is RankingsContract.RankingsEvent.GetUniversityRanking -> {
-                    setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.typeOrgRanking(UNIVERSITY, event.page).onSuccess {
                         setState {
                             copy(
-                                loadState = RankingsContract.RankingsState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
                                     baseRanking = it.map {
                                         TotalOrganizationModel(
@@ -129,11 +130,11 @@ class RankingsViewModel :
                 }
 
                 is RankingsContract.RankingsEvent.GetHighSchoolRanking -> {
-                    setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.typeOrgRanking(HIGH_SCHOOL, event.page).onSuccess {
                         setState {
                             copy(
-                                loadState = RankingsContract.RankingsState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
                                     baseRanking = it.map {
                                         TotalOrganizationModel(
@@ -153,11 +154,11 @@ class RankingsViewModel :
                 }
 
                 is RankingsContract.RankingsEvent.GetEtcRanking -> {
-                    setState { copy(loadState = RankingsContract.RankingsState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.typeOrgRanking(ETC, event.page).onSuccess {
                         setState {
                             copy(
-                                loadState = RankingsContract.RankingsState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
                                     baseRanking = it.map {
                                         TotalOrganizationModel(

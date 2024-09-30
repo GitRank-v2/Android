@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentApprovedOrgBinding
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 class ApprovedOrgFragment : Fragment() {
@@ -41,7 +42,7 @@ class ApprovedOrgFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.state is ApprovedOrgContract.ApprovedOrgState.LoadState.Success) {
+                    if (state.state == LoadState.SUCCESS) {
                         initRecycler()
                     }
                 }

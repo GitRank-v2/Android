@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityRepoCompareBinding
+import com.dragonguard.android.util.LoadState
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 
@@ -44,10 +45,10 @@ class RepoCompareActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.repoMembers.repoMembers.first_result != null && state.repoMembers.repoMembers.second_result != null) {
-                        startFragment()
-                    } else {
-
+                    if (state.loadState == LoadState.SUCCESS) {
+                        if (state.repoMembers.repoMembers.first_result != null && state.repoMembers.repoMembers.second_result != null) {
+                            startFragment()
+                        }
                     }
                 }
             }

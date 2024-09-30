@@ -7,6 +7,7 @@ import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -20,7 +21,7 @@ class SearchOrganizationViewModel :
         pref = getPref()
         repository = getRepository()
         return SearchOrganizationContract.SearchOrganizationStates(
-            SearchOrganizationContract.SearchOrganizationState.LoadState.Initial,
+            LoadState.INIT,
             SearchOrganizationContract.SearchOrganizationState.OrgNames(OrganizationNamesModel()),
             SearchOrganizationContract.SearchOrganizationState.Token("")
         )
@@ -30,11 +31,11 @@ class SearchOrganizationViewModel :
         viewModelScope.launch {
             when (event) {
                 is SearchOrganizationContract.SearchOrganizationEvent.SearchOrgNames -> {
-                    setState { copy(state = SearchOrganizationContract.SearchOrganizationState.LoadState.Loading) }
+                    setState { copy(state = LoadState.LOADING) }
                     repository.getOrgNames(event.name, event.count, event.type).onSuccess {
                         setState {
                             copy(
-                                state = SearchOrganizationContract.SearchOrganizationState.LoadState.Success,
+                                state = LoadState.SUCCESS,
                                 orgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames(
                                     it
                                 )

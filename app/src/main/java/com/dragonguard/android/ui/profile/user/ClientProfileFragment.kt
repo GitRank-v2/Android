@@ -19,6 +19,7 @@ import com.dragonguard.android.databinding.FragmentClientProfileBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.menu.MenuActivity
 import com.dragonguard.android.ui.profile.OthersReposAdapter
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 
@@ -55,15 +56,8 @@ class ClientProfileFragment(
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    when (state.loadState) {
-                        ClientProfileContract.ClientProfileState.LoadState.Success -> {
-                            Log.d("상태", "성공")
-                            initRecycler()
-                        }
-
-                        else -> {
-                            Log.d("상태", "실패")
-                        }
+                    if (state.loadState == LoadState.SUCCESS) {
+                        initRecycler()
                     }
                 }
             }

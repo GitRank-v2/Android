@@ -7,6 +7,7 @@ import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class ClientReposViewModel :
         pref = getPref()
         repository = getRepository()
         return ClientReposContract.ClientReposStates(
-            ClientReposContract.ClientReposState.LoadState.Initial,
+            LoadState.INIT,
             ClientReposContract.ClientReposState.Token(pref.getJwtToken("")),
             ClientReposContract.ClientReposState.GithubOrgRepos(GithubOrgReposModel())
         )
@@ -29,11 +30,11 @@ class ClientReposViewModel :
         viewModelScope.launch {
             when (event) {
                 is ClientReposContract.ClientReposEvent.GetGithubOrgRepos -> {
-                    setState { copy(loadState = ClientReposContract.ClientReposState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.userGitOrgRepoList(event.orgName).onSuccess {
                         setState {
                             copy(
-                                loadState = ClientReposContract.ClientReposState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 githubOrgRepos = ClientReposContract.ClientReposState.GithubOrgRepos(
                                     it
                                 )

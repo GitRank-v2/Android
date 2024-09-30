@@ -7,6 +7,7 @@ import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class OrganizationInternalViewModel :
         pref = getPref()
         repository = getRepository()
         return OrganizationInternalContract.OrganizationInternalStates(
-            OrganizationInternalContract.OrganizationInternalState.LoadState.Loading,
+            LoadState.INIT,
             OrganizationInternalContract.OrganizationInternalState.OrgId(-1L),
             OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
                 OrgInternalRankingModel()
@@ -47,11 +48,11 @@ class OrganizationInternalViewModel :
                 }
 
                 is OrganizationInternalContract.OrganizationInternalEvent.GetOrgInternalRankings -> {
-                    setState { copy(loadState = OrganizationInternalContract.OrganizationInternalState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.orgInternalRankings(event.orgId, event.page).onSuccess {
                         setState {
                             copy(
-                                loadState = OrganizationInternalContract.OrganizationInternalState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 orgInternalRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
                                     it
                                 )

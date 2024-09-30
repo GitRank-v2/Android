@@ -13,6 +13,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.databinding.ActivityUserProfileBinding
 import com.dragonguard.android.ui.profile.OthersReposAdapter
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 class OthersProfileActivity : AppCompatActivity() {
@@ -50,20 +51,9 @@ class OthersProfileActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    when (state.loadState) {
-                        OthersProfileContract.UserProfileState.LoadState.Initial -> {
-                        }
-
-                        OthersProfileContract.UserProfileState.LoadState.Loading -> {
-                        }
-
-                        OthersProfileContract.UserProfileState.LoadState.Success -> {
-                            state.userProfile.userProfile.let {
-                                initRecycler(it)
-                            }
-                        }
-
-                        OthersProfileContract.UserProfileState.LoadState.Error -> {
+                    if (state.loadState == LoadState.SUCCESS) {
+                        state.userProfile.userProfile.let {
+                            initRecycler(it)
                         }
                     }
                 }

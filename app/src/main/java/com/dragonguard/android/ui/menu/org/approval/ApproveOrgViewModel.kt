@@ -8,6 +8,7 @@ import com.dragonguard.android.data.model.org.OrgApprovalModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.RequestStatus
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
@@ -21,7 +22,7 @@ class ApproveOrgViewModel :
         pref = getPref()
         repository = getRepository()
         return ApproveOrgContract.ApproveOrgStates(
-            ApproveOrgContract.ApproveOrgState.LoadState.Loading,
+            LoadState.INIT,
             ApproveOrgContract.ApproveOrgState.RequestedOrg(ApproveRequestOrgModel()),
             ApproveOrgContract.ApproveOrgState.Token(pref.getJwtToken("")),
             ApproveOrgContract.ApproveOrgState.ApproveOrg(false),
@@ -34,11 +35,11 @@ class ApproveOrgViewModel :
         viewModelScope.launch {
             when (event) {
                 is ApproveOrgContract.ApproveOrgEvent.GetRequestedOrg -> {
-                    setState { copy(loadState = ApproveOrgContract.ApproveOrgState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.statusOrgList(RequestStatus.REQUESTED.status, event.page).onSuccess {
                         setState {
                             copy(
-                                loadState = ApproveOrgContract.ApproveOrgState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(it)
                             )
                         }

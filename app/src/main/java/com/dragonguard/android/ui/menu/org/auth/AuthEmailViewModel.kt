@@ -9,6 +9,7 @@ import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.CoroutineStart
@@ -24,7 +25,7 @@ class AuthEmailViewModel :
         pref = getPref()
         repository = getRepository()
         return AuthEmailContract.AuthEmailStates(
-            AuthEmailContract.AuthEmailState.LoadState.Initial,
+            LoadState.LOADING,
             AuthEmailContract.AuthEmailState.CustomTimerDuration(MutableLiveData(MIllIS_IN_FUTURE)),
             AuthEmailContract.AuthEmailState.Timer(
                 0,
@@ -101,9 +102,9 @@ class AuthEmailViewModel :
                     repository.emailAuthResult(event.emailAuthId, event.code, event.orgId)
                         .onSuccess {
                             if (it) {
-                                setState { copy(state = AuthEmailContract.AuthEmailState.LoadState.Success) }
+                                setState { copy(state = LoadState.SUCCESS) }
                             } else {
-                                setState { copy(state = AuthEmailContract.AuthEmailState.LoadState.Error) }
+                                setState { copy(state = LoadState.ERROR) }
                             }
                         }.onFail {
 

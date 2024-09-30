@@ -23,6 +23,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.compare.RepoStats
 import com.dragonguard.android.databinding.FragmentCompareRepoBinding
+import com.dragonguard.android.util.LoadState
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
@@ -97,7 +98,7 @@ class CompareRepoFragment(
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.loadState is RepoCompareContract.RepoCompareState.LoadState.Success) {
+                    if (state.loadState == LoadState.SUCCESS) {
                         checkRepos(state.repo.repo)
                     }
                 }

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.databinding.ActivitySearchBinding
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 class CompareSearchActivity : AppCompatActivity() {
@@ -102,21 +103,15 @@ class CompareSearchActivity : AppCompatActivity() {
     private fun initObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    when (it.loadState) {
-                        is CompareSearchContract.CompareSearchState.LoadState.Loading -> {
-                            binding.loadingLottie.visibility = View.VISIBLE
-                        }
-
-                        is CompareSearchContract.CompareSearchState.LoadState.Success -> {
-                            binding.loadingLottie.visibility = View.GONE
-                            repoNames.addAll(it.searchResults.searchResults)
-                            initRecycler()
-                        }
-
-                        is CompareSearchContract.CompareSearchState.LoadState.Error -> {
-                            binding.loadingLottie.visibility = View.GONE
-                        }
+                viewModel.uiState.collect { state ->
+                    if (state.loadState == LoadState.LOADING) {
+                        binding.loadingLottie.visibility = View.VISIBLE
+                    } else if (state.loadState == LoadState.SUCCESS) {
+                        binding.loadingLottie.visibility = View.GONE
+                        repoNames.addAll(state.searchResults.searchResults)
+                        initRecycler()
+                    } else if (state.loadState == LoadState.ERROR) {
+                        binding.loadingLottie.visibility = View.GONE
                     }
                 }
             }

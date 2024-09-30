@@ -20,6 +20,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.databinding.ActivitySearchOrganizationBinding
 import com.dragonguard.android.ui.menu.org.regist.RegistOrgActivity
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -164,7 +165,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.state is SearchOrganizationContract.SearchOrganizationState.LoadState.Success) {
+                    if (state.state == LoadState.SUCCESS) {
                         if (checkSearchResult(state.orgNames.names)) {
                             initRecycler()
                         }

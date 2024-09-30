@@ -7,6 +7,7 @@ import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class OthersProfileViewModel :
         pref = getPref()
         repository = getRepository()
         return OthersProfileContract.UserProfileStates(
-            OthersProfileContract.UserProfileState.LoadState.Initial,
+            LoadState.INIT,
             OthersProfileContract.UserProfileState.Token(pref.getJwtToken("")),
             OthersProfileContract.UserProfileState.UserProfile(UserProfileModel())
         )
@@ -29,11 +30,11 @@ class OthersProfileViewModel :
         viewModelScope.launch {
             when (event) {
                 is OthersProfileContract.UserProfileEvent.GetOthersProfile -> {
-                    setState { copy(loadState = OthersProfileContract.UserProfileState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.otherProfile(event.name).onSuccess {
                         setState {
                             copy(
-                                loadState = OthersProfileContract.UserProfileState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 userProfile = OthersProfileContract.UserProfileState.UserProfile(it)
                             )
                         }

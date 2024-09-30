@@ -4,6 +4,7 @@ import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
+import com.dragonguard.android.util.LoadState
 
 class RepoContributorsContract {
     sealed class RepoContributorsEvent : UiEvent {
@@ -11,12 +12,7 @@ class RepoContributorsContract {
     }
 
     sealed class RepoContributorsState {
-        sealed class LoadState : RepoContributorsState() {
-            data object Initial : LoadState()
-            data object Loading : LoadState()
-            data object Success : LoadState()
 
-        }
 
         data class RepoContributeState(val repoState: RepoContributorsModel) :
             RepoContributorsState()
@@ -25,7 +21,7 @@ class RepoContributorsContract {
     }
 
     data class RepoContributorsStates(
-        val loadState: RepoContributorsState.LoadState,
+        val loadState: LoadState,
         val repoState: RepoContributorsState.RepoContributeState,
         val token: RepoContributorsState.TokenState
     ) : UiState

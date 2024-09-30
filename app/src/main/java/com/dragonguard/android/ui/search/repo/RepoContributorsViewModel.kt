@@ -7,6 +7,7 @@ import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class RepoContributorsViewModel :
         repository = getRepository()
         pref = getPref()
         return RepoContributorsContract.RepoContributorsStates(
-            RepoContributorsContract.RepoContributorsState.LoadState.Initial,
+            LoadState.INIT,
             RepoContributorsContract.RepoContributorsState.RepoContributeState(RepoContributorsModel()),
             RepoContributorsContract.RepoContributorsState.TokenState(pref.getJwtToken(""))
         )
@@ -29,11 +30,11 @@ class RepoContributorsViewModel :
         viewModelScope.launch {
             when (event) {
                 is RepoContributorsContract.RepoContributorsEvent.GetRepoContributors -> {
-                    setState { copy(loadState = RepoContributorsContract.RepoContributorsState.LoadState.Loading) }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.getRepoContributors(event.repoName).onSuccess {
                         setState {
                             copy(
-                                loadState = RepoContributorsContract.RepoContributorsState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 repoState = RepoContributorsContract.RepoContributorsState.RepoContributeState(
                                     it
                                 )

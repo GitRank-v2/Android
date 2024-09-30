@@ -8,6 +8,7 @@ import com.dragonguard.android.data.model.org.RegistOrgResultModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ class RegistOrgViewModel :
         pref = getPref()
         repository = getRepository()
         return RegistOrgContract.RegistOrgStates(
-            RegistOrgContract.RegistOrgState.LoadState.Initial,
+            LoadState.INIT,
             RegistOrgContract.RegistOrgState.Token(""),
             RegistOrgContract.RegistOrgState.RegistResult(RegistOrgResultModel())
         )
@@ -31,7 +32,7 @@ class RegistOrgViewModel :
         viewModelScope.launch {
             when (event) {
                 is RegistOrgContract.RegistOrgEvent.RequestRegistOrg -> {
-                    setState { copy(state = RegistOrgContract.RegistOrgState.LoadState.Loading) }
+                    setState { copy(state = LoadState.LOADING) }
                     repository.postRegistOrg(
                         RegistOrgModel(
                             event.orgName,
@@ -41,7 +42,7 @@ class RegistOrgViewModel :
                     ).onSuccess {
                         setState {
                             copy(
-                                state = RegistOrgContract.RegistOrgState.LoadState.Success,
+                                state = LoadState.SUCCESS,
                                 registResult = RegistOrgContract.RegistOrgState.RegistResult(it)
                             )
                         }

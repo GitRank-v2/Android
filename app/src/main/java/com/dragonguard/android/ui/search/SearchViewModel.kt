@@ -60,7 +60,7 @@ class SearchViewModel :
 
                 is SearchContract.SearchEvent.GetRepositoryNamesWithFilters -> {
                     setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getRepositoryNamesWithFilters(
+                    repository.getRepositoryNamesWithFilters(
                         event.name,
                         event.count,
                         event.filters,

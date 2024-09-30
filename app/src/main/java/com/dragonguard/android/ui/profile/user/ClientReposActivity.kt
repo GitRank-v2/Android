@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityClientReposBinding
 import com.dragonguard.android.ui.profile.OthersReposAdapter
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 class ClientReposActivity : AppCompatActivity() {
@@ -45,14 +46,8 @@ class ClientReposActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    when (state.loadState) {
-                        is ClientReposContract.ClientReposState.LoadState.Success -> {
-                            initRecycler()
-                        }
-
-                        else -> {
-
-                        }
+                    if (state.loadState == LoadState.SUCCESS) {
+                        initRecycler()
                     }
                 }
             }

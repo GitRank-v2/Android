@@ -5,6 +5,7 @@ import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
+import com.dragonguard.android.util.LoadState
 
 class RankingsContract {
     sealed class RankingsEvent : UiEvent {
@@ -19,12 +20,6 @@ class RankingsContract {
     }
 
     sealed class RankingsState {
-        sealed class LoadState : RankingsState() {
-            data object Initial : LoadState()
-            data object Loading : LoadState()
-            data object Success : LoadState()
-            data object Error : LoadState()
-        }
 
         data class Type(val type: String) : RankingsState()
         sealed class Rankings(val ranking: ArrayList<*>) : RankingsState() {
@@ -53,7 +48,7 @@ class RankingsContract {
     }
 
     data class RankingsStates(
-        val loadState: RankingsState.LoadState,
+        val loadState: LoadState,
         val type: RankingsState.Type,
         val ranking: RankingsState.Rankings,
         val rankings: RankingsState.Rankings,

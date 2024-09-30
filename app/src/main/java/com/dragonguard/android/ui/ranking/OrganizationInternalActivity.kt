@@ -17,6 +17,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +61,7 @@ class OrganizationInternalActivity : AppCompatActivity() {
                         orgInternalRankings(state.orgId.orgId)
                     }
 
-                    if (state.loadState is OrganizationInternalContract.OrganizationInternalState.LoadState.Success) {
+                    if (state.loadState == LoadState.SUCCESS) {
                         checkRankings(state.orgInternalRankings.orgInternalRankings)
                     }
                 }

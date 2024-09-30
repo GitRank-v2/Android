@@ -18,6 +18,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.databinding.ActivityRepoContributorsBinding
+import com.dragonguard.android.util.LoadState
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -64,12 +65,10 @@ class RepoContributorsActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    if (it.loadState is RepoContributorsContract.RepoContributorsState.LoadState.Success) {
+                    if (it.loadState == LoadState.SUCCESS) {
                         checkContributors(it.repoState.repoState)
                     }
                 }
-
-
             }
         }
 

@@ -7,6 +7,7 @@ import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class MainViewModel :
         pref = getPref()
         repository = getRepository()
         return MainContract.MainStates(
-            loadState = MainContract.MainState.LoadState.Initial,
+            loadState = LoadState.INIT,
             userInfo = MainContract.MainState.UserInfo(
                 UserInfoModel()
             ),
@@ -35,15 +36,11 @@ class MainViewModel :
         viewModelScope.launch {
             when (event) {
                 is MainContract.MainEvent.GetUserInfo -> {
-                    setState {
-                        copy(
-                            loadState = MainContract.MainState.LoadState.Loading
-                        )
-                    }
+                    setState { copy(loadState = LoadState.LOADING) }
                     repository.getUserInfo().onSuccess {
                         setState {
                             copy(
-                                loadState = MainContract.MainState.LoadState.Success,
+                                loadState = LoadState.SUCCESS,
                                 userInfo = MainContract.MainState.UserInfo(it)
                             )
                         }
@@ -73,7 +70,7 @@ class MainViewModel :
                             }
                         }.onFail {
 
-                    }
+                        }
 
                 }
 

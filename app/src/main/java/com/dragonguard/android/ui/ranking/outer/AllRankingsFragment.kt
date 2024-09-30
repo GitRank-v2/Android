@@ -21,6 +21,7 @@ import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.ranking.OrganizationInternalActivity
 import com.dragonguard.android.ui.ranking.RankingsAdapter
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 
@@ -116,7 +117,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    if (it.loadState is RankingsContract.RankingsState.LoadState.Success) {
+                    if (it.loadState == LoadState.SUCCESS) {
                         when (it.type.type) {
                             "사용자 전체" -> {
                                 checkTotalUserRankings()

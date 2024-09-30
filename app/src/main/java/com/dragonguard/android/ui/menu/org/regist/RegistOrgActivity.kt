@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityRegistOrgBinding
 import com.dragonguard.android.ui.menu.MenuActivity
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 class RegistOrgActivity : AppCompatActivity() {
@@ -84,7 +85,7 @@ class RegistOrgActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.state is RegistOrgContract.RegistOrgState.LoadState.Success) {
+                    if (state.state == LoadState.SUCCESS) {
                         if (state.registResult.result.id != 0L) {
                             Toast.makeText(
                                 applicationContext,
