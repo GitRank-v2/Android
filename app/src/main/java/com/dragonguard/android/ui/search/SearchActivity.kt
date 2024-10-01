@@ -27,6 +27,7 @@ import com.dragonguard.android.databinding.ActivitySearchBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.search.filter.SearchFilterActivity
 import com.dragonguard.android.util.HorizontalItemDecorator
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.VerticalItemDecorator
 import kotlinx.coroutines.launch
 
@@ -177,9 +178,9 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    if (it.searchState is SearchContract.SearchState.LoadState.RepoSuccess) {
+                    if (it.searchState == LoadState.REPOSUCCESS) {
                         checkUserNames()
-                    } else if (it.searchState is SearchContract.SearchState.LoadState.UserSuccess) {
+                    } else if (it.searchState == LoadState.USERSUCCESS) {
                         checkRepoNames()
                     }
                 }

@@ -6,6 +6,7 @@ import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ class SearchViewModel :
         pref = getPref()
         repository = getRepository()
         return SearchContract.SearchStates(
-            SearchContract.SearchState.LoadState.Initial,
+            LoadState.INIT,
             SearchContract.SearchState.UserNames(arrayListOf()),
             SearchContract.SearchState.UserNames(arrayListOf()),
             SearchContract.SearchState.RepoNames(arrayListOf()),
@@ -30,11 +31,11 @@ class SearchViewModel :
         viewModelScope.launch {
             when (event) {
                 is SearchContract.SearchEvent.GetUserNames -> {
-                    setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
+                    setState { copy(searchState = LoadState.LOADING) }
                     repository.getUserNames(event.name, event.count, event.type).onSuccess {
                         setState {
                             copy(
-                                searchState = SearchContract.SearchState.LoadState.UserSuccess,
+                                searchState = LoadState.USERSUCCESS,
                                 receivedUserNames = SearchContract.SearchState.UserNames(it)
                             )
                         }
@@ -44,11 +45,11 @@ class SearchViewModel :
                 }
 
                 is SearchContract.SearchEvent.GetRepositoryNamesNoFilters -> {
-                    setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
+                    setState { copy(searchState = LoadState.LOADING) }
                     repository.getRepositoryNames(event.name, event.count, event.type).onSuccess {
                         setState {
                             copy(
-                                searchState = SearchContract.SearchState.LoadState.RepoSuccess,
+                                searchState = LoadState.REPOSUCCESS,
                                 receivedRepoNames = SearchContract.SearchState.RepoNames(it)
                             )
                         }
@@ -59,7 +60,7 @@ class SearchViewModel :
                 }
 
                 is SearchContract.SearchEvent.GetRepositoryNamesWithFilters -> {
-                    setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
+                    setState { copy(searchState = LoadState.LOADING) }
                     repository.getRepositoryNamesWithFilters(
                         event.name,
                         event.count,
@@ -68,7 +69,7 @@ class SearchViewModel :
                     ).onSuccess {
                         setState {
                             copy(
-                                searchState = SearchContract.SearchState.LoadState.RepoSuccess,
+                                searchState = LoadState.REPOSUCCESS,
                                 receivedRepoNames = SearchContract.SearchState.RepoNames(it)
                             )
                         }
@@ -80,7 +81,7 @@ class SearchViewModel :
                 is SearchContract.SearchEvent.ClearRepoNames -> {
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.Initial,
+                            searchState = LoadState.INIT,
                             repoNames = SearchContract.SearchState.RepoNames(arrayListOf())
                         )
                     }
@@ -89,7 +90,7 @@ class SearchViewModel :
                 is SearchContract.SearchEvent.ClearUserNames -> {
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.Initial,
+                            searchState = LoadState.INIT,
                             userNames = SearchContract.SearchState.UserNames(arrayListOf())
                         )
                     }
@@ -98,7 +99,6 @@ class SearchViewModel :
                 is SearchContract.SearchEvent.AddReceivedUserNames -> {
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.UserSuccess,
                             userNames = SearchContract.SearchState.UserNames(
                                 (userNames.userNames + receivedUserNames.userNames) as ArrayList
                             ),
@@ -110,7 +110,6 @@ class SearchViewModel :
                 is SearchContract.SearchEvent.AddReceivedRepoNames -> {
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.RepoSuccess,
                             repoNames = SearchContract.SearchState.RepoNames(
                                 (repoNames.repoNames + receivedRepoNames.repoNames) as ArrayList
                             ),
