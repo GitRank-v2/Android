@@ -11,20 +11,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
-import com.dragonguard.android.databinding.ActivityTokenHistoryBinding
+import com.dragonguard.android.databinding.ActivityGitHistoryBinding
 import com.dragonguard.android.ui.main.MainActivity
 
-class TokenHistoryActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityTokenHistoryBinding
+class GitHistoryActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityGitHistoryBinding
     private var token = ""
 
     //var viewmodel = Viewmodel()
-    private lateinit var tokenAdapter: TokenListAdapter
+    private lateinit var tokenAdapter: GitListAdapter
     private var refresh = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_token_history)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_git_history)
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -51,7 +51,7 @@ class TokenHistoryActivity : AppCompatActivity() {
     */
 
     private fun initRecycler(result: ArrayList<TokenHistoryModelItem>) {
-        tokenAdapter = TokenListAdapter(result, this@TokenHistoryActivity)
+        tokenAdapter = GitListAdapter(result, this@GitHistoryActivity)
         binding.tokenContributeList.adapter = tokenAdapter
         binding.tokenContributeList.layoutManager = LinearLayoutManager(this)
         tokenAdapter.notifyDataSetChanged()

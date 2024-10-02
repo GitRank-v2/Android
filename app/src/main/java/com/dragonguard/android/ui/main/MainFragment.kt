@@ -15,7 +15,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
-import com.dragonguard.android.ui.history.TokenHistoryActivity
+import com.dragonguard.android.ui.history.GitHistoryActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,7 +58,7 @@ class MainFragment(
 //        binding.toolbar.inflateMenu(R.menu.refresh)
         binding.githubProfile.clipToOutline = true
         binding.tokenFrame.setOnClickListener {
-            val intent = Intent(requireActivity(), TokenHistoryActivity::class.java)
+            val intent = Intent(requireActivity(), GitHistoryActivity::class.java)
             intent.putExtra("token", viewModel.currentState.newAccessToken.token)
             startActivity(intent)
         }

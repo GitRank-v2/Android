@@ -9,14 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.dragonguard.android.databinding.TokenListBinding
 import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
+import com.dragonguard.android.databinding.TokenListBinding
 
 
-class TokenListAdapter(
+class GitListAdapter(
     private val datas: ArrayList<TokenHistoryModelItem>,
     private val context: Context
-) : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<GitListAdapter.ViewHolder>() {
     private lateinit var binding: TokenListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         binding = TokenListBinding.inflate(LayoutInflater.from(parent.context), parent, false)

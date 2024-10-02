@@ -27,7 +27,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.history.TokenHistoryActivity"
+            android:name=".ui.history.GitHistoryActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -58,10 +58,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.compare.compare.RepoCompareActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.compare.choose.RepoChooseActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
