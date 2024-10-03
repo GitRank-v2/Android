@@ -90,7 +90,10 @@ class ApiRepository {
     }
 
     //klip wallet을 등록한 모든 사용자의 토큰에 따른 등수를 받아오는 함수
-    suspend fun getTotalUsersRankings(page: Int, size: Int): DataResult<TotalUsersRankingModel> {
+    suspend fun getTotalUsersRankings(
+        page: Int,
+        size: Int
+    ): DataResult<TotalUsersRankingModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$page")
         queryMap.put("size", "$size")

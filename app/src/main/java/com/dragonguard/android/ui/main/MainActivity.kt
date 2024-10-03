@@ -98,13 +98,12 @@ class MainActivity : AppCompatActivity() {
             viewModel.logout()
         }
         this.onBackPressedDispatcher.addCallback(this, callback)
-        binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
         binding.mainLoading.resumeAnimation()
         binding.mainLoading.visibility = View.VISIBLE
 
         // 유저 정보 가져오기
-        //viewModel.getUserInfo()
-        refreshMain()
+        viewModel.getUserInfo()
+        //refreshMain()
 
         binding.mainNav.setOnItemSelectedListener {
             when (it.itemId) {
@@ -178,7 +177,29 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     if (state.loadState == LoadState.SUCCESS) {
+                        Log.d("success UserInfo", "success")
                         checkUserInfo(state.userInfo.userInfo)
+                    }
+
+                    if (state.loadState == LoadState.ERROR) {
+                        binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
+                        loginOut = true
+                        viewModel.logout()
+                        val transaction = supportFragmentManager.beginTransaction()
+                        supportFragmentManager.fragments.forEach {
+                            transaction.remove(it)
+                        }
+                        transaction.commit()
+                        mainFrag?.let {
+                            it.clearView()
+                        }
+                        mainFrag = null
+                        compareFrag = null
+                        profileFrag = null
+                        rankingFrag = null
+                        Log.d("로그인 필요", "로그인 필요")
+                        val intent = Intent(applicationContext, LoginActivity::class.java)
+                        activityResultLauncher.launch(intent)
                     }
 
                     if (state.clickSearch.clicked) {
@@ -202,22 +223,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun refreshMain() {
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(1000)
-            withContext(Dispatchers.Main) {
-                binding.mainLoading.pauseAnimation()
-                binding.mainLoading.visibility = View.GONE
-                binding.mainNav.visibility = View.VISIBLE
-                mainFrag = MainFragment(realModel, true, viewModel)
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(binding.contentFrame.id, mainFrag!!)
-                    .commit()
-            }
-
-        }
-    }
-
     private fun checkUserInfo(userInfo: UserInfoModel) {
         Log.d("success", "success userInfo: $userInfo")
         if (userInfo.github_id == null) {
@@ -230,7 +235,28 @@ class MainActivity : AppCompatActivity() {
                 activityResultLauncher.launch(intent)
             }
         } else {
-            mainFrag = MainFragment(realModel, imgRefresh, viewModel)
+
+            if (finish) {
+                return
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(1000)
+                finish = true
+                withContext(Dispatchers.Main) {
+                    binding.mainLoading.pauseAnimation()
+                    binding.mainLoading.visibility = View.GONE
+                    binding.mainNav.visibility = View.VISIBLE
+                    mainFrag =
+                        MainFragment(
+                            viewModel.currentState.userInfo.userInfo,
+                            imgRefresh,
+                            viewModel
+                        )
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(binding.contentFrame.id, mainFrag!!)
+                        .commit()
+                }
+            }
         }
     }
 

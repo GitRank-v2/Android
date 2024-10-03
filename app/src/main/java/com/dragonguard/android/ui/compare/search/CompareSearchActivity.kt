@@ -121,7 +121,7 @@ class CompareSearchActivity : AppCompatActivity() {
     //    repo 검색 api 호출 및 결과 출력
     private fun callSearchApi(name: String) {
         binding.loadingLottie.visibility = View.VISIBLE
-        //viewModel.searchRepo(name, count)
+        viewModel.searchRepo(name, count)
     }
 
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()

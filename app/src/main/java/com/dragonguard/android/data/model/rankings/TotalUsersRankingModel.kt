@@ -1,5 +1,6 @@
 package com.dragonguard.android.data.model.rankings
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /*
@@ -7,4 +8,7 @@ import com.squareup.moshi.JsonClass
  1등부터 끝 순서로 받아오며 TotalUsersRankingModelItem 의 리스트이다
  */
 @JsonClass(generateAdapter = true)
-class TotalUsersRankingModel : ArrayList<TotalUsersRankingModelItem>()
+data class TotalUsersRankingModel(
+    @field:Json(name = "ranks")
+    val ranks: List<TotalUsersRankingModelItem>
+)

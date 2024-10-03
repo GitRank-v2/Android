@@ -49,7 +49,7 @@ class ClientProfileFragment(
         super.onViewCreated(view, savedInstanceState)
         initObserver()
 
-        //viewModel.getClientDetail()
+        viewModel.getClientDetail()
     }
 
     private fun initObserver() {

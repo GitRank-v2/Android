@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.ranking.outer
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
@@ -9,6 +10,8 @@ import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
+import com.dragonguard.android.util.onException
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -35,11 +38,12 @@ class RankingsViewModel :
                 is RankingsContract.RankingsEvent.GetTotalUserRanking -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getTotalUsersRankings(event.page, event.size).onSuccess {
+                        Log.d("user ranking", "success")
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.AllUsers.Ranking(
-                                    baseRanking = it.map {
+                                    baseRanking = it.ranks.map {
                                         TotalUsersRankingsModel(
                                             tokens = it.tokens,
                                             github_id = it.github_id,
@@ -53,7 +57,11 @@ class RankingsViewModel :
                             )
                         }
                     }.onFail {
-
+                        Log.d("RankingsViewModel", "handleEvent: $it")
+                    }.onException {
+                        Log.d("RankingsViewModel", "handleEvent: $it")
+                    }.onError {
+                        Log.d("RankingsViewModel", "handleEvent: $it")
                     }
                 }
 

@@ -7,17 +7,17 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class TotalUsersRankingsModel(
     @field:Json(name = "tokens")
-    override var tokens: Long?,
+    var tokens: Long?,
     @field:Json(name = "github_id")
-    override var github_id: String?,
+    var github_id: String?,
     @field:Json(name = "id")
-    override var id: String?,
+    var id: String?,
     @field:Json(name = "name")
-    override var name: String?,
+    var name: String?,
     @field:Json(name = "tier")
-    override var tier: String?,
+    var tier: String?,
     @field:Json(name = "rank")
     var ranking: Int? = 0,
     @field:Json(name = "profile_image")
-    override var profile_image: String?
-) : TotalUsersRankingModelItem(tokens, github_id, id, name, tier, profile_image)
+    var profile_image: String?
+)

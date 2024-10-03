@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.main
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
@@ -38,6 +39,7 @@ class MainViewModel :
                 is MainContract.MainEvent.GetUserInfo -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getUserInfo().onSuccess {
+                        Log.d("MainViewModel", pref.getJwtToken(""))
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
@@ -45,7 +47,7 @@ class MainViewModel :
                             )
                         }
                     }.onFail {
-
+                        setState { copy(loadState = LoadState.ERROR) }
                     }
                 }
 

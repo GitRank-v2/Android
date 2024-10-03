@@ -42,7 +42,7 @@ class AuthEmailActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         supportActionBar?.title = "   이메일 인증"
 
-        //viewModel.requestAuthEmail(orgId, email)
+        viewModel.requestAuthEmail(orgId, email)
 
 
         binding.resendCode.setOnClickListener {
@@ -95,15 +95,15 @@ class AuthEmailActivity : AppCompatActivity() {
     }
 
     private fun authEmail() {
-        //viewModel.checkEmailCode(emailAuthId, binding.emailCode.text.toString(), orgId)
+        viewModel.checkEmailCode(emailAuthId, binding.emailCode.text.toString(), orgId)
     }
 
     private fun deleteEmail() {
-        //viewModel.deleteLateEmailCode(emailAuthId)
+        viewModel.deleteLateEmailCode(emailAuthId)
     }
 
     private fun sendEmail() {
-        //viewModel.sendEmailAuth()
+        viewModel.sendEmailAuth()
 
     }
 

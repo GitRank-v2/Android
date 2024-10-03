@@ -51,7 +51,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
-        Log.d("시작", "loginactivity1")
+        //Log.d("시작", "loginactivity1")
         viewModel = LoginViewModel()
         initObserver()
         //쿠키 확인 코드
@@ -67,6 +67,7 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
+        Log.d("시작 token", viewModel.currentState.token.token)
 
         if (viewModel.currentState.token.token.isNotBlank() && viewModel.currentState.refreshToken.refreshToken.isNotBlank()) {
             val intentF = Intent(applicationContext, MainActivity::class.java)

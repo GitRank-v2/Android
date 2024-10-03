@@ -38,7 +38,7 @@ class ClientReposActivity : AppCompatActivity() {
             img = it
         }
         if (orgName.isNotBlank() && img.isNotBlank()) {
-            //viewModel.getGithubOrgRepos(orgName)
+            viewModel.getGithubOrgRepos(orgName)
         }
     }
 

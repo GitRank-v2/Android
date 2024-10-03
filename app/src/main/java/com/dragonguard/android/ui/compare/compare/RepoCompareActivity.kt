@@ -32,7 +32,7 @@ class RepoCompareActivity : AppCompatActivity() {
         initObserver()
         repo1 = intent.getStringExtra("repo1")!!
         repo2 = intent.getStringExtra("repo2")!!
-        //viewModel.requestCompareRepoMembers(repo1, repo2)
+        viewModel.requestCompareRepoMembers(repo1, repo2)
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

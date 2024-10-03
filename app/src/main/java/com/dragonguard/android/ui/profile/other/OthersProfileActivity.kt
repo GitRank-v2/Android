@@ -44,7 +44,7 @@ class OthersProfileActivity : AppCompatActivity() {
 
     private fun getOthersProfile() {
         Log.d("id", "id = $name")
-        //viewModel.getOthersProfile(name)
+        viewModel.getOthersProfile(name)
     }
 
     private fun initObserver() {

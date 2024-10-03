@@ -177,7 +177,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         Log.d("org 검색", "이름 $name type $type  count $count")
         if (type.isBlank()) {
             type = "UNIVERSITY"
-            //viewModel.searchOrgNames(name, type, count)
+            viewModel.searchOrgNames(name, type, count)
         }
     }
 

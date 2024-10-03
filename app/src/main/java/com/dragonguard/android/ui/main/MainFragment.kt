@@ -29,7 +29,6 @@ class MainFragment(
     Fragment() {
     private val token = ""
 
-
     private lateinit var binding: FragmentMainBinding
     private var repeat = false
 
@@ -47,6 +46,7 @@ class MainFragment(
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
         binding.mainFragViewmodel = viewModel
+        Log.d("token", info.toString())
 //        val main = activity as MainActivity
 //        main.setSupportActionBar(binding.toolbar)
 //        main.supportActionBar?.setDisplayHomeAsUpEnabled(false)

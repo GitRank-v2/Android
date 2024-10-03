@@ -36,7 +36,7 @@ class MenuActivity : AppCompatActivity() {
         viewModel = MenuViewModel()
         initObserver()
 
-        //viewModel.checkAdmin()
+        viewModel.checkAdmin()
         versionDialog = Dialog(this)
         versionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         versionDialog.setContentView(R.layout.version_dialog)
@@ -85,7 +85,7 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.withdrawBtn.setOnClickListener {
-            //viewModel.withDrawAccount()
+            viewModel.withDrawAccount()
         }
     }
 

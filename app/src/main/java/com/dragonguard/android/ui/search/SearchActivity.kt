@@ -346,24 +346,24 @@ class SearchActivity : AppCompatActivity() {
         if (!this@SearchActivity.isFinishing) {
             if (type.isNotBlank()) {
                 if (type == "USERS") {
-                    //viewModel.searchUserNames(name, count, type)
-                    //count++
+                    viewModel.searchUserNames(name, count, type)
+                    count++
                 } else {
                     if (filterResult.toString().isNotEmpty()) {
-                        //viewModel.searchRepositoryNamesNoFilters(name, count, type)
+                        viewModel.searchRepositoryNamesNoFilters(name, count, type)
                     } else {
-                        /*viewModel.searchRepositoryNamesWithFilters(
+                        viewModel.searchRepositoryNamesWithFilters(
                             name,
                             count,
                             filterResult.toString(),
                             type
-                        )*/
+                        )
                     }
-                    //count++
+                    count++
                 }
             } else {
-                //viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
-                //count++
+                viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
+                count++
             }
         }
     }

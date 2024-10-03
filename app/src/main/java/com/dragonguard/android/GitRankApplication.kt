@@ -3,6 +3,7 @@ package com.dragonguard.android
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.annotation.StringRes
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.data.service.GitRankService
@@ -22,7 +23,6 @@ class GitRankApplication : Application() {
         context = applicationContext
         pref = IdPreference(context)
         networkConnectionChecker = NetworkChecker(context)
-        repository = ApiRepository()
         moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
@@ -31,6 +31,7 @@ class GitRankApplication : Application() {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
         service = retrofit.create(GitRankService::class.java)
+        repository = ApiRepository()
     }
 
     companion object {
@@ -67,6 +68,7 @@ class GitRankApplication : Application() {
         fun getRepository(): ApiRepository = repository
         fun getService(): GitRankService = service
         fun setService() {
+            Log.d("setService", "setService: ")
             okHttpClient = OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(18, TimeUnit.SECONDS)

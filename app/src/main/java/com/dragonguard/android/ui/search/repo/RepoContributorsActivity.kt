@@ -96,7 +96,7 @@ class RepoContributorsActivity : AppCompatActivity() {
         if (!this@RepoContributorsActivity.isFinishing) {
             Log.d("check", "repoName $repoName")
             // 받아오기
-            //viewModel.getRepoContributors(repoName)
+            viewModel.getRepoContributors(repoName)
         }
     }
 
