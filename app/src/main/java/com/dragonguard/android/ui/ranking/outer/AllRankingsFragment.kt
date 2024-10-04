@@ -143,50 +143,35 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
     private fun checkTotalUserRankings() {
         if (viewModel.currentState.ranking.ranking.isNotEmpty()) {
             (viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).userRanking.forEach {
-                if (it.tokens != null) {
-                    if (ranking != 0) {
-                        if ((viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.AllUsers.Ranking).baseRanking[ranking - 1].tokens == it.tokens) {
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
-                                TotalUsersRankingsModel(
-                                    it.tokens,
-                                    it.github_id,
-                                    it.id,
-                                    it.name,
-                                    it.tier,
-                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking[ranking - 1].ranking,
-                                    it.profile_image
-                                )
-                            )
-                        } else {
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
-                                TotalUsersRankingsModel(
-                                    it.tokens,
-                                    it.github_id,
-                                    it.id,
-                                    it.name,
-                                    it.tier,
-                                    ranking + 1,
-                                    it.profile_image
-                                )
-                            )
-                        }
-                    } else {
-                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
-                            TotalUsersRankingsModel(
-                                it.tokens,
-                                it.github_id,
-                                it.id,
-                                it.name,
-                                it.tier,
-                                1,
-                                it.profile_image
-                            )
+                if (ranking != 0) {
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
+                        TotalUsersRankingsModel(
+                            it.tokens,
+                            it.github_id,
+                            it.id,
+                            it.name,
+                            it.tier,
+                            ranking + 1,
+                            it.profile_image
                         )
-                    }
-                    //Log.d("유져", "랭킹 ${ranking+1} 추가")
-                    ranking++
+                    )
+                } else {
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
+                        TotalUsersRankingsModel(
+                            it.tokens,
+                            it.github_id,
+                            it.id,
+                            it.name,
+                            it.tier,
+                            1,
+                            it.profile_image
+                        )
+                    )
                 }
+                //Log.d("유져", "랭킹 ${ranking+1} 추가")
+                ranking++
             }
+
             viewModel.addUserRanking()
             initUserRecycler()
         } else {
@@ -198,46 +183,31 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
     private fun checkOrgRankings() {
         if (viewModel.currentState.ranking.ranking.isNotEmpty()) {
             (viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.Organization.Ranking).orgRanking.forEach {
-                if (it.name != null) {
-                    if (ranking != 0) {
-                        if ((viewModel.currentState.ranking as RankingsContract.RankingsState.Rankings.Organization.Ranking).baseRanking[ranking - 1].token_sum == it.token_sum) {
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
-                                TotalOrganizationModel(
-                                    email_endpoint = it.email_endpoint,
-                                    id = it.id,
-                                    name = it.name,
-                                    organization_type = it.organization_type,
-                                    token_sum = it.token_sum,
-                                    ranking = (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings[ranking - 1].ranking
-                                )
-                            )
-                        } else {
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
-                                TotalOrganizationModel(
-                                    email_endpoint = it.email_endpoint,
-                                    id = it.id,
-                                    name = it.name,
-                                    organization_type = it.organization_type,
-                                    token_sum = it.token_sum,
-                                    ranking = ranking + 1
-                                )
-                            )
-                        }
-                    } else {
-                        (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
-                            TotalOrganizationModel(
-                                email_endpoint = it.email_endpoint,
-                                id = it.id,
-                                name = it.name,
-                                organization_type = it.organization_type,
-                                token_sum = it.token_sum,
-                                ranking = 1
-                            )
+                if (ranking != 0) {
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
+                        TotalOrganizationModel(
+                            email_endpoint = it.email_endpoint,
+                            id = it.id,
+                            name = it.name,
+                            organization_type = it.organization_type,
+                            token_sum = it.token_sum,
+                            ranking = ranking + 1
                         )
-                    }
-                    //Log.d("유져", "랭킹 ${ranking+1} 추가")
-                    ranking++
+                    )
+                } else {
+                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
+                        TotalOrganizationModel(
+                            email_endpoint = it.email_endpoint,
+                            id = it.id,
+                            name = it.name,
+                            organization_type = it.organization_type,
+                            token_sum = it.token_sum,
+                            ranking = 1
+                        )
+                    )
                 }
+                //Log.d("유져", "랭킹 ${ranking+1} 추가")
+                ranking++
             }
             viewModel.addOrganizationRanking()
             initOrgRecycler()
@@ -305,7 +275,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     viewModel.currentState.rankings.ranking.removeFirst()
                     viewModel.currentState.rankings.ranking.removeFirst()
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
-                        RankingsAdapter(
+                        rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
                             requireActivity(),
                             viewModel.currentState.token.token
@@ -323,7 +293,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         }
         binding.eachRankings.adapter?.notifyDataSetChanged()
         page++
-        if (page * size == viewModel.currentState.rankings.ranking.size) {
+        if ((page * size) - 3 == viewModel.currentState.rankings.ranking.size) {
             current++
         }
         Log.d("api 횟수", "$page 페이지 검색")
@@ -406,7 +376,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
         }
         binding.eachRankings.adapter?.notifyDataSetChanged()
         page++
-        if (page * size == viewModel.currentState.rankings.ranking.size) {
+        if ((page * size) - 3 == viewModel.currentState.rankings.ranking.size) {
             current++
         }
         Log.d("api 횟수", "$page 페이지 검색")

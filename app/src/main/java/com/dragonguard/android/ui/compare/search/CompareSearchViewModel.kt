@@ -36,7 +36,7 @@ class CompareSearchViewModel :
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 receivedSearchResult = CompareSearchContract.CompareSearchState.SearchResults(
-                                    it
+                                    it.data
                                 )
                             )
                         }

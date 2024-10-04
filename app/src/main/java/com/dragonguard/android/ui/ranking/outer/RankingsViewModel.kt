@@ -72,7 +72,7 @@ class RankingsViewModel :
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.map {
+                                    baseRanking = it.data.map {
                                         TotalOrganizationModel(
                                             email_endpoint = it.email_endpoint,
                                             id = it.id,
@@ -96,7 +96,7 @@ class RankingsViewModel :
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.map {
+                                    baseRanking = it.data.map {
                                         TotalOrganizationModel(
                                             email_endpoint = it.email_endpoint,
                                             id = it.id,
@@ -120,7 +120,7 @@ class RankingsViewModel :
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.map {
+                                    baseRanking = it.data.map {
                                         TotalOrganizationModel(
                                             email_endpoint = it.email_endpoint,
                                             id = it.id,
@@ -144,7 +144,7 @@ class RankingsViewModel :
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.map {
+                                    baseRanking = it.data.map {
                                         TotalOrganizationModel(
                                             email_endpoint = it.email_endpoint,
                                             id = it.id,
@@ -168,7 +168,7 @@ class RankingsViewModel :
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.map {
+                                    baseRanking = it.data.map {
                                         TotalOrganizationModel(
                                             email_endpoint = it.email_endpoint,
                                             id = it.id,

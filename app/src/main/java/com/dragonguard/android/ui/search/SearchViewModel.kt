@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.search
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
@@ -7,6 +8,8 @@ import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
+import com.dragonguard.android.util.onException
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
@@ -36,25 +39,34 @@ class SearchViewModel :
                         setState {
                             copy(
                                 searchState = LoadState.USERSUCCESS,
-                                receivedUserNames = SearchContract.SearchState.UserNames(it)
+                                receivedUserNames = SearchContract.SearchState.UserNames(it.data as ArrayList)
                             )
                         }
                     }.onFail {
-
+                        Log.d("SearchViewModel", "handleEvent fail: $it")
+                    }.onError {
+                        Log.d("SearchViewModel", "handleEvent error: $it")
+                    }.onException {
+                        Log.d("SearchViewModel", "handleEvent exception: ${it.message}")
                     }
                 }
 
                 is SearchContract.SearchEvent.GetRepositoryNamesNoFilters -> {
                     setState { copy(searchState = LoadState.LOADING) }
                     repository.getRepositoryNames(event.name, event.count, event.type).onSuccess {
+                        Log.d("SearchViewModel", "handleEvent success: ${it.data}")
+                        currentState.receivedRepoNames.repoNames.addAll(it.data)
                         setState {
                             copy(
                                 searchState = LoadState.REPOSUCCESS,
-                                receivedRepoNames = SearchContract.SearchState.RepoNames(it)
                             )
                         }
                     }.onFail {
-
+                        Log.d("SearchViewModel", "handleEvent fail: $it")
+                    }.onError {
+                        Log.d("SearchViewModel", "handleEvent error: $it")
+                    }.onException {
+                        Log.d("SearchViewModel", "handleEvent exception: ${it.message}")
                     }
 
                 }
@@ -70,11 +82,15 @@ class SearchViewModel :
                         setState {
                             copy(
                                 searchState = LoadState.REPOSUCCESS,
-                                receivedRepoNames = SearchContract.SearchState.RepoNames(it)
+                                receivedRepoNames = SearchContract.SearchState.RepoNames(it.data as ArrayList)
                             )
                         }
                     }.onFail {
-
+                        Log.d("SearchViewModel", "handleEvent fail: $it")
+                    }.onError {
+                        Log.d("SearchViewModel", "handleEvent error: $it")
+                    }.onException {
+                        Log.d("SearchViewModel", "handleEvent exception: ${it.message}")
                     }
                 }
 
@@ -108,11 +124,9 @@ class SearchViewModel :
                 }
 
                 is SearchContract.SearchEvent.AddReceivedRepoNames -> {
+                    currentState.repoNames.repoNames.addAll(currentState.receivedRepoNames.repoNames)
                     setState {
                         copy(
-                            repoNames = SearchContract.SearchState.RepoNames(
-                                (repoNames.repoNames + receivedRepoNames.repoNames) as ArrayList
-                            ),
                             receivedRepoNames = SearchContract.SearchState.RepoNames(arrayListOf())
                         )
                     }

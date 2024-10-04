@@ -22,7 +22,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.databinding.ActivitySearchBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.search.filter.SearchFilterActivity
@@ -179,9 +178,9 @@ class SearchActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
                     if (it.searchState == LoadState.REPOSUCCESS) {
-                        checkUserNames()
-                    } else if (it.searchState == LoadState.USERSUCCESS) {
                         checkRepoNames()
+                    } else if (it.searchState == LoadState.USERSUCCESS) {
+                        checkUserNames()
                     }
                 }
             }
@@ -192,6 +191,10 @@ class SearchActivity : AppCompatActivity() {
         if (viewModel.currentState.receivedUserNames.userNames.isNotEmpty()) {
             viewModel.addReceivedUserNames()
             initRecycler()
+        } else {
+            binding.loadingLottie.pauseAnimation()
+            binding.loadingLottie.visibility = View.GONE
+            binding.searchResult.visibility = View.VISIBLE
         }
     }
 
@@ -199,6 +202,10 @@ class SearchActivity : AppCompatActivity() {
         if (viewModel.currentState.receivedRepoNames.repoNames.isNotEmpty()) {
             viewModel.addReceivedRepoNames()
             initRecycler()
+        } else {
+            binding.loadingLottie.pauseAnimation()
+            binding.loadingLottie.visibility = View.GONE
+            binding.searchResult.visibility = View.VISIBLE
         }
     }
 
@@ -349,9 +356,11 @@ class SearchActivity : AppCompatActivity() {
                     viewModel.searchUserNames(name, count, type)
                     count++
                 } else {
-                    if (filterResult.toString().isNotEmpty()) {
+                    if (filterResult.toString().isBlank()) {
+                        Log.d("필터 없음", "필터 없음")
                         viewModel.searchRepositoryNamesNoFilters(name, count, type)
                     } else {
+                        Log.d("필터 있음", "필터 있음")
                         viewModel.searchRepositoryNamesWithFilters(
                             name,
                             count,
@@ -359,11 +368,10 @@ class SearchActivity : AppCompatActivity() {
                             type
                         )
                     }
-                    count++
                 }
             } else {
+                Log.d("필터 없음", "필터 없음")
                 viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
-                count++
             }
         }
     }
@@ -372,6 +380,8 @@ class SearchActivity : AppCompatActivity() {
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()
     private fun initRecycler() {
         Log.d("count", "count: $count")
+        Log.d("results", viewModel.currentState.userNames.userNames.toString())
+        Log.d("results", viewModel.currentState.repoNames.repoNames.toString())
         if (type == "USERS") {
             if (count == 0) {
                 repositoryProfileAdapter =
@@ -403,7 +413,7 @@ class SearchActivity : AppCompatActivity() {
                     )
                 } else {
                     RepositoryProfileAdapter(
-                        viewModel.currentState.repoNames.repoNames as ArrayList<RepoSearchResultModel>,
+                        viewModel.currentState.repoNames.repoNames,
                         this,
                         token,
                         type,

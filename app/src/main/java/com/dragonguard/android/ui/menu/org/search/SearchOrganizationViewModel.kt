@@ -50,7 +50,9 @@ class SearchOrganizationViewModel :
                 is SearchOrganizationContract.SearchOrganizationEvent.AddReceivedOrgNames -> {
                     setState {
                         copy(
-                            orgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames((orgNames.names + receivedOrgNames.names) as OrganizationNamesModel)
+                            orgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames(
+                                OrganizationNamesModel(orgNames.names.data + receivedOrgNames.names.data)
+                            )
 
                         )
                     }

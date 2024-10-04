@@ -49,14 +49,14 @@ class ApproveOrgFragment : Fragment() {
 
                     if (state.approveOrg.status) {
                         Toast.makeText(requireContext(), "승인됨", Toast.LENGTH_SHORT).show()
-                        viewModel.currentState.requestedOrg.org.removeAt(position)
+                        viewModel.removeRequestedOrg(position)
                         binding.waitingOrgList.adapter?.notifyDataSetChanged()
                         viewModel.resetClick()
                     }
 
                     if (state.rejectOrg.status) {
                         Toast.makeText(requireContext(), "반려됨", Toast.LENGTH_SHORT).show()
-                        viewModel.currentState.requestedOrg.org.removeAt(position)
+                        viewModel.removeRequestedOrg(position)
                         binding.waitingOrgList.adapter?.notifyDataSetChanged()
                         viewModel.resetClick()
                     }
@@ -81,7 +81,7 @@ class ApproveOrgFragment : Fragment() {
         if (page == 0) {
             val adapter =
                 ApproveRequestOrgAdapter(
-                    viewModel.currentState.requestedOrg.org,
+                    viewModel.currentState.requestedOrg.org.data,
                     requireContext(),
                     viewModel.currentState.token.token,
                     viewModel,

@@ -80,9 +80,9 @@ class OrganizationInternalActivity : AppCompatActivity() {
     }
 
     private fun checkRankings(result: OrgInternalRankingModel) {
-        if (result.isNotEmpty()) {
-            Log.d("조직 내 랭킹", "결과 : ${result[0].github_id}")
-            result.forEach {
+        if (result.data.isNotEmpty()) {
+            Log.d("조직 내 랭킹", "결과 : ${result.data[0].github_id}")
+            result.data.forEach {
                 Log.d("조직 내 랭킹", "결과 : ${it.github_id}")
                 if (ranking != 0) {
                     if (orgInternalRankings[ranking - 1].tokens == it.tokens) {

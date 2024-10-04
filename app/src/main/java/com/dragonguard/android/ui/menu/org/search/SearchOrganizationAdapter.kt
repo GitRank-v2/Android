@@ -22,7 +22,7 @@ class SearchOrganizationAdapter(
         return ViewHolder(binding.root)
     }
 
-    override fun getItemCount(): Int = datas.size
+    override fun getItemCount(): Int = datas.data.size
 
     //리사이클러 뷰의 요소들을 넣어줌
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -46,6 +46,6 @@ class SearchOrganizationAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(datas[position])
+        holder.bind(datas.data[position])
     }
 }

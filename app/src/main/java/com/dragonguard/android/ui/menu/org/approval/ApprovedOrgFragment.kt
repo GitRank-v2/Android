@@ -61,7 +61,10 @@ class ApprovedOrgFragment : Fragment() {
         Log.d("count", "count: $count")
         if (page == 0) {
             val adapter =
-                ApprovedOrgAdapter(viewModel.currentState.approvedOrg.approvedOrg, requireContext())
+                ApprovedOrgAdapter(
+                    viewModel.currentState.approvedOrg.approvedOrg.data as ArrayList,
+                    requireContext()
+                )
             binding.acceptedOrgList.adapter = adapter
             binding.acceptedOrgList.layoutManager = LinearLayoutManager(requireContext())
         }

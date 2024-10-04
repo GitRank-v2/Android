@@ -71,7 +71,7 @@ class OrganizationInternalViewModel :
                     setState {
                         copy(
                             orgInternalRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
-                                (orgInternalRankings.orgInternalRankings + receivedRankings.orgInternalRankings) as OrgInternalRankingModel
+                                OrgInternalRankingModel(orgInternalRankings.orgInternalRankings.data + receivedRankings.orgInternalRankings.data)
                             )
                         )
                     }

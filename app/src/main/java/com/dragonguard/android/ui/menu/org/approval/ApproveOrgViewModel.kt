@@ -101,7 +101,19 @@ class ApproveOrgViewModel :
                     setState {
                         copy(
                             requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(
-                                (requestedOrg.org + receivedOrg.org) as ApproveRequestOrgModel
+                                ApproveRequestOrgModel(requestedOrg.org.data + receivedOrg.org.data)
+                            )
+                        )
+                    }
+                }
+
+                is ApproveOrgContract.ApproveOrgEvent.RemoveRequestedOrg -> {
+                    val list = uiState.value.requestedOrg.org.data.toMutableList()
+                    list.removeAt(event.position)
+                    setState {
+                        copy(
+                            requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(
+                                ApproveRequestOrgModel(list)
                             )
                         )
                     }
@@ -130,4 +142,8 @@ class ApproveOrgViewModel :
         setEvent(ApproveOrgContract.ApproveOrgEvent.AddReceivedOrg)
     }
 
+
+    fun removeRequestedOrg(position: Int) {
+        setEvent(ApproveOrgContract.ApproveOrgEvent.RemoveRequestedOrg(position))
+    }
 }

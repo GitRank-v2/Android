@@ -50,7 +50,7 @@ class ApprovedOrgViewModel :
                     setState {
                         copy(
                             approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(
-                                (approvedOrg.approvedOrg + receivedOrg.approvedOrg) as ApproveRequestOrgModel
+                                ApproveRequestOrgModel(approvedOrg.approvedOrg.data + receivedOrg.approvedOrg.data)
                             )
                         )
                     }
