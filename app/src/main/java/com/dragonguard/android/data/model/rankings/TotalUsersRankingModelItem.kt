@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
  모든 사용자의 랭킹을 받기위해 정의한 model
  */
 @JsonClass(generateAdapter = true)
-class TotalUsersRankingModelItem(
+data class TotalUsersRankingModelItem(
     @field:Json(name = "tokens")
     var tokens: Long?,
 

@@ -10,10 +10,6 @@ import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.data.model.klip.TokenHistoryModel
-import com.dragonguard.android.data.model.klip.WalletAddressModel
-import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
-import com.dragonguard.android.data.model.klip.WalletAuthResponseModel
-import com.dragonguard.android.data.model.klip.WalletAuthResultModel
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.EmailAuthResultModel
@@ -78,7 +74,8 @@ interface GitRankService {
     @GET("members/me/details")
     suspend fun getMemberDetails(): Response<ClientDetailModel>
 
-    //
+
+    /*
     @POST("prepare")
     @Headers("accept: application/json", "content-type: application/json")
     fun postWalletAuth(@Body auth: WalletAuthRequestModel): Response<WalletAuthResponseModel>
@@ -91,13 +88,14 @@ interface GitRankService {
     @GET("blockchain")
     fun getTokenHistory(): Response<TokenHistoryModel>
 
-    @POST("blockchain/update")
-    fun updateToken(): Response<TokenHistoryModel>
-
     //    klip wallet address를 서버로 보내는 함수
     @POST("members/wallet-address")
     @Headers("accept: application/json", "content-type: application/json")
     fun postWalletAddress(@Body walletAddress: WalletAddressModel): Response<Unit>
+    */
+
+    @POST("blockchain/update")
+    fun updateToken(): Response<TokenHistoryModel>
 
     //    두 Repository의 구성원들의 정보를 받아오기 위한 함수
     @POST("git-repos/compare/git-repos-members")
@@ -155,7 +153,6 @@ interface GitRankService {
 
     @GET("organizations/ranking/all")
     suspend fun getAllOrgRankings(@QueryMap query: Map<String, String>): Response<OrganizationRankingModel>
-
 
     @GET("admin/check")
     suspend fun getPermissionState(): Response<Unit>
