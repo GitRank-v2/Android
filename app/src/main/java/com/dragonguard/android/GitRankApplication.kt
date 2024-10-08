@@ -5,6 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.IdPreference
@@ -17,7 +19,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
-class GitRankApplication : Application() {
+class GitRankApplication : Application(), DefaultLifecycleObserver {
     override fun onCreate() {
         super<Application>.onCreate()
         context = applicationContext
@@ -34,10 +36,19 @@ class GitRankApplication : Application() {
         repository = ApiRepository()
     }
 
+    override fun onStop(owner: LifecycleOwner) {
+        networkConnectionChecker.unregister()
+        super.onStop(owner)
+    }
+
+    override fun onStart(owner: LifecycleOwner) {
+        networkConnectionChecker.register()
+        super.onStart(owner)
+    }
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         private lateinit var context: Context
-
 
         private lateinit var moshi: Moshi
 
