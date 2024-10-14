@@ -299,7 +299,11 @@ class MainActivity : AppCompatActivity() {
         override fun handleOnBackPressed() {
             if (System.currentTimeMillis() > backPressed + 2500) {
                 backPressed = System.currentTimeMillis()
-                Toast.makeText(applicationContext, "Back 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.finish_app),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 return
             }

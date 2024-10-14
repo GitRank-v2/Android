@@ -31,7 +31,7 @@
                     android:layout_weight="2"
                     android:fontFamily="@font/ibm_semibold"
                     android:gravity="center"
-                    android:text="Repository 비교하기"
+                    android:text="@string/search_compare_title"
                     android:textColor="@color/black"
                     android:textSize="30sp" />
 
@@ -47,7 +47,7 @@
                     android:fontFamily="@font/ibm_semibold"
                     android:gravity="center"
                     android:lines="1"
-                    android:text="Repository 1"
+                    android:text="@string/repo1"
                     android:textAllCaps="false"
                     android:textSize="23sp" />
             </LinearLayout>
@@ -90,7 +90,7 @@
                         android:fontFamily="@font/ibm_semibold"
                         android:gravity="center"
                         android:lines="1"
-                        android:text="Repository 2"
+                        android:text="@string/repo2"
                         android:textAllCaps="false"
                         android:textSize="23sp" />
                 </LinearLayout>
@@ -105,7 +105,7 @@
                     android:gravity="center_horizontal"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="2dp"
-                    android:text="다음"
+                    android:text="@string/next_btn"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="20sp" />

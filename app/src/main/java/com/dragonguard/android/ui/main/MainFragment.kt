@@ -27,8 +27,6 @@ class MainFragment(
     private val viewModel: MainViewModel
 ) :
     Fragment() {
-    private val token = ""
-
     private lateinit var binding: FragmentMainBinding
     private var repeat = false
 
@@ -43,7 +41,7 @@ class MainFragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
+        //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
         binding.mainFragViewmodel = viewModel
         Log.d("token", info.toString())
@@ -145,7 +143,7 @@ class MainFragment(
             userActivity.put("review", it)
         }
         Log.d("map", "hashMap: $userActivity")
-        binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList, requireContext())
+        binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList)
         binding.userUtil.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         if (info.organization == null) {

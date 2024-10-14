@@ -32,28 +32,25 @@ class SearchCompareRepoFragment : Fragment() {
             val repoName = it.getString("repoName")
             val number = it.getInt("number")
             when (number) {
-                1 -> {
-                    binding.repoCompare1.text = repoName
-                }
-
-                2 -> {
-                    binding.repoCompare2.text = repoName
-                }
+                FIRST_REPO_NUMBER -> binding.repoCompare1.text = repoName
+                SECOND_REPO_NUMBER -> binding.repoCompare2.text = repoName
             }
         }
         binding.repoCompare1.setOnClickListener {
             val intent = Intent(activity, SearchActivity::class.java)
-            intent.putExtra("count", 1)
+            intent.putExtra("count", FIRST_REPO_NUMBER)
             resultLauncher.launch(intent)
         }
         binding.repoCompare2.setOnClickListener {
             val intent = Intent(activity, SearchActivity::class.java)
-            intent.putExtra("count", 2)
+            intent.putExtra("count", SECOND_REPO_NUMBER)
             resultLauncher.launch(intent)
         }
         binding.repoChoose.setOnClickListener {
             if (binding.repoCompare1.text.isNullOrBlank() || binding.repoCompare2.text.isNullOrBlank() ||
-                binding.repoCompare1.text == "Repository 1" || binding.repoCompare2.text == "Repository 2"
+                binding.repoCompare1.text == getString(R.string.repo1) || binding.repoCompare2.text == getString(
+                    R.string.repo2
+                )
             ) {
                 Toast.makeText(requireContext(), "비교할 Repository를 선택해 주세요!!", Toast.LENGTH_SHORT)
                     .show()
@@ -86,4 +83,9 @@ class SearchCompareRepoFragment : Fragment() {
                 }
             }
         }
+
+    companion object {
+        private const val FIRST_REPO_NUMBER = 1
+        private const val SECOND_REPO_NUMBER = 2
+    }
 }

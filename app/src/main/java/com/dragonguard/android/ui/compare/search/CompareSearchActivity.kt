@@ -43,10 +43,10 @@ class CompareSearchActivity : AppCompatActivity() {
         initObserver()
 
         repoCount = intent.getIntExtra("count", 0)
-        if (repoCount == 0) {
-            supportActionBar?.setTitle("첫번째 Repository")
+        if (repoCount == 1) {
+            supportActionBar?.setTitle(getString(R.string.first_compare_search_title))
         } else {
-            supportActionBar?.setTitle("두번째 Repository")
+            supportActionBar?.setTitle(getString(R.string.search_compare_title))
         }
         //Toast.makeText(this, "$repoCount", Toast.LENGTH_SHORT).show()
 

@@ -41,10 +41,9 @@ class LoginActivity : AppCompatActivity() {
             CallBack()
         ), "auth"
     )
-    private var walletAddress = ""
-    private val oauthUrl = "oauth2/authorize/github"
+
+    //private var walletAddress = ""
     private lateinit var mClient: CustomTabsClient
-    private val appUrl = "gitrank://github-auth"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         CookieManager.getInstance().setAcceptCookie(true)
@@ -343,7 +342,7 @@ class LoginActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         val uri = intent?.data
         Log.d("uri new", "uri: $uri")
-        if (uri != null && uri.toString().startsWith("$appUrl?")) {
+        if (uri != null && uri.toString().startsWith("${getString(R.string.app_url)}?")) {
             val urlSplit = uri.toString().split("?")
             val queries = urlSplit[1].split("&")
             val access = queries[0].split("=")[1]
