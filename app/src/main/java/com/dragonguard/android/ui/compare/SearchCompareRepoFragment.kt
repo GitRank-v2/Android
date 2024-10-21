@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.compare
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,10 +13,13 @@ import androidx.fragment.app.Fragment
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentCompareSearchBinding
 import com.dragonguard.android.ui.compare.compare.RepoCompareActivity
-import com.dragonguard.android.ui.search.SearchActivity
+import com.dragonguard.android.ui.compare.search.CompareSearchActivity
 
 class SearchCompareRepoFragment : Fragment() {
+
+
     private lateinit var binding: FragmentCompareSearchBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,21 +32,14 @@ class SearchCompareRepoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.let {
-            val repoName = it.getString("repoName")
-            val number = it.getInt("number")
-            when (number) {
-                FIRST_REPO_NUMBER -> binding.repoCompare1.text = repoName
-                SECOND_REPO_NUMBER -> binding.repoCompare2.text = repoName
-            }
-        }
+        
         binding.repoCompare1.setOnClickListener {
-            val intent = Intent(activity, SearchActivity::class.java)
+            val intent = Intent(activity, CompareSearchActivity::class.java)
             intent.putExtra("count", FIRST_REPO_NUMBER)
             resultLauncher.launch(intent)
         }
         binding.repoCompare2.setOnClickListener {
-            val intent = Intent(activity, SearchActivity::class.java)
+            val intent = Intent(activity, CompareSearchActivity::class.java)
             intent.putExtra("count", SECOND_REPO_NUMBER)
             resultLauncher.launch(intent)
         }
@@ -83,6 +80,7 @@ class SearchCompareRepoFragment : Fragment() {
                 }
             }
         }
+
 
     companion object {
         private const val FIRST_REPO_NUMBER = 1

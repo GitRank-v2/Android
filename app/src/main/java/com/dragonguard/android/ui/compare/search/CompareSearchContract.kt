@@ -14,7 +14,10 @@ class CompareSearchContract {
 
     sealed class CompareSearchState {
         data class Token(val token: String) : CompareSearchState()
-        data class SearchResults(val searchResults: List<RepoSearchResultModel>) :
+        data class SearchResults(val searchResults: ArrayList<RepoSearchResultModel>) :
+            CompareSearchState()
+
+        data class ReceivedSearchResult(val receivedSearchResult: List<RepoSearchResultModel>) :
             CompareSearchState()
     }
 
@@ -22,7 +25,7 @@ class CompareSearchContract {
         val loadState: LoadState,
         val token: CompareSearchState.Token,
         val searchResults: CompareSearchState.SearchResults,
-        val receivedSearchResult: CompareSearchState.SearchResults
+        val receivedSearchResult: CompareSearchState.ReceivedSearchResult
     ) : UiState
 
     sealed class CompareSearchEffect : UiEffect {

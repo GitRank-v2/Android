@@ -68,13 +68,17 @@ class RepoCompareViewModel :
                     ).onSuccess {
                         setState {
                             copy(
-                                loadState = LoadState.SUCCESS,
+                                loadState = LoadState.REPOSUCCESS,
                                 repo = RepoCompareContract.RepoCompareState.Repo(it)
                             )
                         }
                     }.onFail {
 
                     }
+                }
+
+                is RepoCompareContract.RepoCompareEvent.SetFinish -> {
+                    setState { copy(loadState = LoadState.FINISH) }
                 }
             }
         }
@@ -86,5 +90,9 @@ class RepoCompareViewModel :
 
     fun requestCompareRepo(repo1: String, repo2: String) {
         setEvent(RepoCompareContract.RepoCompareEvent.RequestCompareRepo(repo1, repo2))
+    }
+
+    fun setFinish() {
+        setEvent(RepoCompareContract.RepoCompareEvent.SetFinish)
     }
 }

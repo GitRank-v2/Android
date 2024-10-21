@@ -28,12 +28,10 @@ class MainFragment(
 ) :
     Fragment() {
     private lateinit var binding: FragmentMainBinding
-    private var repeat = false
 
     //    private var menuItem: MenuItem? = null
     val handler = Handler(Looper.getMainLooper()) {
         setPage()
-        repeat = true
         true
     }
 
@@ -41,6 +39,7 @@ class MainFragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("mainCreate", "mainCreate")
         //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
         binding.mainFragViewmodel = viewModel
@@ -63,10 +62,12 @@ class MainFragment(
         initObserver()
         drawInfo()
         CoroutineScope(Dispatchers.IO).launch {
-            viewModel.setRepeat(true)
-            while (true) {
-                Thread.sleep(3000)
-                handler.sendEmptyMessage(0)
+            if (!viewModel.currentState.repeatState.repeat) {
+                viewModel.setRepeat(true)
+                while (true) {
+                    Thread.sleep(3000)
+                    handler.sendEmptyMessage(0)
+                }
             }
         }
     }

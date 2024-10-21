@@ -7,18 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.dragonguard.android.ui.main.MainActivity
-import com.dragonguard.android.databinding.RepositoryListBinding
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
+import com.dragonguard.android.databinding.RepositoryListBinding
 
 //비교할 Repository를 나열하기 위한 recyclerview의 adapter
 class SearchCompareRepoAdapter(
     private val datas: ArrayList<RepoSearchResultModel>,
     private val context: Context,
     count: Int,
-    private val token: String
+    private val token: String,
+    private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<SearchCompareRepoAdapter.ViewHolder>() {
-    private var repoCount = count
+    private val repoCount = count
     private lateinit var binding: RepositoryListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         binding = RepositoryListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -33,12 +33,13 @@ class SearchCompareRepoAdapter(
         fun bind(data: RepoSearchResultModel, count: Int) {
             val mContext = context as CompareSearchActivity
             binding.repoName.text = data.name
+            //binding.repoLanguage.text = data.language
             Log.d("name", "$data.name")
+            Log.d("count", "$repoCount")
             itemView.setOnClickListener {
-                val intent = Intent(context, MainActivity::class.java)
-                intent.putExtra("repo_name", data.name)
-                intent.putExtra("token", token)
-                context.setResult(count, intent)
+                val resultIntent = Intent()
+                resultIntent.putExtra("repoName", data.name)
+                context.setResult(repoCount, resultIntent)
                 context.finish()
             }
         }
@@ -50,6 +51,10 @@ class SearchCompareRepoAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(datas[position], repoCount)
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(count: Int, name: String)
     }
 
 }

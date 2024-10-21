@@ -98,7 +98,7 @@ class CompareRepoFragment(
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.loadState == LoadState.SUCCESS) {
+                    if (state.loadState == LoadState.REPOSUCCESS) {
                         checkRepos(state.repo.repo)
                     }
                 }
@@ -126,11 +126,13 @@ class CompareRepoFragment(
 
             } catch (e: Exception) {
                 count++
+                Log.d("checkRepos()", "error : $e")
                 val handler = Handler(Looper.getMainLooper())
                 handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
             }
         } else {
             count++
+            Log.d("checkRepos()", "first: ${result.first_repo} second: ${result.second_repo}")
             val handler = Handler(Looper.getMainLooper())
             handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
         }
@@ -141,6 +143,7 @@ class CompareRepoFragment(
     결과에 문제 없으면 다 그리고 그래프를 그리는 함수 호출
      */
     private fun initRecycler(result: CompareRepoResponseModel) {
+        viewModel.setFinish()
         Log.d("initRecycler()", "리사이클러뷰 구현 시작")
         if (result.first_repo!!.languages_stats == null || result.second_repo!!.languages_stats == null) {
             Log.d(

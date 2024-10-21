@@ -94,7 +94,7 @@ class SearchActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
         viewModel = SearchViewModel()
         this.onBackPressedDispatcher.addCallback(this, callback)
-
+        binding.searchName.isFocusable = true
         initObserver()
         binding.searchResult.addItemDecoration(VerticalItemDecorator(20))
         binding.searchResult.addItemDecoration(HorizontalItemDecorator(10))

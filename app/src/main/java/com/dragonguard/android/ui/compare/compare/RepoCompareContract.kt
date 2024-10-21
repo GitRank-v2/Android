@@ -13,6 +13,7 @@ class RepoCompareContract {
             RepoCompareEvent()
 
         data class RequestCompareRepo(val repo1: String, val repo2: String) : RepoCompareEvent()
+        data object SetFinish : RepoCompareEvent()
     }
 
     sealed class RepoCompareState {

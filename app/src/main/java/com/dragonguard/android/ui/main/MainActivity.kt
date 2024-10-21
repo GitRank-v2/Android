@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private var backPressed: Long = 0
-    private var loginOut = false
     private var refreshState = true
     private var mainFrag: MainFragment? = null
     private var rankingFrag: RankingFragment? = null
@@ -52,7 +51,6 @@ class MainActivity : AppCompatActivity() {
     private var imgRefresh = true
     private var realModel = UserInfoModel()
     private var finish = false
-    private var post = true
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -61,10 +59,8 @@ class MainActivity : AppCompatActivity() {
         val logout = intent?.getBooleanExtra("logout", false)
         if (logout != null) {
             if (!this@MainActivity.isFinishing) {
-                loginOut = logout
-                if (loginOut) {
+                if (logout) {
                     binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
-                    loginOut = true
                     viewModel.logout()
                     val transaction = supportFragmentManager.beginTransaction()
                     supportFragmentManager.fragments.forEach {
@@ -90,13 +86,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = MainViewModel()
-
+        Log.d("mainCreate", "main create")
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initObserver()
         //로그아웃시
-        if (loginOut) {
-            viewModel.logout()
-        }
         this.onBackPressedDispatcher.addCallback(this, callback)
         binding.mainLoading.resumeAnimation()
         binding.mainLoading.visibility = View.VISIBLE
@@ -168,7 +161,6 @@ class MainActivity : AppCompatActivity() {
                                 )
                                     .show()
                                 refreshState = false
-                                loginOut = true
                                 viewModel.logout()
                                 val intent = Intent(applicationContext, LoginActivity::class.java)
                                 activityResultLauncher.launch(intent)
@@ -178,12 +170,12 @@ class MainActivity : AppCompatActivity() {
 
                     if (state.loadState == LoadState.SUCCESS) {
                         Log.d("success UserInfo", "success")
+                        viewModel.setFinish()
                         checkUserInfo(state.userInfo.userInfo)
                     }
 
                     if (state.loadState == LoadState.ERROR) {
                         binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
-                        loginOut = true
                         viewModel.logout()
                         val transaction = supportFragmentManager.beginTransaction()
                         supportFragmentManager.fragments.forEach {
@@ -229,7 +221,6 @@ class MainActivity : AppCompatActivity() {
             if (!this@MainActivity.isFinishing) {
                 Log.d("not login", "login activity로 이동")
                 Toast.makeText(applicationContext, "다시 로그인 바랍니다.", Toast.LENGTH_SHORT).show()
-                loginOut = true
                 viewModel.logout()
                 val intent = Intent(applicationContext, LoginActivity::class.java)
                 activityResultLauncher.launch(intent)
@@ -279,14 +270,10 @@ class MainActivity : AppCompatActivity() {
             }
         }*/
 
-    override fun onResume() {
-        super.onResume()
-    }
 
     override fun onRestart() {
         super.onRestart()
         finish = false
-        loginOut = false
     }
 
     override fun onPause() {

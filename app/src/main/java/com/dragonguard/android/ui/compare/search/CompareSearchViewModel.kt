@@ -21,8 +21,8 @@ class CompareSearchViewModel :
         return CompareSearchContract.CompareSearchStates(
             LoadState.INIT,
             CompareSearchContract.CompareSearchState.Token(pref.getJwtToken("")),
-            CompareSearchContract.CompareSearchState.SearchResults(emptyList()),
-            CompareSearchContract.CompareSearchState.SearchResults(emptyList())
+            CompareSearchContract.CompareSearchState.SearchResults(arrayListOf()),
+            CompareSearchContract.CompareSearchState.ReceivedSearchResult(emptyList())
         )
     }
 
@@ -35,7 +35,7 @@ class CompareSearchViewModel :
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
-                                receivedSearchResult = CompareSearchContract.CompareSearchState.SearchResults(
+                                receivedSearchResult = CompareSearchContract.CompareSearchState.ReceivedSearchResult(
                                     it.data
                                 )
                             )
@@ -46,10 +46,11 @@ class CompareSearchViewModel :
                 }
 
                 is CompareSearchContract.CompareSearchEvent.AddReceivedRepo -> {
+                    currentState.searchResults.searchResults.addAll(currentState.receivedSearchResult.receivedSearchResult)
                     setState {
                         copy(
                             searchResults = CompareSearchContract.CompareSearchState.SearchResults(
-                                currentState.searchResults.searchResults + currentState.receivedSearchResult.searchResults
+                                currentState.searchResults.searchResults
                             )
                         )
                     }

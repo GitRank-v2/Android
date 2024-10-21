@@ -4,6 +4,7 @@ enum class LoadState {
     INIT,
     LOADING,
     SUCCESS,
+    FINISH,
     REPOSUCCESS,
     USERSUCCESS,
     ERROR

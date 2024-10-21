@@ -1,9 +1,11 @@
 package com.dragonguard.android.ui.compare.compare
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -30,6 +32,7 @@ class RepoCompareActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_compare)
         viewModel = RepoCompareViewModel()
         initObserver()
+        this.onBackPressedDispatcher.addCallback(this, callback)
         repo1 = intent.getStringExtra("repo1")!!
         repo2 = intent.getStringExtra("repo2")!!
         viewModel.requestCompareRepoMembers(repo1, repo2)
@@ -56,6 +59,7 @@ class RepoCompareActivity : AppCompatActivity() {
     }
 
     private fun startFragment() {
+        Log.d("startFragment", "startFragment")
         binding.rankingLottie.pauseAnimation()
         binding.rankingLottie.visibility = View.GONE
         binding.compareFrame.visibility = View.VISIBLE
@@ -88,7 +92,6 @@ class RepoCompareActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> {
                 finish()
-                startActivity(intent)
             }
 
             R.id.refresh_button -> {
@@ -101,4 +104,10 @@ class RepoCompareActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            finish()
+        }
+    }
 }

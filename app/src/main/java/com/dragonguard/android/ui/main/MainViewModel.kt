@@ -90,6 +90,10 @@ class MainViewModel :
                 is MainContract.MainEvent.SetRepeat -> {
                     setState { copy(repeatState = MainContract.MainState.RepeatState(event.repeat)) }
                 }
+
+                is MainContract.MainEvent.SetFinish -> {
+                    setState { copy(loadState = LoadState.FINISH) }
+                }
             }
         }
     }
@@ -116,6 +120,10 @@ class MainViewModel :
 
     fun setRepeat(repeat: Boolean) {
         setEvent(MainContract.MainEvent.SetRepeat(repeat))
+    }
+
+    fun setFinish() {
+        setEvent(MainContract.MainEvent.SetFinish)
     }
 
 }
