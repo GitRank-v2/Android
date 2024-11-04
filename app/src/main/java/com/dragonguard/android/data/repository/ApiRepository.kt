@@ -290,10 +290,7 @@ class ApiRepository {
     suspend fun manualContribute(repoName: String): DataResult<RepoContributorsModel> {
         return handleApi({ service.getRepoContributorsUpdate(repoName) }) { it }
     }
-
-    suspend fun manualToken(): DataResult<TokenHistoryModel> {
-        return handleApi({ service.updateToken() }) { it }
-    }
+    
 
     suspend fun manualUserInfo(): DataResult<UserInfoModel> {
         return handleApi({ service.userInfoUpdate() }) { it }

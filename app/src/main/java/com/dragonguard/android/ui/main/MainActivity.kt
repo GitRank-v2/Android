@@ -284,19 +284,24 @@ class MainActivity : AppCompatActivity() {
     //    뒤로가기 1번 누르면 종료 안내 메시지, 2번 누르면 종료
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (System.currentTimeMillis() > backPressed + 2500) {
-                backPressed = System.currentTimeMillis()
-                Toast.makeText(
-                    applicationContext,
-                    getString(R.string.finish_app),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                return
-            }
+            if (binding.mainNav.selectedItemId == R.id.bottom_main) {
+                if (System.currentTimeMillis() > backPressed + 2500) {
+                    backPressed = System.currentTimeMillis()
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.finish_app),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    return
+                }
 
-            if (System.currentTimeMillis() <= backPressed + 2500) {
-                finishAffinity()
+                if (System.currentTimeMillis() <= backPressed + 2500) {
+                    finishAffinity()
+                }
+            } else {
+                binding.mainNav.selectedItemId = R.id.bottom_main
+                Log.d("back", "back to mainfrag")
             }
         }
     }

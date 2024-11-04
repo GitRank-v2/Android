@@ -28,6 +28,7 @@ class MainFragment(
 ) :
     Fragment() {
     private lateinit var binding: FragmentMainBinding
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     //    private var menuItem: MenuItem? = null
     val handler = Handler(Looper.getMainLooper()) {
@@ -61,8 +62,8 @@ class MainFragment(
         }
         initObserver()
         drawInfo()
-        CoroutineScope(Dispatchers.IO).launch {
-            if (!viewModel.currentState.repeatState.repeat) {
+        if (viewModel.currentState.repeatState.repeat.not()) {
+            scope.launch {
                 viewModel.setRepeat(true)
                 while (true) {
                     Thread.sleep(3000)
@@ -313,7 +314,7 @@ class MainFragment(
     }
 
     override fun onDestroy() {
-        viewModel.setRepeat(false)
+        //viewModel.setRepeat(false)
         super.onDestroy()
     }
 

@@ -9,7 +9,6 @@ import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.model.detail.UserProfileModel
-import com.dragonguard.android.data.model.klip.TokenHistoryModel
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.EmailAuthResultModel
@@ -94,8 +93,10 @@ interface GitRankService {
     fun postWalletAddress(@Body walletAddress: WalletAddressModel): Response<Unit>
     */
 
+    /*
     @POST("blockchain/update")
     fun updateToken(): Response<TokenHistoryModel>
+    */
 
     //    두 Repository의 구성원들의 정보를 받아오기 위한 함수
     @POST("git-repos/compare/git-repos-members")
