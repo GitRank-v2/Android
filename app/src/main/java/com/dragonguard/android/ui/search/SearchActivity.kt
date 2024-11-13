@@ -1,15 +1,11 @@
 package com.dragonguard.android.ui.search
 
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
-import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,11 +18,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.databinding.ActivitySearchBinding
-import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.search.filter.SearchFilterActivity
 import com.dragonguard.android.util.HorizontalItemDecorator
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.VerticalItemDecorator
 import kotlinx.coroutines.launch
 
@@ -94,7 +89,7 @@ class SearchActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
         viewModel = SearchViewModel()
         this.onBackPressedDispatcher.addCallback(this, callback)
-
+        binding.searchName.isFocusable = false
         initObserver()
         binding.searchResult.addItemDecoration(VerticalItemDecorator(20))
         binding.searchResult.addItemDecoration(HorizontalItemDecorator(10))
@@ -177,10 +172,10 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    if (it.searchState is SearchContract.SearchState.LoadState.RepoSuccess) {
-                        checkUserNames()
-                    } else if (it.searchState is SearchContract.SearchState.LoadState.UserSuccess) {
+                    if (it.searchState == LoadState.REPOSUCCESS) {
                         checkRepoNames()
+                    } else if (it.searchState == LoadState.USERSUCCESS) {
+                        checkUserNames()
                     }
                 }
             }
@@ -191,6 +186,10 @@ class SearchActivity : AppCompatActivity() {
         if (viewModel.currentState.receivedUserNames.userNames.isNotEmpty()) {
             viewModel.addReceivedUserNames()
             initRecycler()
+        } else {
+            binding.loadingLottie.pauseAnimation()
+            binding.loadingLottie.visibility = View.GONE
+            binding.searchResult.visibility = View.VISIBLE
         }
     }
 
@@ -198,6 +197,10 @@ class SearchActivity : AppCompatActivity() {
         if (viewModel.currentState.receivedRepoNames.repoNames.isNotEmpty()) {
             viewModel.addReceivedRepoNames()
             initRecycler()
+        } else {
+            binding.loadingLottie.pauseAnimation()
+            binding.loadingLottie.visibility = View.GONE
+            binding.searchResult.visibility = View.VISIBLE
         }
     }
 
@@ -345,24 +348,25 @@ class SearchActivity : AppCompatActivity() {
         if (!this@SearchActivity.isFinishing) {
             if (type.isNotBlank()) {
                 if (type == "USERS") {
-                    //viewModel.searchUserNames(name, count, type)
-                    //count++
+                    viewModel.searchUserNames(name, count, type)
+                    count++
                 } else {
-                    if (filterResult.toString().isNotEmpty()) {
-                        //viewModel.searchRepositoryNamesNoFilters(name, count, type)
+                    if (filterResult.toString().isBlank()) {
+                        Log.d("필터 없음", "필터 없음")
+                        viewModel.searchRepositoryNamesNoFilters(name, count, type)
                     } else {
-                        /*viewModel.searchRepositoryNamesWithFilters(
+                        Log.d("필터 있음", "필터 있음")
+                        viewModel.searchRepositoryNamesWithFilters(
                             name,
                             count,
                             filterResult.toString(),
                             type
-                        )*/
+                        )
                     }
-                    //count++
                 }
             } else {
-                //viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
-                //count++
+                Log.d("필터 없음", "필터 없음")
+                viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
             }
         }
     }
@@ -371,6 +375,8 @@ class SearchActivity : AppCompatActivity() {
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()
     private fun initRecycler() {
         Log.d("count", "count: $count")
+        Log.d("results", viewModel.currentState.userNames.userNames.toString())
+        Log.d("results", viewModel.currentState.repoNames.repoNames.toString())
         if (type == "USERS") {
             if (count == 0) {
                 repositoryProfileAdapter =
@@ -402,7 +408,7 @@ class SearchActivity : AppCompatActivity() {
                     )
                 } else {
                     RepositoryProfileAdapter(
-                        viewModel.currentState.repoNames.repoNames as ArrayList<RepoSearchResultModel>,
+                        viewModel.currentState.repoNames.repoNames,
                         this,
                         token,
                         type,
@@ -465,10 +471,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            val intent = Intent(this@SearchActivity, MainActivity::class.java)
-            intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
-            intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
+            Log.d("search", "search back pressed")
             finish()
         }
     }
@@ -477,25 +480,12 @@ class SearchActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
-                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
+                Log.d("search", "search back pressed")
+                finish()
+                finish()
             }
 
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    //    화면의 다른곳 눌렀을때 처리
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        closeKeyboard()
-        return super.dispatchTouchEvent(ev)
-    }
-
-    //    edittext의 키보드 제거
-    fun closeKeyboard() {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
     }
 }

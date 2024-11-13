@@ -2,6 +2,7 @@ package com.dragonguard.android.ui.login
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
+import com.dragonguard.android.GitRankApplication.Companion.setService
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import kotlinx.coroutines.launch
@@ -27,6 +28,7 @@ class LoginViewModel :
                 is LoginContract.LoginEvent.SetJwtToken -> {
                     pref.setJwtToken(event.token)
                     pref.setRefreshToken(event.refreshToken)
+                    setService()
                     setState {
                         copy(
                             token = LoginContract.LoginState.Token(event.token),

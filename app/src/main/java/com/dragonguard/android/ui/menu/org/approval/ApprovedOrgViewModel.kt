@@ -7,7 +7,10 @@ import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.RequestStatus
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class ApprovedOrgViewModel :
@@ -18,8 +21,9 @@ class ApprovedOrgViewModel :
         pref = getPref()
         repository = getRepository()
         return ApprovedOrgContract.ApprovedOrgStates(
-            state = ApprovedOrgContract.ApprovedOrgState.LoadState.Loading,
+            state = LoadState.INIT,
             approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(ApproveRequestOrgModel()),
+            receivedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(ApproveRequestOrgModel()),
             token = ApprovedOrgContract.ApprovedOrgState.Token("")
         )
     }
@@ -28,16 +32,26 @@ class ApprovedOrgViewModel :
         viewModelScope.launch {
             when (event) {
                 is ApprovedOrgContract.ApprovedOrgEvent.GetApprovedOrg -> {
-                    setState { copy(state = ApprovedOrgContract.ApprovedOrgState.LoadState.Loading) }
-                    val result = repository.statusOrgList(
-                        RequestStatus.ACCEPTED.status,
-                        event.page,
-                        currentState.token.token
-                    )
+                    setState { copy(state = LoadState.LOADING) }
+                    repository.statusOrgList(RequestStatus.ACCEPTED.status, event.page).onSuccess {
+                        setState {
+                            copy(
+                                state = LoadState.SUCCESS,
+                                receivedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(it)
+                            )
+                        }
+                    }.onFail {
+
+                    }
+
+                }
+
+                is ApprovedOrgContract.ApprovedOrgEvent.AddReceivedOrg -> {
                     setState {
                         copy(
-                            state = ApprovedOrgContract.ApprovedOrgState.LoadState.Success,
-                            approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(result)
+                            approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(
+                                ApproveRequestOrgModel(approvedOrg.approvedOrg.data + receivedOrg.approvedOrg.data)
+                            )
                         )
                     }
                 }
@@ -47,5 +61,9 @@ class ApprovedOrgViewModel :
 
     fun getApprovedOrg(page: Int) {
         setEvent(ApprovedOrgContract.ApprovedOrgEvent.GetApprovedOrg(page))
+    }
+
+    fun addReceivedOrg() {
+        setEvent(ApprovedOrgContract.ApprovedOrgEvent.AddReceivedOrg)
     }
 }

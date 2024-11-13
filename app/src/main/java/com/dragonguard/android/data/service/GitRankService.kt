@@ -9,11 +9,6 @@ import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.model.detail.UserProfileModel
-import com.dragonguard.android.data.model.klip.TokenHistoryModel
-import com.dragonguard.android.data.model.klip.WalletAddressModel
-import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
-import com.dragonguard.android.data.model.klip.WalletAuthResponseModel
-import com.dragonguard.android.data.model.klip.WalletAuthResultModel
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.EmailAuthResultModel
@@ -27,7 +22,7 @@ import com.dragonguard.android.data.model.rankings.TotalUsersRankingModel
 import com.dragonguard.android.data.model.search.RepoNameModel
 import com.dragonguard.android.data.model.search.UserNameModel
 import com.dragonguard.android.data.model.token.RefreshTokenModel
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -45,202 +40,136 @@ interface GitRankService {
 
     //    repo 검색 함수
     @GET("search")
-    fun getRepoName(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") token: String
-    ): Call<RepoNameModel>
+    suspend fun getRepoName(@QueryMap query: Map<String, String>): Response<RepoNameModel>
 
     @GET("search")
-    fun getUserName(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") token: String
-    ): Call<UserNameModel>
+    suspend fun getUserName(@QueryMap query: Map<String, String>): Response<UserNameModel>
 
     //    id에 해당하는 사용자의 정보를 받아오는 함수
     @GET("members/me")
-    fun getUserInfo(@Header("Authorization") token: String): Call<UserInfoModel>
+    suspend fun getUserInfo(): Response<UserInfoModel>
 
     @POST("members/me/update")
-    fun userInfoUpdate(@Header("Authorization") token: String): Call<UserInfoModel>
+    suspend fun userInfoUpdate(): Response<UserInfoModel>
 
     //    repoName에 해당하는 repo의 정보를 받아오는 함수
     @GET("git-repos")
-    fun getRepoContributors(
-        @Query("name") repoName: String,
-        @Header("Authorization") token: String
-    ): Call<RepoContributorsModel>
+    suspend fun getRepoContributors(@Query("name") repoName: String): Response<RepoContributorsModel>
 
     @GET("git-repos/update")
-    fun getRepoContributorsUpdate(
-        @Query("name") repoName: String,
-        @Header("Authorization") token: String
-    ): Call<RepoContributorsModel>
+    suspend fun getRepoContributorsUpdate(@Query("name") repoName: String): Response<RepoContributorsModel>
 
     //    모든 사용자들의 랭킹을 받아오는 함수
     @GET("members/ranking")
-    fun getTotalUsersRanking(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") token: String
-    ): Call<TotalUsersRankingModel>
+    suspend fun getTotalUsersRanking(@QueryMap query: Map<String, String>): Response<TotalUsersRankingModel>
 
     //    서버에 사용자의 활용도 최산화하는 함수
     @POST("members/contributions")
-    fun postCommits(@Header("Authorization") token: String): Call<Unit>
+    suspend fun postCommits(): Response<Unit>
 
     @GET("members/git-organizations/git-repos")
-    fun getOrgRepoList(
-        @Query("name") orgName: String,
-        @Header("Authorization") token: String
-    ): Call<GithubOrgReposModel>
+    suspend fun getOrgRepoList(@Query("name") orgName: String): Response<GithubOrgReposModel>
 
     @GET("members/me/details")
-    fun getMemberDetails(@Header("Authorization") token: String): Call<ClientDetailModel>
+    suspend fun getMemberDetails(): Response<ClientDetailModel>
 
-    //
+
+    /*
     @POST("prepare")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postWalletAuth(@Body auth: WalletAuthRequestModel): Call<WalletAuthResponseModel>
+    fun postWalletAuth(@Body auth: WalletAuthRequestModel): Response<WalletAuthResponseModel>
 
     //    klip wallet address 정보제공동의 후 wallet address를 받아오는 함수
     @GET("result")
-    fun getAuthResult(@Query("request_key") key: String): Call<WalletAuthResultModel>
+    fun getAuthResult(@Query("request_key") key: String): Response<WalletAuthResultModel>
 
     //    사용자의 토큰부여 내역을 가져오기 위한 함수
     @GET("blockchain")
-    fun getTokenHistory(@Header("Authorization") token: String): Call<TokenHistoryModel>
-
-    @POST("blockchain/update")
-    fun updateToken(@Header("Authorization") token: String): Call<TokenHistoryModel>
+    fun getTokenHistory(): Response<TokenHistoryModel>
 
     //    klip wallet address를 서버로 보내는 함수
     @POST("members/wallet-address")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postWalletAddress(
-        @Body walletAddress: WalletAddressModel,
-        @Header("Authorization") token: String
-    ): Call<Unit>
+    fun postWalletAddress(@Body walletAddress: WalletAddressModel): Response<Unit>
+    */
+
+    /*
+    @POST("blockchain/update")
+    fun updateToken(): Response<TokenHistoryModel>
+    */
 
     //    두 Repository의 구성원들의 정보를 받아오기 위한 함수
     @POST("git-repos/compare/git-repos-members")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postCompareRepoMembers(
-        @Body compare: CompareRepoRequestModel,
-        @Header("Authorization") token: String
-    ): Call<CompareRepoMembersResponseModel>
+    suspend fun postCompareRepoMembers(@Body compare: CompareRepoRequestModel): Response<CompareRepoMembersResponseModel>
 
     @POST("git-repos/compare/git-repos-members/update")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postCompareRepoMembersUpdate(
-        @Body compare: CompareRepoRequestModel,
-        @Header("Authorization") token: String
-    ): Call<CompareRepoMembersResponseModel>
+    suspend fun postCompareRepoMembersUpdate(@Body compare: CompareRepoRequestModel): Response<CompareRepoMembersResponseModel>
 
     //    두 Repository의 정보를 받아오기 위한 함수
     @POST("git-repos/compare")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postCompareRepo(
-        @Body compare: CompareRepoRequestModel,
-        @Header("Authorization") token: String
-    ): Call<CompareRepoResponseModel>
+    suspend fun postCompareRepo(@Body compare: CompareRepoRequestModel): Response<CompareRepoResponseModel>
 
     @POST("git-repos/compare")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postCompareRepoUpdate(
-        @Body compare: CompareRepoRequestModel,
-        @Header("Authorization") token: String
-    ): Call<CompareRepoResponseModel>
+    suspend fun postCompareRepoUpdate(@Body compare: CompareRepoRequestModel): Response<CompareRepoResponseModel>
 
     @GET("auth/refresh")
-    fun getNewAccessToken(
+    suspend fun getNewAccessToken(
         @Header("accessToken") access: String,
         @Header("refreshToken") refresh: String
-    ): Call<RefreshTokenModel>
+    ): Response<RefreshTokenModel>
 
     @GET("organizations/search")
-    fun getOrgNames(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") access: String
-    ): Call<OrganizationNamesModel>
+    suspend fun getOrgNames(@QueryMap query: Map<String, String>): Response<OrganizationNamesModel>
 
     @POST("organizations")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postOrgRegist(
-        @Body body: RegistOrgModel,
-        @Header("Authorization") access: String
-    ): Call<RegistOrgResultModel>
+    suspend fun postOrgRegist(@Body body: RegistOrgModel): Response<RegistOrgResultModel>
 
     @POST("organizations/add-member")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postAddOrgMember(
-        @Body body: AddOrgMemberModel,
-        @Header("Authorization") access: String
-    ): Call<RegistOrgResultModel>
+    suspend fun postAddOrgMember(@Body body: AddOrgMemberModel): Response<RegistOrgResultModel>
 
     @POST("email/send")
     @Headers("accept: application/json", "content-type: application/json")
-    fun postAuthEmail(@Header("Authorization") access: String): Call<RegistOrgResultModel>
+    suspend fun postAuthEmail(): Response<RegistOrgResultModel>
 
     @GET("email/check")
-    fun getEmailAuthResult(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") access: String
-    ): Call<EmailAuthResultModel>
+    suspend fun getEmailAuthResult(@QueryMap query: Map<String, String>): Response<EmailAuthResultModel>
 
     @DELETE("email/{id}")
-    fun deleteEmailCode(
-        @Path("id") emailId: Long,
-        @Header("Authorization") access: String
-    ): Call<Unit>
+    suspend fun deleteEmailCode(@Path("id") emailId: Long): Response<Unit>
 
     @GET("organizations/search-id")
-    fun getOrgId(
-        @Query("name") key: String,
-        @Header("Authorization") access: String
-    ): Call<RegistOrgResultModel>
+    suspend fun getOrgId(@Query("name") key: String): Response<RegistOrgResultModel>
 
     @GET("members/ranking/organization")
-    fun getOrgInternalRankings(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") access: String
-    ): Call<OrgInternalRankingModel>
+    suspend fun getOrgInternalRankings(@QueryMap query: Map<String, String>): Response<OrgInternalRankingModel>
 
     @GET("organizations/ranking")
-    fun getOrgRankings(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") access: String
-    ): Call<OrganizationRankingModel>
+    suspend fun getOrgRankings(@QueryMap query: Map<String, String>): Response<OrganizationRankingModel>
 
     @GET("organizations/ranking/all")
-    fun getAllOrgRankings(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") access: String
-    ): Call<OrganizationRankingModel>
-
+    suspend fun getAllOrgRankings(@QueryMap query: Map<String, String>): Response<OrganizationRankingModel>
 
     @GET("admin/check")
-    fun getPermissionState(@Header("Authorization") access: String): Call<Unit>
+    suspend fun getPermissionState(): Response<Unit>
 
     @POST("admin/organizations/decide")
-    fun postOrgApproval(
-        @Body body: OrgApprovalModel,
-        @Header("Authorization") access: String
-    ): Call<ApproveRequestOrgModel>
+    suspend fun postOrgApproval(@Body body: OrgApprovalModel): Response<ApproveRequestOrgModel>
 
     @GET("admin/organizations")
-    fun getOrgStatus(
-        @QueryMap query: Map<String, String>,
-        @Header("Authorization") access: String
-    ): Call<ApproveRequestOrgModel>
+    suspend fun getOrgStatus(@QueryMap query: Map<String, String>): Response<ApproveRequestOrgModel>
 
     @GET("members/details")
-    fun getOthersProfile(
-        @Query("githubId") query: String,
-        @Header("Authorization") access: String
-    ): Call<UserProfileModel>
+    suspend fun getOthersProfile(@Query("githubId") query: String): Response<UserProfileModel>
 
     @GET("members/verify")
-    fun getLoginAuthState(@Header("Authorization") access: String): Call<AuthStateModel>
+    suspend fun getLoginAuthState(): Response<AuthStateModel>
 
     @DELETE("members/withdraw")
-    fun postWithDraw(@Header("Authorization") access: String): Call<Unit>
+    suspend fun postWithDraw(): Response<Unit>
 }

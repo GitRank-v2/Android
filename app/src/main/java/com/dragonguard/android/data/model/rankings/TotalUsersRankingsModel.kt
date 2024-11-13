@@ -1,12 +1,23 @@
 package com.dragonguard.android.data.model.rankings
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
 // 유저들의 랭킹 대입을 쉽게 하기 위한 Model
+@JsonClass(generateAdapter = true)
 data class TotalUsersRankingsModel(
-    override var tokens: Long?,
-    override var github_id: String?,
-    override var id: String?,
-    override var name: String?,
-    override var tier: String?,
+    @field:Json(name = "tokens")
+    var tokens: Long?,
+    @field:Json(name = "github_id")
+    var github_id: String?,
+    @field:Json(name = "id")
+    var id: String?,
+    @field:Json(name = "name")
+    var name: String?,
+    @field:Json(name = "tier")
+    var tier: String?,
+    @field:Json(name = "rank")
     var ranking: Int? = 0,
-    override var profile_image: String?
-) : TotalUsersRankingModelItem(tokens, github_id, id, name, tier, profile_image)
+    @field:Json(name = "profile_image")
+    var profile_image: String?
+)

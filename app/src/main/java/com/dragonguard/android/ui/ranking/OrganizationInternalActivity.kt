@@ -17,6 +17,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +61,7 @@ class OrganizationInternalActivity : AppCompatActivity() {
                         orgInternalRankings(state.orgId.orgId)
                     }
 
-                    if (state.loadState is OrganizationInternalContract.OrganizationInternalState.LoadState.Success) {
+                    if (state.loadState == LoadState.SUCCESS) {
                         checkRankings(state.orgInternalRankings.orgInternalRankings)
                     }
                 }
@@ -70,18 +71,18 @@ class OrganizationInternalActivity : AppCompatActivity() {
 
     private fun searchOrgId() {
         binding.progressBar.visibility = View.VISIBLE
-        //viewModel.searchOrgId(orgName)
+        viewModel.searchOrgId(orgName)
     }
 
     private fun orgInternalRankings(id: Long) {
         binding.orgInternalName.text = orgName
-        //viewModel.getOrgInternalRankings(id, page)
+        viewModel.getOrgInternalRankings(id, page)
     }
 
     private fun checkRankings(result: OrgInternalRankingModel) {
-        if (result.isNotEmpty()) {
-            Log.d("조직 내 랭킹", "결과 : ${result[0].github_id}")
-            result.forEach {
+        if (result.data.isNotEmpty()) {
+            Log.d("조직 내 랭킹", "결과 : ${result.data[0].github_id}")
+            result.data.forEach {
                 Log.d("조직 내 랭킹", "결과 : ${it.github_id}")
                 if (ranking != 0) {
                     if (orgInternalRankings[ranking - 1].tokens == it.tokens) {
@@ -137,6 +138,7 @@ class OrganizationInternalActivity : AppCompatActivity() {
 
     private fun initRecycler() {
         Log.d("recycler", "initrecycler()")
+        viewModel.addRanking()
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =

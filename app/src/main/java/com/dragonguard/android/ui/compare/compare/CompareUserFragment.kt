@@ -1,6 +1,5 @@
 package com.dragonguard.android.ui.compare.compare
 
-import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -103,10 +102,8 @@ class CompareUserFragment(
         }
         binding.user1Profile.clipToOutline = true
         binding.user2Profile.clipToOutline = true
-        initGraph()
 
 
-        getActivity()?.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     }
 
     //activity 구성 이후 화면을 초기화하는 함수

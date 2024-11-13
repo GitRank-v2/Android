@@ -4,6 +4,7 @@ import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
+import com.dragonguard.android.util.LoadState
 
 class ApproveOrgContract {
     sealed class ApproveOrgEvent : UiEvent {
@@ -11,15 +12,11 @@ class ApproveOrgContract {
         data class ClickApprove(val orgId: Long, val position: Int) : ApproveOrgEvent()
         data class ClickReject(val orgId: Long, val position: Int) : ApproveOrgEvent()
         data object ResetClick : ApproveOrgEvent()
+        data object AddReceivedOrg : ApproveOrgEvent()
+        data class RemoveRequestedOrg(val position: Int) : ApproveOrgEvent()
     }
 
     sealed class ApproveOrgState {
-        sealed class LoadState : ApproveOrgState() {
-            data object Loading : LoadState()
-            data object Success : LoadState()
-            data object Error : LoadState()
-        }
-
         data class RequestedOrg(val org: ApproveRequestOrgModel) : ApproveOrgState()
         data class Token(val token: String) : ApproveOrgState()
 
@@ -29,8 +26,9 @@ class ApproveOrgContract {
     }
 
     data class ApproveOrgStates(
-        val loadState: ApproveOrgState.LoadState,
+        val loadState: LoadState,
         val requestedOrg: ApproveOrgState.RequestedOrg,
+        val receivedOrg: ApproveOrgState.RequestedOrg,
         val token: ApproveOrgState.Token,
         val approveOrg: ApproveOrgState.ApproveOrg,
         val rejectOrg: ApproveOrgState.RejectOrg,

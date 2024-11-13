@@ -18,10 +18,9 @@ import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
-import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.profile.user.ClientProfileFragment
 import com.dragonguard.android.ui.ranking.outer.RankingFragment
-import com.dragonguard.android.ui.search.SearchActivity
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -42,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private var backPressed: Long = 0
-    private var loginOut = false
     private var refreshState = true
     private var mainFrag: MainFragment? = null
     private var rankingFrag: RankingFragment? = null
@@ -51,7 +49,6 @@ class MainActivity : AppCompatActivity() {
     private var imgRefresh = true
     private var realModel = UserInfoModel()
     private var finish = false
-    private var post = true
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -60,19 +57,15 @@ class MainActivity : AppCompatActivity() {
         val logout = intent?.getBooleanExtra("logout", false)
         if (logout != null) {
             if (!this@MainActivity.isFinishing) {
-                loginOut = logout
-                if (loginOut) {
+                if (logout) {
                     binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
-                    loginOut = true
                     viewModel.logout()
                     val transaction = supportFragmentManager.beginTransaction()
                     supportFragmentManager.fragments.forEach {
                         transaction.remove(it)
                     }
                     transaction.commit()
-                    mainFrag?.let {
-                        it.clearView()
-                    }
+                    mainFrag?.clearView()
                     mainFrag = null
                     compareFrag = null
                     profileFrag = null
@@ -89,22 +82,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = MainViewModel()
-
+        Log.d("mainCreate", "main create")
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initObserver()
         //로그아웃시
-        if (loginOut) {
-            viewModel.logout()
-        }
         this.onBackPressedDispatcher.addCallback(this, callback)
-        binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
         binding.mainLoading.resumeAnimation()
         binding.mainLoading.visibility = View.VISIBLE
 
         // 유저 정보 가져오기
-        //viewModel.getUserInfo()
-        refreshMain()
-
+        viewModel.getUserInfo()
+        //refreshMain()
         binding.mainNav.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.bottom_main -> {
@@ -152,11 +140,6 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.clickSearch.clicked) {
-                        val intent = Intent(applicationContext, SearchActivity::class.java)
-                        intent.putExtra("token", "")
-                        startActivity(intent)
-                    }
                     if (state.newAccessToken.token == null || state.newRefreshToken.refreshToken == null) {
                         if (!this@MainActivity.isFinishing) {
                             Log.d("refresh fail", "token refresh 실패")
@@ -168,7 +151,6 @@ class MainActivity : AppCompatActivity() {
                                 )
                                     .show()
                                 refreshState = false
-                                loginOut = true
                                 viewModel.logout()
                                 val intent = Intent(applicationContext, LoginActivity::class.java)
                                 activityResultLauncher.launch(intent)
@@ -176,23 +158,32 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    if (state.loadState is MainContract.MainState.LoadState.Success) {
+                    if (state.loadState == LoadState.SUCCESS) {
+                        Log.d("success UserInfo", "success")
+                        viewModel.setFinish()
                         checkUserInfo(state.userInfo.userInfo)
                     }
 
-                    if (state.clickSearch.clicked) {
-                        val intent = Intent(applicationContext, SearchActivity::class.java)
-                        intent.putExtra("token", "")
-                        startActivity(intent)
+                    if (state.loadState == LoadState.ERROR) {
+                        binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
+                        viewModel.logout()
+                        val transaction = supportFragmentManager.beginTransaction()
+                        supportFragmentManager.fragments.forEach {
+                            transaction.remove(it)
+                        }
+                        transaction.commit()
+                        mainFrag?.let {
+                            it.clearView()
+                        }
+                        mainFrag = null
+                        compareFrag = null
+                        profileFrag = null
+                        rankingFrag = null
+                        Log.d("로그인 필요", "로그인 필요")
+                        val intent = Intent(applicationContext, LoginActivity::class.java)
+                        activityResultLauncher.launch(intent)
                     }
 
-                    if (state.clickUserIcon.clicked) {
-                        Log.d("userIcon", "userIcon")
-                        val intent = Intent(applicationContext, OthersProfileActivity::class.java)
-                        intent.putExtra("token", "")
-                        intent.putExtra("userName", realModel.github_id)
-                        startActivity(intent)
-                    }
                 }
 
             }
@@ -201,35 +192,39 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun refreshMain() {
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(1000)
-            withContext(Dispatchers.Main) {
-                binding.mainLoading.pauseAnimation()
-                binding.mainLoading.visibility = View.GONE
-                binding.mainNav.visibility = View.VISIBLE
-                mainFrag = MainFragment(realModel, true, viewModel)
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(binding.contentFrame.id, mainFrag!!)
-                    .commit()
-            }
-
-        }
-    }
-
     private fun checkUserInfo(userInfo: UserInfoModel) {
         Log.d("success", "success userInfo: $userInfo")
         if (userInfo.github_id == null) {
             if (!this@MainActivity.isFinishing) {
                 Log.d("not login", "login activity로 이동")
                 Toast.makeText(applicationContext, "다시 로그인 바랍니다.", Toast.LENGTH_SHORT).show()
-                loginOut = true
                 viewModel.logout()
                 val intent = Intent(applicationContext, LoginActivity::class.java)
                 activityResultLauncher.launch(intent)
             }
         } else {
-            mainFrag = MainFragment(realModel, imgRefresh, viewModel)
+
+            if (finish) {
+                return
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(1000)
+                finish = true
+                withContext(Dispatchers.Main) {
+                    binding.mainLoading.pauseAnimation()
+                    binding.mainLoading.visibility = View.GONE
+                    binding.mainNav.visibility = View.VISIBLE
+                    mainFrag =
+                        MainFragment(
+                            viewModel.currentState.userInfo.userInfo,
+                            imgRefresh,
+                            viewModel
+                        )
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(binding.contentFrame.id, mainFrag!!)
+                        .commit()
+                }
+            }
         }
     }
 
@@ -252,14 +247,10 @@ class MainActivity : AppCompatActivity() {
             }
         }*/
 
-    override fun onResume() {
-        super.onResume()
-    }
 
     override fun onRestart() {
         super.onRestart()
         finish = false
-        loginOut = false
     }
 
     override fun onPause() {
@@ -270,15 +261,24 @@ class MainActivity : AppCompatActivity() {
     //    뒤로가기 1번 누르면 종료 안내 메시지, 2번 누르면 종료
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (System.currentTimeMillis() > backPressed + 2500) {
-                backPressed = System.currentTimeMillis()
-                Toast.makeText(applicationContext, "Back 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT)
-                    .show()
-                return
-            }
+            if (binding.mainNav.selectedItemId == R.id.bottom_main) {
+                if (System.currentTimeMillis() > backPressed + 2500) {
+                    backPressed = System.currentTimeMillis()
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.finish_app),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    return
+                }
 
-            if (System.currentTimeMillis() <= backPressed + 2500) {
-                finishAffinity()
+                if (System.currentTimeMillis() <= backPressed + 2500) {
+                    finishAffinity()
+                }
+            } else {
+                binding.mainNav.selectedItemId = R.id.bottom_main
+                Log.d("back", "back to mainfrag")
             }
         }
     }

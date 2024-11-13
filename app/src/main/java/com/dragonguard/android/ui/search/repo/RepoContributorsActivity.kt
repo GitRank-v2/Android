@@ -18,6 +18,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.databinding.ActivityRepoContributorsBinding
+import com.dragonguard.android.util.LoadState
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -38,7 +39,7 @@ import kotlinx.coroutines.launch
  */
 class RepoContributorsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRepoContributorsBinding
-    lateinit var contributorsAdapter: ContributorsAdapter
+    private lateinit var contributorsAdapter: ContributorsAdapter
     private var repoName = ""
     private lateinit var viewModel: RepoContributorsViewModel
     private val colorSets = ArrayList<Int>()
@@ -64,12 +65,10 @@ class RepoContributorsActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    if (it.loadState is RepoContributorsContract.RepoContributorsState.LoadState.Success) {
+                    if (it.loadState == LoadState.SUCCESS) {
                         checkContributors(it.repoState.repoState)
                     }
                 }
-
-
             }
         }
 
@@ -97,7 +96,7 @@ class RepoContributorsActivity : AppCompatActivity() {
         if (!this@RepoContributorsActivity.isFinishing) {
             Log.d("check", "repoName $repoName")
             // 받아오기
-            //viewModel.getRepoContributors(repoName)
+            viewModel.getRepoContributors(repoName)
         }
     }
 

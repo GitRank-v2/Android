@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.compare.search
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -18,9 +19,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.databinding.ActivitySearchBinding
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
-class CompareSearchActivity : AppCompatActivity() {
+class CompareSearchActivity : AppCompatActivity(), SearchCompareRepoAdapter.OnItemClickListener {
     private lateinit var compareRepositoryAdapter: SearchCompareRepoAdapter
     private lateinit var binding: ActivitySearchBinding
     private lateinit var viewModel: CompareSearchViewModel
@@ -40,12 +42,13 @@ class CompareSearchActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         viewModel = CompareSearchViewModel()
         initObserver()
+        //binding.searchName.isFocusable = true
 
         repoCount = intent.getIntExtra("count", 0)
-        if (repoCount == 0) {
-            supportActionBar?.setTitle("첫번째 Repository")
+        if (repoCount == 1) {
+            supportActionBar?.setTitle(getString(R.string.first_compare_search_title))
         } else {
-            supportActionBar?.setTitle("두번째 Repository")
+            supportActionBar?.setTitle(getString(R.string.search_compare_title))
         }
         //Toast.makeText(this, "$repoCount", Toast.LENGTH_SHORT).show()
 
@@ -102,21 +105,15 @@ class CompareSearchActivity : AppCompatActivity() {
     private fun initObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    when (it.loadState) {
-                        is CompareSearchContract.CompareSearchState.LoadState.Loading -> {
-                            binding.loadingLottie.visibility = View.VISIBLE
-                        }
-
-                        is CompareSearchContract.CompareSearchState.LoadState.Success -> {
-                            binding.loadingLottie.visibility = View.GONE
-                            repoNames.addAll(it.searchResults.searchResults)
-                            initRecycler()
-                        }
-
-                        is CompareSearchContract.CompareSearchState.LoadState.Error -> {
-                            binding.loadingLottie.visibility = View.GONE
-                        }
+                viewModel.uiState.collect { state ->
+                    if (state.loadState == LoadState.LOADING) {
+                        binding.loadingLottie.visibility = View.VISIBLE
+                    } else if (state.loadState == LoadState.SUCCESS) {
+                        binding.loadingLottie.visibility = View.GONE
+                        viewModel.addReceivedRepo()
+                        initRecycler()
+                    } else if (state.loadState == LoadState.ERROR) {
+                        binding.loadingLottie.visibility = View.GONE
                     }
                 }
             }
@@ -126,7 +123,7 @@ class CompareSearchActivity : AppCompatActivity() {
     //    repo 검색 api 호출 및 결과 출력
     private fun callSearchApi(name: String) {
         binding.loadingLottie.visibility = View.VISIBLE
-        //viewModel.searchRepo(name, count)
+        viewModel.searchRepo(name, count)
     }
 
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()
@@ -134,10 +131,11 @@ class CompareSearchActivity : AppCompatActivity() {
         Log.d("count", "count: $count")
         if (count == 0) {
             compareRepositoryAdapter = SearchCompareRepoAdapter(
-                repoNames,
+                viewModel.currentState.searchResults.searchResults,
                 this,
                 repoCount,
-                viewModel.currentState.token.token
+                viewModel.currentState.token.token,
+                this
             )
             binding.searchResult.adapter = compareRepositoryAdapter
             binding.searchResult.layoutManager = LinearLayoutManager(this)
@@ -148,7 +146,10 @@ class CompareSearchActivity : AppCompatActivity() {
         binding.searchResult.adapter?.notifyDataSetChanged()
         Log.d("api 횟수", "$count 페이지 검색")
         binding.loadingLottie.visibility = View.GONE
-        initScrollListener()
+        if (viewModel.currentState.searchResults.searchResults.size == 10 * (count + 1)) {
+            initScrollListener()
+        }
+
     }
 
 
@@ -175,9 +176,12 @@ class CompareSearchActivity : AppCompatActivity() {
                 position = recyclerView.adapter!!.itemCount - 1
                 // 마지막으로 보여진 아이템 position 이
                 // 전체 아이템 개수보다 1개 모자란 경우, 데이터를 loadMore 한다
-                if (!binding.searchResult.canScrollVertically(1) && lastVisibleItem == itemTotalCount) {
-                    loadMorePosts()
+                if (viewModel.currentState.searchResults.searchResults.size == 10 * (count + 1)) {
+                    if (!binding.searchResult.canScrollVertically(1) && lastVisibleItem == itemTotalCount) {
+                        loadMorePosts()
+                    }
                 }
+
             }
         })
     }
@@ -202,5 +206,11 @@ class CompareSearchActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(ev)
     }
 
+    override fun onItemClick(count: Int, name: String) {
+        val resultIntent = Intent()
+        resultIntent.putExtra("repoName", name)
+        setResult(repoCount, resultIntent)
+        finish()
+    }
 
 }

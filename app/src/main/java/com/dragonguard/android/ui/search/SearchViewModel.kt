@@ -1,11 +1,17 @@
 package com.dragonguard.android.ui.search
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
+import com.dragonguard.android.util.onException
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class SearchViewModel :
@@ -16,7 +22,7 @@ class SearchViewModel :
         pref = getPref()
         repository = getRepository()
         return SearchContract.SearchStates(
-            SearchContract.SearchState.LoadState.Initial,
+            LoadState.INIT,
             SearchContract.SearchState.UserNames(arrayListOf()),
             SearchContract.SearchState.UserNames(arrayListOf()),
             SearchContract.SearchState.RepoNames(arrayListOf()),
@@ -28,58 +34,70 @@ class SearchViewModel :
         viewModelScope.launch {
             when (event) {
                 is SearchContract.SearchEvent.GetUserNames -> {
-                    setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getUserNames(
-                        event.name,
-                        event.count,
-                        event.type,
-                        pref.getJwtToken("")
-                    )
-                    setState {
-                        copy(
-                            searchState = SearchContract.SearchState.LoadState.UserSuccess,
-                            receivedUserNames = SearchContract.SearchState.UserNames(result)
-                        )
+                    setState { copy(searchState = LoadState.LOADING) }
+                    repository.getUserNames(event.name, event.count, event.type).onSuccess {
+                        setState {
+                            copy(
+                                searchState = LoadState.USERSUCCESS,
+                                receivedUserNames = SearchContract.SearchState.UserNames(it.data as ArrayList)
+                            )
+                        }
+                    }.onFail {
+                        Log.d("SearchViewModel", "handleEvent fail: $it")
+                    }.onError {
+                        Log.d("SearchViewModel", "handleEvent error: $it")
+                    }.onException {
+                        Log.d("SearchViewModel", "handleEvent exception: ${it.message}")
                     }
                 }
 
                 is SearchContract.SearchEvent.GetRepositoryNamesNoFilters -> {
-                    setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getRepositoryNames(
-                        event.name,
-                        event.count,
-                        event.type,
-                        pref.getJwtToken("")
-                    )
-                    setState {
-                        copy(
-                            searchState = SearchContract.SearchState.LoadState.RepoSuccess,
-                            receivedRepoNames = SearchContract.SearchState.RepoNames(result)
-                        )
+                    setState { copy(searchState = LoadState.LOADING) }
+                    repository.getRepositoryNames(event.name, event.count, event.type).onSuccess {
+                        Log.d("SearchViewModel", "handleEvent success: ${it.data}")
+                        currentState.receivedRepoNames.repoNames.addAll(it.data)
+                        setState {
+                            copy(
+                                searchState = LoadState.REPOSUCCESS,
+                            )
+                        }
+                    }.onFail {
+                        Log.d("SearchViewModel", "handleEvent fail: $it")
+                    }.onError {
+                        Log.d("SearchViewModel", "handleEvent error: $it")
+                    }.onException {
+                        Log.d("SearchViewModel", "handleEvent exception: ${it.message}")
                     }
+
                 }
 
                 is SearchContract.SearchEvent.GetRepositoryNamesWithFilters -> {
-                    setState { copy(searchState = SearchContract.SearchState.LoadState.Loading) }
-                    val result = repository.getRepositoryNamesWithFilters(
+                    setState { copy(searchState = LoadState.LOADING) }
+                    repository.getRepositoryNamesWithFilters(
                         event.name,
                         event.count,
                         event.filters,
                         event.type,
-                        pref.getJwtToken("")
-                    )
-                    setState {
-                        copy(
-                            searchState = SearchContract.SearchState.LoadState.RepoSuccess,
-                            receivedRepoNames = SearchContract.SearchState.RepoNames(result)
-                        )
+                    ).onSuccess {
+                        setState {
+                            copy(
+                                searchState = LoadState.REPOSUCCESS,
+                                receivedRepoNames = SearchContract.SearchState.RepoNames(it.data as ArrayList)
+                            )
+                        }
+                    }.onFail {
+                        Log.d("SearchViewModel", "handleEvent fail: $it")
+                    }.onError {
+                        Log.d("SearchViewModel", "handleEvent error: $it")
+                    }.onException {
+                        Log.d("SearchViewModel", "handleEvent exception: ${it.message}")
                     }
                 }
 
                 is SearchContract.SearchEvent.ClearRepoNames -> {
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.Initial,
+                            searchState = LoadState.INIT,
                             repoNames = SearchContract.SearchState.RepoNames(arrayListOf())
                         )
                     }
@@ -88,7 +106,7 @@ class SearchViewModel :
                 is SearchContract.SearchEvent.ClearUserNames -> {
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.Initial,
+                            searchState = LoadState.INIT,
                             userNames = SearchContract.SearchState.UserNames(arrayListOf())
                         )
                     }
@@ -97,7 +115,6 @@ class SearchViewModel :
                 is SearchContract.SearchEvent.AddReceivedUserNames -> {
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.UserSuccess,
                             userNames = SearchContract.SearchState.UserNames(
                                 (userNames.userNames + receivedUserNames.userNames) as ArrayList
                             ),
@@ -107,12 +124,9 @@ class SearchViewModel :
                 }
 
                 is SearchContract.SearchEvent.AddReceivedRepoNames -> {
+                    currentState.repoNames.repoNames.addAll(currentState.receivedRepoNames.repoNames)
                     setState {
                         copy(
-                            searchState = SearchContract.SearchState.LoadState.RepoSuccess,
-                            repoNames = SearchContract.SearchState.RepoNames(
-                                (repoNames.repoNames + receivedRepoNames.repoNames) as ArrayList
-                            ),
                             receivedRepoNames = SearchContract.SearchState.RepoNames(arrayListOf())
                         )
                     }

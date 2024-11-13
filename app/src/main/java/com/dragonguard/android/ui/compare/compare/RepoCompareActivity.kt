@@ -1,9 +1,11 @@
 package com.dragonguard.android.ui.compare.compare
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -11,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityRepoCompareBinding
+import com.dragonguard.android.util.LoadState
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 
@@ -29,9 +32,10 @@ class RepoCompareActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_compare)
         viewModel = RepoCompareViewModel()
         initObserver()
+        this.onBackPressedDispatcher.addCallback(this, callback)
         repo1 = intent.getStringExtra("repo1")!!
         repo2 = intent.getStringExtra("repo2")!!
-        //viewModel.requestCompareRepoMembers(repo1, repo2)
+        viewModel.requestCompareRepoMembers(repo1, repo2)
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -44,10 +48,10 @@ class RepoCompareActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.repoMembers.repoMembers.first_result != null && state.repoMembers.repoMembers.second_result != null) {
-                        startFragment()
-                    } else {
-
+                    if (state.loadState == LoadState.SUCCESS) {
+                        if (state.repoMembers.repoMembers.first_result != null && state.repoMembers.repoMembers.second_result != null) {
+                            startFragment()
+                        }
                     }
                 }
             }
@@ -55,6 +59,7 @@ class RepoCompareActivity : AppCompatActivity() {
     }
 
     private fun startFragment() {
+        Log.d("startFragment", "startFragment")
         binding.rankingLottie.pauseAnimation()
         binding.rankingLottie.visibility = View.GONE
         binding.compareFrame.visibility = View.VISIBLE
@@ -87,7 +92,6 @@ class RepoCompareActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> {
                 finish()
-                startActivity(intent)
             }
 
             R.id.refresh_button -> {
@@ -100,4 +104,10 @@ class RepoCompareActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            finish()
+        }
+    }
 }

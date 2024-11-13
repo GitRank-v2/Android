@@ -4,6 +4,7 @@ import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
+import com.dragonguard.android.util.LoadState
 
 class MainContract {
     sealed class MainEvent : UiEvent {
@@ -13,16 +14,10 @@ class MainContract {
         data object GetNewToken : MainEvent()
         data object Logout : MainEvent()
         data class SetRepeat(val repeat: Boolean) : MainEvent()
+        data object SetFinish : MainEvent()
     }
 
     sealed class MainState {
-        sealed class LoadState : MainState() {
-            data object Initial : LoadState()
-            data object Loading : LoadState()
-            data object Success : LoadState()
-            data object Error : LoadState()
-        }
-
         data class UserInfo(val userInfo: UserInfoModel) : MainState()
         data class ClickSearch(val clicked: Boolean) : MainState()
         data class ClickUserIcon(val clicked: Boolean) : MainState()
@@ -32,7 +27,7 @@ class MainContract {
     }
 
     data class MainStates(
-        val loadState: MainState.LoadState,
+        val loadState: LoadState,
         val userInfo: MainState.UserInfo,
         val clickSearch: MainState.ClickSearch,
         val clickUserIcon: MainState.ClickUserIcon,

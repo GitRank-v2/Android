@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityAuthEmailBinding
 import com.dragonguard.android.ui.main.MainActivity
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 class AuthEmailActivity : AppCompatActivity() {
@@ -41,7 +42,7 @@ class AuthEmailActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         supportActionBar?.title = "   이메일 인증"
 
-        //viewModel.requestAuthEmail(orgId, email)
+        viewModel.requestAuthEmail(orgId, email)
 
 
         binding.resendCode.setOnClickListener {
@@ -72,7 +73,7 @@ class AuthEmailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.state is AuthEmailContract.AuthEmailState.LoadState.Success) {
+                    if (state.state == LoadState.SUCCESS) {
                         Toast.makeText(applicationContext, "$orgName 인증되었습니다!!", Toast.LENGTH_SHORT)
                             .show()
                         val intent = Intent(applicationContext, MainActivity::class.java)
@@ -81,7 +82,7 @@ class AuthEmailActivity : AppCompatActivity() {
                         startActivity(intent)
                     }
 
-                    if (state.state is AuthEmailContract.AuthEmailState.LoadState.Error) {
+                    if (state.state == LoadState.ERROR) {
                         binding.authStatus.text = "다시 입력해주세요!!"
                         binding.emailCode.setText("")
                     }
@@ -94,15 +95,15 @@ class AuthEmailActivity : AppCompatActivity() {
     }
 
     private fun authEmail() {
-        //viewModel.checkEmailCode(emailAuthId, binding.emailCode.text.toString(), orgId)
+        viewModel.checkEmailCode(emailAuthId, binding.emailCode.text.toString(), orgId)
     }
 
     private fun deleteEmail() {
-        //viewModel.deleteLateEmailCode(emailAuthId)
+        viewModel.deleteLateEmailCode(emailAuthId)
     }
 
     private fun sendEmail() {
-        //viewModel.sendEmailAuth()
+        viewModel.sendEmailAuth()
 
     }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.Job
 
 class AuthEmailContract {
@@ -17,13 +18,6 @@ class AuthEmailContract {
     }
 
     sealed class AuthEmailState {
-        sealed class LoadState : AuthEmailState() {
-            data object Initial : LoadState()
-            data object Loading : LoadState()
-            data object Success : LoadState()
-            data object Error : LoadState()
-        }
-
         data class Timer(var oldTime: Long, val timer: Job) : AuthEmailState()
         data class CustomTimerDuration(val timerDuration: MutableLiveData<Long>) : AuthEmailState()
         data class EmailAuthId(val emailAuthId: Long) : AuthEmailState()
@@ -34,7 +28,7 @@ class AuthEmailContract {
     }
 
     data class AuthEmailStates(
-        val state: AuthEmailState.LoadState,
+        val state: LoadState,
         val customTimerDuration: AuthEmailState.CustomTimerDuration,
         val timer: AuthEmailState.Timer,
         val countDownTimer: AuthEmailState.CountDownTimer,

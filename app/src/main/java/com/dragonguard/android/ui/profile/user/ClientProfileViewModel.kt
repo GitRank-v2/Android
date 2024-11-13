@@ -1,11 +1,16 @@
 package com.dragonguard.android.ui.profile.user
 
+import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
+import kotlinx.coroutines.launch
 
 class ClientProfileViewModel :
     BaseViewModel<ClientProfileContract.ClientProfileEvent, ClientProfileContract.ClientProfileStates, ClientProfileContract.ClientProfileEffect>() {
@@ -15,23 +20,28 @@ class ClientProfileViewModel :
         pref = getPref()
         repository = getRepository()
         return ClientProfileContract.ClientProfileStates(
-            ClientProfileContract.ClientProfileState.LoadState.Initial,
+            LoadState.INIT,
             ClientProfileContract.ClientProfileState.ClientDetail(ClientDetailModel()),
             ClientProfileContract.ClientProfileState.Token(pref.getJwtToken(""))
         )
     }
 
     override fun handleEvent(event: ClientProfileContract.ClientProfileEvent) {
-        when (event) {
-            is ClientProfileContract.ClientProfileEvent.GetClientDetail -> {
-                setState { copy(loadState = ClientProfileContract.ClientProfileState.LoadState.Loading) }
-                val result = repository.getClientDetails(currentState.token.token)
-                result?.let {
-                    setState {
-                        copy(
-                            loadState = ClientProfileContract.ClientProfileState.LoadState.Success,
-                            clientDetail = ClientProfileContract.ClientProfileState.ClientDetail(it)
-                        )
+        viewModelScope.launch {
+            when (event) {
+                is ClientProfileContract.ClientProfileEvent.GetClientDetail -> {
+                    setState { copy(loadState = LoadState.LOADING) }
+                    repository.getClientDetails().onSuccess {
+                        setState {
+                            copy(
+                                loadState = LoadState.SUCCESS,
+                                clientDetail = ClientProfileContract.ClientProfileState.ClientDetail(
+                                    it
+                                )
+                            )
+                        }
+                    }.onFail {
+
                     }
                 }
             }

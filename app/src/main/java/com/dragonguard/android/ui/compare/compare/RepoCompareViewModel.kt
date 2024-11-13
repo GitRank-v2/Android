@@ -9,6 +9,9 @@ import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class RepoCompareViewModel :
@@ -19,7 +22,7 @@ class RepoCompareViewModel :
         pref = getPref()
         repository = getRepository()
         return RepoCompareContract.RepoCompareStates(
-            RepoCompareContract.RepoCompareState.LoadState.Initial,
+            LoadState.INIT,
             RepoCompareContract.RepoCompareState.Token(pref.getJwtToken("")),
             RepoCompareContract.RepoCompareState.RepoMembers(
                 CompareRepoMembersResponseModel(
@@ -35,36 +38,47 @@ class RepoCompareViewModel :
         viewModelScope.launch {
             when (event) {
                 is RepoCompareContract.RepoCompareEvent.RequestCompareRepoMembers -> {
-                    setState { copy(loadState = RepoCompareContract.RepoCompareState.LoadState.Loading) }
-                    val result = repository.postCompareRepoMembersRequest(
+                    setState { copy(loadState = LoadState.LOADING) }
+                    repository.postCompareRepoMembersRequest(
                         CompareRepoRequestModel(
                             event.repo1,
                             event.repo2
-                        ), currentState.token.token
-                    )
-                    setState {
-                        copy(
-                            loadState = RepoCompareContract.RepoCompareState.LoadState.Success,
-                            repoMembers = RepoCompareContract.RepoCompareState.RepoMembers(result)
                         )
+                    ).onSuccess {
+                        setState {
+                            copy(
+                                loadState = LoadState.SUCCESS,
+                                repoMembers = RepoCompareContract.RepoCompareState.RepoMembers(it)
+                            )
+                        }
+                    }.onFail {
+
                     }
+
 
                 }
 
                 is RepoCompareContract.RepoCompareEvent.RequestCompareRepo -> {
-                    setState { copy(loadState = RepoCompareContract.RepoCompareState.LoadState.Loading) }
-                    val result = repository.postCompareRepoRequest(
+                    setState { copy(loadState = LoadState.LOADING) }
+                    repository.postCompareRepoRequest(
                         CompareRepoRequestModel(
                             event.repo1,
                             event.repo2
-                        ), currentState.token.token
-                    )
-                    setState {
-                        copy(
-                            loadState = RepoCompareContract.RepoCompareState.LoadState.Success,
-                            repo = RepoCompareContract.RepoCompareState.Repo(result)
                         )
+                    ).onSuccess {
+                        setState {
+                            copy(
+                                loadState = LoadState.REPOSUCCESS,
+                                repo = RepoCompareContract.RepoCompareState.Repo(it)
+                            )
+                        }
+                    }.onFail {
+
                     }
+                }
+
+                is RepoCompareContract.RepoCompareEvent.SetFinish -> {
+                    setState { copy(loadState = LoadState.FINISH) }
                 }
             }
         }
@@ -76,5 +90,9 @@ class RepoCompareViewModel :
 
     fun requestCompareRepo(repo1: String, repo2: String) {
         setEvent(RepoCompareContract.RepoCompareEvent.RequestCompareRepo(repo1, repo2))
+    }
+
+    fun setFinish() {
+        setEvent(RepoCompareContract.RepoCompareEvent.SetFinish)
     }
 }

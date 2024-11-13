@@ -15,7 +15,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
-import com.dragonguard.android.ui.history.TokenHistoryActivity
+import com.dragonguard.android.ui.history.GitHistoryActivity
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
+import com.dragonguard.android.ui.search.SearchActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,16 +29,12 @@ class MainFragment(
     private val viewModel: MainViewModel
 ) :
     Fragment() {
-    private val token = ""
-
-
     private lateinit var binding: FragmentMainBinding
-    private var repeat = false
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     //    private var menuItem: MenuItem? = null
     val handler = Handler(Looper.getMainLooper()) {
         setPage()
-        repeat = true
         true
     }
 
@@ -44,9 +42,10 @@ class MainFragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
+        Log.d("mainCreate", "mainCreate")
+        //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
-        binding.mainFragViewmodel = viewModel
+        Log.d("token", info.toString())
 //        val main = activity as MainActivity
 //        main.setSupportActionBar(binding.toolbar)
 //        main.supportActionBar?.setDisplayHomeAsUpEnabled(false)
@@ -57,20 +56,42 @@ class MainFragment(
         super.onViewCreated(view, savedInstanceState)
 //        binding.toolbar.inflateMenu(R.menu.refresh)
         binding.githubProfile.clipToOutline = true
+        initObserver()
+        drawInfo()
+        if (viewModel.currentState.repeatState.repeat.not()) {
+            scope.launch {
+                viewModel.setRepeat(true)
+                while (true) {
+                    Thread.sleep(3000)
+                    handler.sendEmptyMessage(0)
+                }
+            }
+        }
+
         binding.tokenFrame.setOnClickListener {
-            val intent = Intent(requireActivity(), TokenHistoryActivity::class.java)
+            val intent = Intent(requireActivity(), GitHistoryActivity::class.java)
             intent.putExtra("token", viewModel.currentState.newAccessToken.token)
             startActivity(intent)
         }
-        initObserver()
-        drawInfo()
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.setRepeat(true)
-            while (true) {
-                Thread.sleep(3000)
-                handler.sendEmptyMessage(0)
-            }
+        binding.searchName.setOnClickListener {
+            val intent = Intent(requireActivity(), SearchActivity::class.java)
+            startActivity(intent)
         }
+        binding.userId.setOnClickListener {
+            Log.d("userIcon", "userIcon")
+            val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
+            intent.putExtra("token", "")
+            intent.putExtra("userName", info.github_id)
+            startActivity(intent)
+        }
+        binding.githubProfile.setOnClickListener {
+            Log.d("userIcon", "userIcon")
+            val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
+            intent.putExtra("token", "")
+            intent.putExtra("userName", info.github_id)
+            startActivity(intent)
+        }
+
     }
 
     private fun drawInfo() {
@@ -145,7 +166,7 @@ class MainFragment(
             userActivity.put("review", it)
         }
         Log.d("map", "hashMap: $userActivity")
-        binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList, requireContext())
+        binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList)
         binding.userUtil.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         if (info.organization == null) {
@@ -314,7 +335,7 @@ class MainFragment(
     }
 
     override fun onDestroy() {
-        viewModel.setRepeat(false)
+        //viewModel.setRepeat(false)
         super.onDestroy()
     }
 

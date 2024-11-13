@@ -3,13 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="mainFragViewmodel"
-            type="com.dragonguard.android.ui.main.MainViewModel" />
-    </data>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -40,7 +33,6 @@
                 android:layout_weight="0.6"
                 android:background="@drawable/shadow"
                 android:focusable="false"
-                android:imeOptions="actionSearch"
                 android:drawableStart="@drawable/search_icon"
                 android:drawablePadding="10dp"
                 android:layout_marginTop="5dp"
@@ -48,7 +40,6 @@
                 android:fontFamily="@font/ibm_regular"
                 android:gravity="center_vertical"
                 android:hint="Repositoy or User"
-                android:onClick="@{()->mainFragViewmodel.clickSearch()}"
                 android:textColor="@color/black"
                 android:textSize="25sp" />
 
@@ -86,8 +77,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.25"
                 android:adjustViewBounds="true"
-                android:background="@drawable/round_title"
-                android:onClick="@{()->mainFragViewmodel.clickUserIcon()}" />
+                android:background="@drawable/round_title" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -103,7 +93,6 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="2"
                 android:fontFamily="@font/ibm_semibold"
-                android:onClick="@{()->mainFragViewmodel.clickUserIcon()}"
                 android:textColor="@color/black"
                 android:textSize="25sp" />
 

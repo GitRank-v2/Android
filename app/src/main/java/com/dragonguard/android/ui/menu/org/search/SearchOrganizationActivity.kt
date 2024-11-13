@@ -20,8 +20,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.databinding.ActivitySearchOrganizationBinding
 import com.dragonguard.android.ui.menu.org.regist.RegistOrgActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 class SearchOrganizationActivity : AppCompatActivity() {
@@ -99,7 +98,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         binding.searchIcon.setOnClickListener {
             if (!binding.searchName.text.isNullOrEmpty()) {
                 if (lastSearch != binding.searchName.text.toString() || typeChanged) {
-                    orgNames.clear()
+                    orgNames.data = emptyList()
                     binding.searchResult.visibility = View.GONE
                     count = 0
                     position = 0
@@ -127,7 +126,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
                     if (search.isNotEmpty()) {
                         closeKeyboard()
                         if (lastSearch != binding.searchName.text.toString() || typeChanged) {
-                            orgNames.clear()
+                            orgNames.data = emptyList()
                             binding.searchResult.visibility = View.GONE
                             count = 0
                             position = 0
@@ -164,7 +163,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.state is SearchOrganizationContract.SearchOrganizationState.LoadState.Success) {
+                    if (state.state == LoadState.SUCCESS) {
                         if (checkSearchResult(state.orgNames.names)) {
                             initRecycler()
                         }
@@ -183,7 +182,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
     }
 
     private fun checkSearchResult(searchResult: OrganizationNamesModel): Boolean {
-        return when (searchResult.isNullOrEmpty()) {
+        return when (searchResult.data.isNullOrEmpty()) {
             true -> {
                 if (changable) {
                     changable = false
@@ -196,10 +195,10 @@ class SearchOrganizationActivity : AppCompatActivity() {
             false -> {
                 changable = false
                 Log.d("api 시도", "api 성공$searchResult")
-                for (i in 0 until searchResult.size) {
-                    val compare = orgNames.filter { it.name == searchResult[i].name }
+                for (i in 0 until searchResult.data.size) {
+                    val compare = orgNames.data.filter { it.name == searchResult.data[i].name }
                     if (compare.isEmpty()) {
-                        orgNames.add(searchResult[i])
+                        orgNames.data += searchResult.data[i]
                     }
                 }
                 true
@@ -209,6 +208,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
     }
 
     private fun initRecycler() {
+        viewModel.addReceivedOrgNames()
         Log.d("count", "count: $count")
         if (count == 0) {
             binding.orgListTitle.text = "$type 목록"
@@ -250,9 +250,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
         if (binding.progressBar.visibility == View.GONE && count != 0) {
             binding.progressBar.visibility = View.VISIBLE
             changable = true
-            CoroutineScope(Dispatchers.Main).launch {
-                getOrganizationNames(lastSearch)
-            }
+            getOrganizationNames(binding.searchName.text.toString())
         }
     }
 
@@ -262,7 +260,7 @@ class SearchOrganizationActivity : AppCompatActivity() {
     }
 
     //    edittext의 키보드 제거
-    fun closeKeyboard() {
+    private fun closeKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
     }

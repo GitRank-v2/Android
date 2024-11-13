@@ -91,7 +91,7 @@ class SearchFilterActivity : AppCompatActivity() {
         binding.searchName.setOnEditorActionListener { textView, i, keyEvent ->
             if (i == EditorInfo.IME_ACTION_SEARCH) {
                 map.put("name", binding.searchName.text.toString())
-                val intent = Intent(applicationContext, SearchActivity::class.java)
+                val intent = Intent(this@SearchFilterActivity, SearchActivity::class.java)
                 intent.putExtra("type", map["type"])
                 intent.putExtra("language", map["language"])
                 intent.putExtra("stars", map["stars"])

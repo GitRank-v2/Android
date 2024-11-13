@@ -9,7 +9,7 @@ import com.dragonguard.android.databinding.ApproveRequestListBinding
 
 //승인 요청중인 조직 목록 adapter
 class ApproveRequestOrgAdapter(
-    private var datas: ArrayList<ApproveRequestOrgModelItem>,
+    private var datas: List<ApproveRequestOrgModelItem>,
     private val context: Context,
     private val token: String,
     private val viewModel: ApproveOrgViewModel,

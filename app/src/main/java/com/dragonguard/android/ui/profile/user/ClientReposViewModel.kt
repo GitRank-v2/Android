@@ -1,11 +1,16 @@
 package com.dragonguard.android.ui.profile.user
 
+import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
+import kotlinx.coroutines.launch
 
 class ClientReposViewModel :
     BaseViewModel<ClientReposContract.ClientReposEvent, ClientReposContract.ClientReposStates, ClientReposContract.ClientReposEffect>() {
@@ -15,23 +20,28 @@ class ClientReposViewModel :
         pref = getPref()
         repository = getRepository()
         return ClientReposContract.ClientReposStates(
-            ClientReposContract.ClientReposState.LoadState.Initial,
+            LoadState.INIT,
             ClientReposContract.ClientReposState.Token(pref.getJwtToken("")),
             ClientReposContract.ClientReposState.GithubOrgRepos(GithubOrgReposModel())
         )
     }
 
     override fun handleEvent(event: ClientReposContract.ClientReposEvent) {
-        when (event) {
-            is ClientReposContract.ClientReposEvent.GetGithubOrgRepos -> {
-                setState { copy(loadState = ClientReposContract.ClientReposState.LoadState.Loading) }
-                val result = repository.userGitOrgRepoList(event.orgName, currentState.token.token)
-                result?.let {
-                    setState {
-                        copy(
-                            loadState = ClientReposContract.ClientReposState.LoadState.Success,
-                            githubOrgRepos = ClientReposContract.ClientReposState.GithubOrgRepos(it)
-                        )
+        viewModelScope.launch {
+            when (event) {
+                is ClientReposContract.ClientReposEvent.GetGithubOrgRepos -> {
+                    setState { copy(loadState = LoadState.LOADING) }
+                    repository.userGitOrgRepoList(event.orgName).onSuccess {
+                        setState {
+                            copy(
+                                loadState = LoadState.SUCCESS,
+                                githubOrgRepos = ClientReposContract.ClientReposState.GithubOrgRepos(
+                                    it
+                                )
+                            )
+                        }
+                    }.onFail {
+
                     }
                 }
             }

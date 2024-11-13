@@ -7,6 +7,9 @@ import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class SearchOrganizationViewModel :
@@ -18,7 +21,8 @@ class SearchOrganizationViewModel :
         pref = getPref()
         repository = getRepository()
         return SearchOrganizationContract.SearchOrganizationStates(
-            SearchOrganizationContract.SearchOrganizationState.LoadState.Initial,
+            LoadState.INIT,
+            SearchOrganizationContract.SearchOrganizationState.OrgNames(OrganizationNamesModel()),
             SearchOrganizationContract.SearchOrganizationState.OrgNames(OrganizationNamesModel()),
             SearchOrganizationContract.SearchOrganizationState.Token("")
         )
@@ -28,19 +32,28 @@ class SearchOrganizationViewModel :
         viewModelScope.launch {
             when (event) {
                 is SearchOrganizationContract.SearchOrganizationEvent.SearchOrgNames -> {
-                    setState { copy(state = SearchOrganizationContract.SearchOrganizationState.LoadState.Loading) }
-                    val result = repository.getOrgNames(
-                        event.name,
-                        currentState.token.token,
-                        event.count,
-                        event.type
-                    )
+                    setState { copy(state = LoadState.LOADING) }
+                    repository.getOrgNames(event.name, event.count, event.type).onSuccess {
+                        setState {
+                            copy(
+                                state = LoadState.SUCCESS,
+                                receivedOrgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames(
+                                    it
+                                )
+                            )
+                        }
+                    }.onFail {
+
+                    }
+                }
+
+                is SearchOrganizationContract.SearchOrganizationEvent.AddReceivedOrgNames -> {
                     setState {
                         copy(
-                            state = SearchOrganizationContract.SearchOrganizationState.LoadState.Success,
                             orgNames = SearchOrganizationContract.SearchOrganizationState.OrgNames(
-                                result
+                                OrganizationNamesModel(orgNames.names.data + receivedOrgNames.names.data)
                             )
+
                         )
                     }
                 }
@@ -56,5 +69,9 @@ class SearchOrganizationViewModel :
                 count
             )
         )
+    }
+
+    fun addReceivedOrgNames() {
+        setEvent(SearchOrganizationContract.SearchOrganizationEvent.AddReceivedOrgNames)
     }
 }

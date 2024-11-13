@@ -59,8 +59,7 @@
                                 android:imeOptions="actionSearch"
                                 android:drawableStart="@drawable/ic_baseline_search_24"
                                 android:drawablePadding="10dp"
-                                android:focusable="false"
-                                android:hint=" 검색어 입력"
+                                android:hint="@string/search_hint"
                                 android:inputType="text"
                                 android:textColor="@color/black"
                                 android:textSize="20sp" />

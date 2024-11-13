@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.main
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.GitRankApplication.Companion.getRepository
@@ -7,6 +8,9 @@ import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
 
 class MainViewModel :
@@ -17,7 +21,7 @@ class MainViewModel :
         pref = getPref()
         repository = getRepository()
         return MainContract.MainStates(
-            loadState = MainContract.MainState.LoadState.Initial,
+            loadState = LoadState.INIT,
             userInfo = MainContract.MainState.UserInfo(
                 UserInfoModel()
             ),
@@ -33,19 +37,17 @@ class MainViewModel :
         viewModelScope.launch {
             when (event) {
                 is MainContract.MainEvent.GetUserInfo -> {
-                    setState {
-                        copy(
-                            loadState = MainContract.MainState.LoadState.Loading
-                        )
-                    }
-                    val userInfo = repository.getUserInfo(pref.getJwtToken(""))
-                    setState {
-                        copy(
-                            loadState = MainContract.MainState.LoadState.Success,
-                            userInfo = MainContract.MainState.UserInfo(
-                                userInfo
+                    setState { copy(loadState = LoadState.LOADING) }
+                    repository.getUserInfo().onSuccess {
+                        Log.d("MainViewModel", pref.getJwtToken(""))
+                        setState {
+                            copy(
+                                loadState = LoadState.SUCCESS,
+                                userInfo = MainContract.MainState.UserInfo(it)
                             )
-                        )
+                        }
+                    }.onFail {
+                        setState { copy(loadState = LoadState.ERROR) }
                     }
                 }
 
@@ -60,18 +62,18 @@ class MainViewModel :
                 }
 
                 is MainContract.MainEvent.GetNewToken -> {
-                    val result =
-                        repository.getNewAccessToken(pref.getJwtToken(""), pref.getRefreshToken(""))
-                    setState {
-                        copy(
-                            newAccessToken = MainContract.MainState.NewAccessToken(
-                                result.access_token
-                            ),
-                            newRefreshToken = MainContract.MainState.NewRefreshToken(
-                                result.refresh_token
-                            )
-                        )
-                    }
+                    repository.getNewAccessToken(pref.getJwtToken(""), pref.getRefreshToken(""))
+                        .onSuccess {
+                            setState {
+                                copy(
+                                    newAccessToken = MainContract.MainState.NewAccessToken(it.access_token),
+                                    newRefreshToken = MainContract.MainState.NewRefreshToken(it.refresh_token)
+                                )
+                            }
+                        }.onFail {
+
+                        }
+
                 }
 
                 is MainContract.MainEvent.Logout -> {
@@ -87,6 +89,10 @@ class MainViewModel :
 
                 is MainContract.MainEvent.SetRepeat -> {
                     setState { copy(repeatState = MainContract.MainState.RepeatState(event.repeat)) }
+                }
+
+                is MainContract.MainEvent.SetFinish -> {
+                    setState { copy(loadState = LoadState.FINISH) }
                 }
             }
         }
@@ -114,6 +120,10 @@ class MainViewModel :
 
     fun setRepeat(repeat: Boolean) {
         setEvent(MainContract.MainEvent.SetRepeat(repeat))
+    }
+
+    fun setFinish() {
+        setEvent(MainContract.MainEvent.SetFinish)
     }
 
 }

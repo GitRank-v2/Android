@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentApproveOrgBinding
+import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.launch
 
 
@@ -42,20 +43,20 @@ class ApproveOrgFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.loadState is ApproveOrgContract.ApproveOrgState.LoadState.Success) {
+                    if (state.loadState == LoadState.SUCCESS) {
                         initRecycler()
                     }
 
                     if (state.approveOrg.status) {
                         Toast.makeText(requireContext(), "승인됨", Toast.LENGTH_SHORT).show()
-                        viewModel.currentState.requestedOrg.org.removeAt(position)
+                        viewModel.removeRequestedOrg(position)
                         binding.waitingOrgList.adapter?.notifyDataSetChanged()
                         viewModel.resetClick()
                     }
 
                     if (state.rejectOrg.status) {
                         Toast.makeText(requireContext(), "반려됨", Toast.LENGTH_SHORT).show()
-                        viewModel.currentState.requestedOrg.org.removeAt(position)
+                        viewModel.removeRequestedOrg(position)
                         binding.waitingOrgList.adapter?.notifyDataSetChanged()
                         viewModel.resetClick()
                     }
@@ -75,11 +76,12 @@ class ApproveOrgFragment : Fragment() {
 
 
     private fun initRecycler() {
+        viewModel.addReceivedOrg()
         Log.d("count", "count: $count")
         if (page == 0) {
             val adapter =
                 ApproveRequestOrgAdapter(
-                    viewModel.currentState.requestedOrg.org,
+                    viewModel.currentState.requestedOrg.org.data,
                     requireContext(),
                     viewModel.currentState.token.token,
                     viewModel,

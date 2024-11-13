@@ -2,4 +2,15 @@
     <string name="app_name">GitRank</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="auth">Authorization</string>
+    <string name="bearer">"Bearer %s"</string>
+    <string name="repo1">Repository 1</string>
+    <string name="repo2">Repository 2</string>
+    <string name="search_compare_title">Repository 비교하기</string>
+    <string name="next_btn">다음</string>
+    <string name="search_hint"> 검색어 입력</string>
+    <string name="first_compare_search_title">첫번째 Repository</string>
+    <string name="second_compare_search_title">두번째 Repository</string>
+    <string name="git_history">개발 활동 내역</string>
+    <string name="finish_app">Back 버튼을 한번 더 누르면 종료합니다.</string>
 </resources>
