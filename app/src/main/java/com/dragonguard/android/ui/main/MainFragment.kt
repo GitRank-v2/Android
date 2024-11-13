@@ -16,6 +16,8 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.GitHistoryActivity
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
+import com.dragonguard.android.ui.search.SearchActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +45,6 @@ class MainFragment(
         Log.d("mainCreate", "mainCreate")
         //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
-        binding.mainFragViewmodel = viewModel
         Log.d("token", info.toString())
 //        val main = activity as MainActivity
 //        main.setSupportActionBar(binding.toolbar)
@@ -55,11 +56,6 @@ class MainFragment(
         super.onViewCreated(view, savedInstanceState)
 //        binding.toolbar.inflateMenu(R.menu.refresh)
         binding.githubProfile.clipToOutline = true
-        binding.tokenFrame.setOnClickListener {
-            val intent = Intent(requireActivity(), GitHistoryActivity::class.java)
-            intent.putExtra("token", viewModel.currentState.newAccessToken.token)
-            startActivity(intent)
-        }
         initObserver()
         drawInfo()
         if (viewModel.currentState.repeatState.repeat.not()) {
@@ -71,6 +67,31 @@ class MainFragment(
                 }
             }
         }
+
+        binding.tokenFrame.setOnClickListener {
+            val intent = Intent(requireActivity(), GitHistoryActivity::class.java)
+            intent.putExtra("token", viewModel.currentState.newAccessToken.token)
+            startActivity(intent)
+        }
+        binding.searchName.setOnClickListener {
+            val intent = Intent(requireActivity(), SearchActivity::class.java)
+            startActivity(intent)
+        }
+        binding.userId.setOnClickListener {
+            Log.d("userIcon", "userIcon")
+            val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
+            intent.putExtra("token", "")
+            intent.putExtra("userName", info.github_id)
+            startActivity(intent)
+        }
+        binding.githubProfile.setOnClickListener {
+            Log.d("userIcon", "userIcon")
+            val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
+            intent.putExtra("token", "")
+            intent.putExtra("userName", info.github_id)
+            startActivity(intent)
+        }
+
     }
 
     private fun drawInfo() {

@@ -18,10 +18,8 @@ import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
-import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.profile.user.ClientProfileFragment
 import com.dragonguard.android.ui.ranking.outer.RankingFragment
-import com.dragonguard.android.ui.search.SearchActivity
 import com.dragonguard.android.util.LoadState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,9 +65,7 @@ class MainActivity : AppCompatActivity() {
                         transaction.remove(it)
                     }
                     transaction.commit()
-                    mainFrag?.let {
-                        it.clearView()
-                    }
+                    mainFrag?.clearView()
                     mainFrag = null
                     compareFrag = null
                     profileFrag = null
@@ -97,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         // 유저 정보 가져오기
         viewModel.getUserInfo()
         //refreshMain()
-
         binding.mainNav.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.bottom_main -> {
@@ -145,11 +140,6 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.clickSearch.clicked) {
-                        val intent = Intent(applicationContext, SearchActivity::class.java)
-                        intent.putExtra("token", "")
-                        startActivity(intent)
-                    }
                     if (state.newAccessToken.token == null || state.newRefreshToken.refreshToken == null) {
                         if (!this@MainActivity.isFinishing) {
                             Log.d("refresh fail", "token refresh 실패")
@@ -194,19 +184,6 @@ class MainActivity : AppCompatActivity() {
                         activityResultLauncher.launch(intent)
                     }
 
-                    if (state.clickSearch.clicked) {
-                        val intent = Intent(applicationContext, SearchActivity::class.java)
-                        intent.putExtra("token", "")
-                        startActivity(intent)
-                    }
-
-                    if (state.clickUserIcon.clicked) {
-                        Log.d("userIcon", "userIcon")
-                        val intent = Intent(applicationContext, OthersProfileActivity::class.java)
-                        intent.putExtra("token", "")
-                        intent.putExtra("userName", realModel.github_id)
-                        startActivity(intent)
-                    }
                 }
 
             }

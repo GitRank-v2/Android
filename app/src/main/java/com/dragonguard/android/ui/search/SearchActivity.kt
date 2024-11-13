@@ -1,15 +1,11 @@
 package com.dragonguard.android.ui.search
 
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
-import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivitySearchBinding
-import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.search.filter.SearchFilterActivity
 import com.dragonguard.android.util.HorizontalItemDecorator
 import com.dragonguard.android.util.LoadState
@@ -94,7 +89,7 @@ class SearchActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
         viewModel = SearchViewModel()
         this.onBackPressedDispatcher.addCallback(this, callback)
-        binding.searchName.isFocusable = true
+        binding.searchName.isFocusable = false
         initObserver()
         binding.searchResult.addItemDecoration(VerticalItemDecorator(20))
         binding.searchResult.addItemDecoration(HorizontalItemDecorator(10))
@@ -476,10 +471,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            val intent = Intent(this@SearchActivity, MainActivity::class.java)
-            intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
-            intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
+            Log.d("search", "search back pressed")
             finish()
         }
     }
@@ -488,25 +480,12 @@ class SearchActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
-                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
+                Log.d("search", "search back pressed")
+                finish()
+                finish()
             }
 
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    //    화면의 다른곳 눌렀을때 처리
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        closeKeyboard()
-        return super.dispatchTouchEvent(ev)
-    }
-
-    //    edittext의 키보드 제거
-    fun closeKeyboard() {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
     }
 }
