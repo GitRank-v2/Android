@@ -2,6 +2,7 @@ package com.dragonguard.android.ui.profile.user
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -11,11 +12,13 @@ import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityClientReposBinding
 import com.dragonguard.android.ui.profile.OthersReposAdapter
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ClientReposActivity : AppCompatActivity() {
     private lateinit var binding: ActivityClientReposBinding
-    private lateinit var viewModel: ClientReposViewModel
+    private val viewModel by viewModels<ClientReposViewModel>()
     private var orgName = ""
     private lateinit var reposAdapter: OthersReposAdapter
     private var img = ""
@@ -23,7 +26,6 @@ class ClientReposActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityClientReposBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ClientReposViewModel()
         initObserver()
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용

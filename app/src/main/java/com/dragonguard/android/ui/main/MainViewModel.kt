@@ -2,24 +2,24 @@ package com.dragonguard.android.ui.main
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.UserInfoModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.main.MainRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel :
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val pref: IdPreference,
+    private val repository: MainRepository
+) :
     BaseViewModel<MainContract.MainEvent, MainContract.MainStates, MainContract.MainActivityEffect>() {
-    private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
     override fun createInitialState(): MainContract.MainStates {
-        pref = getPref()
-        repository = getRepository()
         return MainContract.MainStates(
             loadState = LoadState.INIT,
             userInfo = MainContract.MainState.UserInfo(

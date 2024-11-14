@@ -3,27 +3,25 @@ package com.dragonguard.android.ui.menu.org.auth
 import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
-import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class AuthEmailViewModel :
-    BaseViewModel<AuthEmailContract.AuthEmailEvent, AuthEmailContract.AuthEmailStates, AuthEmailContract.AuthEmailEffect>() {
-    private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+@HiltViewModel
+class AuthEmailViewModel @Inject constructor(
+    private val repository: ApiRepository
+) : BaseViewModel<AuthEmailContract.AuthEmailEvent, AuthEmailContract.AuthEmailStates, AuthEmailContract.AuthEmailEffect>() {
+
     override fun createInitialState(): AuthEmailContract.AuthEmailStates {
-        pref = getPref()
-        repository = getRepository()
         return AuthEmailContract.AuthEmailStates(
             LoadState.LOADING,
             AuthEmailContract.AuthEmailState.CustomTimerDuration(MutableLiveData(MIllIS_IN_FUTURE)),

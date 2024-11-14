@@ -1,8 +1,6 @@
 package com.dragonguard.android.ui.search.repo
 
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.ui.base.BaseViewModel
@@ -10,15 +8,17 @@ import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RepoContributorsViewModel :
+@HiltViewModel
+class RepoContributorsViewModel @Inject constructor(
+    private val pref: IdPreference,
+    private val repository: ApiRepository
+) :
     BaseViewModel<RepoContributorsContract.RepoContributorsEvent, RepoContributorsContract.RepoContributorsStates, RepoContributorsContract.RepoContributorsEffect>() {
-    private lateinit var repository: ApiRepository
-    private lateinit var pref: IdPreference
     override fun createInitialState(): RepoContributorsContract.RepoContributorsStates {
-        repository = getRepository()
-        pref = getPref()
         return RepoContributorsContract.RepoContributorsStates(
             LoadState.INIT,
             RepoContributorsContract.RepoContributorsState.RepoContributeState(RepoContributorsModel()),

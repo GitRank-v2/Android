@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -20,9 +21,10 @@ import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.menu.MenuActivity
 import com.dragonguard.android.ui.profile.OthersReposAdapter
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class ClientProfileFragment(
     private val userName: String
 ) : Fragment() {
@@ -30,7 +32,7 @@ class ClientProfileFragment(
     private lateinit var binding: FragmentClientProfileBinding
     private lateinit var orgAdapter: ClientGitOrgAdapter
     private lateinit var repoAdapter: OthersReposAdapter
-    private lateinit var viewModel: ClientProfileViewModel
+    private val viewModel by viewModels<ClientProfileViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +43,6 @@ class ClientProfileFragment(
         main.setSupportActionBar(binding.toolbar)
         main.supportActionBar?.setDisplayShowTitleEnabled(false)
         main.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        viewModel = ClientProfileViewModel()
         return binding.root
     }
 

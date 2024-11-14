@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -21,19 +22,20 @@ import com.dragonguard.android.ui.menu.criterion.CriterionActivity
 import com.dragonguard.android.ui.menu.faq.FaqActivity
 import com.dragonguard.android.ui.menu.org.approval.ApprovalOrgActivity
 import com.dragonguard.android.ui.menu.org.auth.AuthOrgActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /*
  메인화면에서 프로필 사진이나 id를 눌렀을 때 메뉴를 보여주는 activity
  */
+@AndroidEntryPoint
 class MenuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMenuBinding
-    private lateinit var viewModel: MenuViewModel
+    private val viewModel by viewModels<MenuViewModel>()
     private lateinit var versionDialog: Dialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_menu)
-        viewModel = MenuViewModel()
         initObserver()
 
         viewModel.checkAdmin()

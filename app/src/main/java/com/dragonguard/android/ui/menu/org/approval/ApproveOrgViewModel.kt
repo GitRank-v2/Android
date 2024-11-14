@@ -1,8 +1,6 @@
 package com.dragonguard.android.ui.menu.org.approval
 
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.OrgApprovalModel
 import com.dragonguard.android.data.repository.ApiRepository
@@ -12,15 +10,17 @@ import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.RequestStatus
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ApproveOrgViewModel :
-    BaseViewModel<ApproveOrgContract.ApproveOrgEvent, ApproveOrgContract.ApproveOrgStates, ApproveOrgContract.ApproveOrgEffect>() {
-    private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+@HiltViewModel
+class ApproveOrgViewModel @Inject constructor(
+    private val pref: IdPreference,
+    private val repository: ApiRepository
+) : BaseViewModel<ApproveOrgContract.ApproveOrgEvent, ApproveOrgContract.ApproveOrgStates, ApproveOrgContract.ApproveOrgEffect>() {
     override fun createInitialState(): ApproveOrgContract.ApproveOrgStates {
-        pref = getPref()
-        repository = getRepository()
+
         return ApproveOrgContract.ApproveOrgStates(
             LoadState.INIT,
             ApproveOrgContract.ApproveOrgState.RequestedOrg(ApproveRequestOrgModel()),

@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -16,11 +17,13 @@ import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityRegistOrgBinding
 import com.dragonguard.android.ui.menu.MenuActivity
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class RegistOrgActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistOrgBinding
-    private lateinit var viewModel: RegistOrgViewModel
+    private val viewModel by viewModels<RegistOrgViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_regist_org)

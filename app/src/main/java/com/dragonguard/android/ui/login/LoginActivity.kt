@@ -12,6 +12,7 @@ import android.webkit.CookieManager
 import android.webkit.ValueCallback
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsCallback
 import androidx.browser.customtabs.CustomTabsClient
@@ -27,14 +28,16 @@ import com.dragonguard.android.data.model.klip.CallBack
 import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
 import com.dragonguard.android.databinding.ActivityLoginBinding
 import com.dragonguard.android.ui.main.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private var backPressed: Long = 0
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var viewModel: LoginViewModel
+    private val viewModel by viewModels<LoginViewModel>()
     private val body = WalletAuthRequestModel(
         Bapp(
             "GitRank",
@@ -51,7 +54,6 @@ class LoginActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
         //Log.d("시작", "loginactivity1")
-        viewModel = LoginViewModel()
         initObserver()
         //쿠키 확인 코드
         this.onBackPressedDispatcher.addCallback(this, callback)
@@ -338,7 +340,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val uri = intent?.data
         Log.d("uri new", "uri: $uri")

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -15,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentApprovedOrgBinding
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ApprovedOrgFragment : Fragment() {
     private lateinit var binding: FragmentApprovedOrgBinding
-    private lateinit var viewModel: ApprovedOrgViewModel
+    private val viewModel by viewModels<ApprovedOrgViewModel>()
     private var count = 0
     private var page = 0
     private var position = 0
@@ -29,7 +32,6 @@ class ApprovedOrgFragment : Fragment() {
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_approved_org, container, false)
-        viewModel = ApprovedOrgViewModel()
         return binding.root
     }
 

@@ -1,7 +1,6 @@
 package com.dragonguard.android.data.repository
 
 import android.util.Log
-import com.dragonguard.android.GitRankApplication.Companion.getService
 import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
@@ -10,7 +9,6 @@ import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.model.detail.UserProfileModel
-import com.dragonguard.android.data.model.klip.TokenHistoryModel
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.OrgApprovalModel
@@ -23,18 +21,19 @@ import com.dragonguard.android.data.model.rankings.TotalUsersRankingModel
 import com.dragonguard.android.data.model.search.RepoNameModel
 import com.dragonguard.android.data.model.search.UserNameModel
 import com.dragonguard.android.data.model.token.RefreshTokenModel
+import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
 import com.dragonguard.android.util.handleAdminApi
 import com.dragonguard.android.util.handleApi
 import com.dragonguard.android.util.handleLoginApi
 import com.dragonguard.android.util.handleWithdrawApi
+import javax.inject.Inject
 
 /*
  서버에 요청하는 모든 api들의 호출부분
  */
-class ApiRepository {
+class ApiRepository @Inject constructor(private val service: GitRankService) {
 
-    private val service = getService()
 
     //Repository 검색을 위한 함수
     suspend fun getRepositoryNames(
@@ -185,8 +184,8 @@ class ApiRepository {
         return handleApi({ service.getNewAccessToken(access, refresh) }) { it }
     }
 
-    suspend fun postCommits(): DataResult<Unit> {
-        return handleApi({ service.postCommits() }) { it }
+    suspend fun updateGitContributions(): DataResult<Unit> {
+        return handleApi({ service.updateGitContributions() }) { it }
     }
 
     suspend fun getOrgNames(
@@ -290,7 +289,7 @@ class ApiRepository {
     suspend fun manualContribute(repoName: String): DataResult<RepoContributorsModel> {
         return handleApi({ service.getRepoContributorsUpdate(repoName) }) { it }
     }
-    
+
 
     suspend fun manualUserInfo(): DataResult<UserInfoModel> {
         return handleApi({ service.userInfoUpdate() }) { it }

@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -28,20 +29,22 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
 //선택한 두 Repository를 비교하기 위한 fragment
+@AndroidEntryPoint
 class CompareRepoFragment(
     repoName1: String,
     repoName2: String,
-    private val viewModel: RepoCompareViewModel
 ) : Fragment() {
     // TODO: Rename and change types of parameters
     private var repo1 = repoName1
     private var repo2 = repoName2
     private lateinit var binding: FragmentCompareRepoBinding
     private var count = 0
+    private val viewModel by viewModels<RepoCompareViewModel>()
     private val compareItems = arrayListOf(
         "forks",
         "closed issues",

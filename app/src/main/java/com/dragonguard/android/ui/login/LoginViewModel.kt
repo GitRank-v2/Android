@@ -1,18 +1,17 @@
 package com.dragonguard.android.ui.login
 
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.setService
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel :
-    BaseViewModel<LoginContract.LoginEvent, LoginContract.LoginStates, LoginContract.LoginEffect>() {
-
-    private lateinit var pref: IdPreference
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val pref: IdPreference,
+) : BaseViewModel<LoginContract.LoginEvent, LoginContract.LoginStates, LoginContract.LoginEffect>() {
     override fun createInitialState(): LoginContract.LoginStates {
-        pref = getPref()
         return LoginContract.LoginStates(
             LoginContract.LoginState.LoginStat(null),
             LoginContract.LoginState.Token(pref.getJwtToken("")),
@@ -28,7 +27,6 @@ class LoginViewModel :
                 is LoginContract.LoginEvent.SetJwtToken -> {
                     pref.setJwtToken(event.token)
                     pref.setRefreshToken(event.refreshToken)
-                    setService()
                     setState {
                         copy(
                             token = LoginContract.LoginState.Token(event.token),

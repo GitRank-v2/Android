@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
@@ -23,11 +24,13 @@ import com.dragonguard.android.ui.search.filter.SearchFilterActivity
 import com.dragonguard.android.util.HorizontalItemDecorator
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.VerticalItemDecorator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /*
  repo를 이름으로 검색하는 activity
  */
+@AndroidEntryPoint
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
     lateinit var repositoryProfileAdapter: RepositoryProfileAdapter
@@ -37,7 +40,7 @@ class SearchActivity : AppCompatActivity() {
     private var lastSearch = ""
     private var popularLanguages = ArrayList<String>()
     private lateinit var languagesCheckBox: ArrayList<Boolean>
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by viewModels<SearchViewModel>()
     private var filterLanguage = StringBuilder()
     private var filterOptions = StringBuilder()
     private var filterResult = StringBuilder()
@@ -87,7 +90,7 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
-        viewModel = SearchViewModel()
+
         this.onBackPressedDispatcher.addCallback(this, callback)
         binding.searchName.isFocusable = false
         initObserver()

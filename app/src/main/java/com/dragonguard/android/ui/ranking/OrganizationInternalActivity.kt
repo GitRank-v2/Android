@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -18,6 +19,7 @@ import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,9 +27,10 @@ import kotlinx.coroutines.launch
 /*
  사용자의 대학교 내의 랭킹을 보여주는 activity
  */
+@AndroidEntryPoint
 class OrganizationInternalActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOrganizationInternalRankingBinding
-    private lateinit var viewModel: OrganizationInternalViewModel
+    private val viewModel by viewModels<OrganizationInternalViewModel>()
     private var orgName = ""
     private var page = 0
     private var position = 0
@@ -41,7 +44,6 @@ class OrganizationInternalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding =
             DataBindingUtil.setContentView(this, R.layout.activity_organization_internal_ranking)
-        viewModel = OrganizationInternalViewModel()
         initObserver()
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용

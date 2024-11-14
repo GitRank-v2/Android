@@ -9,8 +9,9 @@ import androidx.fragment.app.Fragment
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentRankingBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class RankingFragment() : Fragment() {
 
     private val token = ""
