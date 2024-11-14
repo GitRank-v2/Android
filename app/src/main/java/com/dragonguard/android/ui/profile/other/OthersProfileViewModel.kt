@@ -1,8 +1,9 @@
 package com.dragonguard.android.ui.profile.other
 
 import androidx.lifecycle.viewModelScope
+import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.detail.UserProfileModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.profile.other.OthersProfileRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
@@ -14,10 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OthersProfileViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
+    private val repository: OthersProfileRepository
 ) : BaseViewModel<OthersProfileContract.UserProfileEvent, OthersProfileContract.UserProfileStates, OthersProfileContract.UserProfileEffect>() {
+    private lateinit var pref: IdPreference
+
     override fun createInitialState(): OthersProfileContract.UserProfileStates {
+        pref = getPref()
         return OthersProfileContract.UserProfileStates(
             LoadState.INIT,
             OthersProfileContract.UserProfileState.Token(pref.getJwtToken("")),

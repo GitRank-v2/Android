@@ -2,9 +2,8 @@ package com.dragonguard.android.ui.menu.org.search
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.menu.org.search.SearchOrganizationRepository
 import com.dragonguard.android.ui.base.BaseViewModel
-import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
@@ -14,11 +13,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchOrganizationViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
+    private val repository: SearchOrganizationRepository
 ) : BaseViewModel<SearchOrganizationContract.SearchOrganizationEvent, SearchOrganizationContract.SearchOrganizationStates, SearchOrganizationContract.SearchOrganizationEffect>() {
     override fun createInitialState(): SearchOrganizationContract.SearchOrganizationStates {
-
         return SearchOrganizationContract.SearchOrganizationStates(
             LoadState.INIT,
             SearchOrganizationContract.SearchOrganizationState.OrgNames(OrganizationNamesModel()),

@@ -3,9 +3,8 @@ package com.dragonguard.android.ui.menu.org.regist
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.data.model.org.RegistOrgModel
 import com.dragonguard.android.data.model.org.RegistOrgResultModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.menu.org.regist.RegistOrgRepository
 import com.dragonguard.android.ui.base.BaseViewModel
-import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
@@ -13,8 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RegistOrgViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
+    private val repository: RegistOrgRepository
 ) : BaseViewModel<RegistOrgContract.RegistOrgEvent, RegistOrgContract.RegistOrgStates, RegistOrgContract.RegistOrgEffect>() {
 
     override fun createInitialState(): RegistOrgContract.RegistOrgStates {

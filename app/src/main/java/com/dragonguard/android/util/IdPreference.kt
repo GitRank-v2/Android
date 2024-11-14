@@ -4,8 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class IdPreference(context: Context) {
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences("id", Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences = context.getSharedPreferences("id", Context.MODE_PRIVATE)
 
     fun getWalletAddress(defValue: String): String {
         return prefs.getString("wallet_address", defValue)!!
@@ -44,7 +43,7 @@ class IdPreference(context: Context) {
     }
 
     fun getPostAddress(defValue: Boolean): Boolean {
-        return prefs.getBoolean("post", defValue)!!
+        return prefs.getBoolean("post", defValue)
     }
 
     fun setRepeat(value: Boolean) {
@@ -52,6 +51,6 @@ class IdPreference(context: Context) {
     }
 
     fun getRepeat(defValue: Boolean): Boolean {
-        return prefs.getBoolean("repeat", defValue)!!
+        return prefs.getBoolean("repeat", defValue)
     }
 }

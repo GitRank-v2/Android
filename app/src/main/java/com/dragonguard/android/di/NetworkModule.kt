@@ -3,7 +3,6 @@ package com.dragonguard.android.di
 import com.dragonguard.android.GitRankApplication.Companion.getString
 import com.dragonguard.android.R
 import com.dragonguard.android.data.service.GitRankService
-import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.JwtInterceptor
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -22,12 +21,12 @@ import javax.inject.Singleton
 object NetworkModule {
     @Singleton
     @Provides
-    fun provideOkHttpClient(pref: IdPreference): OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(18, TimeUnit.SECONDS)
             .writeTimeout(18, TimeUnit.SECONDS)
-            .addInterceptor(JwtInterceptor(pref))
+            .addInterceptor(JwtInterceptor())
             .retryOnConnectionFailure(true)
             .build()
     }

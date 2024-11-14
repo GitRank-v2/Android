@@ -1,8 +1,9 @@
 package com.dragonguard.android.ui.ranking
 
 import androidx.lifecycle.viewModelScope
+import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.ranking.OrganizationInternalRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
@@ -14,10 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrganizationInternalViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
+    private val repository: OrganizationInternalRepository
 ) : BaseViewModel<OrganizationInternalContract.OrganizationInternalEvent, OrganizationInternalContract.OrganizationInternalStates, OrganizationInternalContract.OrganizationInternalEffect>() {
+    private lateinit var pref: IdPreference
+
     override fun createInitialState(): OrganizationInternalContract.OrganizationInternalStates {
+        pref = getPref()
         return OrganizationInternalContract.OrganizationInternalStates(
             LoadState.INIT,
             OrganizationInternalContract.OrganizationInternalState.OrgId(-1L),

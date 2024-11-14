@@ -1,8 +1,9 @@
 package com.dragonguard.android.ui.profile.user
 
 import androidx.lifecycle.viewModelScope
+import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.GithubOrgReposModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.profile.user.ClientReposRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
@@ -12,10 +13,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ClientReposViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
+    private val repository: ClientReposRepository
 ) : BaseViewModel<ClientReposContract.ClientReposEvent, ClientReposContract.ClientReposStates, ClientReposContract.ClientReposEffect>() {
+    private lateinit var pref: IdPreference
+
     override fun createInitialState(): ClientReposContract.ClientReposStates {
+        pref = getPref()
         return ClientReposContract.ClientReposStates(
             LoadState.INIT,
             ClientReposContract.ClientReposState.Token(pref.getJwtToken("")),

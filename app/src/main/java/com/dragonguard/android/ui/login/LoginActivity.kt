@@ -23,27 +23,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.klip.Bapp
-import com.dragonguard.android.data.model.klip.CallBack
-import com.dragonguard.android.data.model.klip.WalletAuthRequestModel
 import com.dragonguard.android.databinding.ActivityLoginBinding
 import com.dragonguard.android.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
-
     private var backPressed: Long = 0
     private lateinit var binding: ActivityLoginBinding
     private val viewModel by viewModels<LoginViewModel>()
-    private val body = WalletAuthRequestModel(
-        Bapp(
-            "GitRank",
-            CallBack()
-        ), "auth"
-    )
+
 
     //private var walletAddress = ""
     private lateinit var mClient: CustomTabsClient

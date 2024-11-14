@@ -221,6 +221,7 @@ class MainActivity : AppCompatActivity() {
                         MainFragment(
                             viewModel.currentState.userInfo.userInfo,
                             imgRefresh,
+                            viewModel
                         )
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, mainFrag!!)

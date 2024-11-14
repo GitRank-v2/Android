@@ -255,7 +255,6 @@ class ApiRepository @Inject constructor(private val service: GitRankService) {
 
     suspend fun checkAdmin(): DataResult<Boolean> {
         return handleAdminApi { service.getPermissionState() }
-
     }
 
     suspend fun approveOrgRequest(body: OrgApprovalModel): DataResult<ApproveRequestOrgModel> {
@@ -301,6 +300,5 @@ class ApiRepository @Inject constructor(private val service: GitRankService) {
 
     suspend fun withDrawAccount(): DataResult<Boolean> {
         return handleWithdrawApi { service.postWithDraw() }
-
     }
 }

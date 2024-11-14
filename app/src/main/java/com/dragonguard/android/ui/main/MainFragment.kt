@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.UserInfoModel
@@ -28,10 +27,10 @@ import kotlinx.coroutines.launch
 class MainFragment(
     private var info: UserInfoModel,
     private val refresh: Boolean,
+    private val viewModel: MainViewModel
 ) : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val viewModel by viewModels<MainViewModel>()
 
     //    private var menuItem: MenuItem? = null
     val handler = Handler(Looper.getMainLooper()) {

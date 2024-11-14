@@ -2,6 +2,7 @@ package com.dragonguard.android.ui.main
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.repository.main.MainRepository
 import com.dragonguard.android.ui.base.BaseViewModel
@@ -15,11 +16,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val pref: IdPreference,
     private val repository: MainRepository
-) :
-    BaseViewModel<MainContract.MainEvent, MainContract.MainStates, MainContract.MainActivityEffect>() {
+) : BaseViewModel<MainContract.MainEvent, MainContract.MainStates, MainContract.MainActivityEffect>() {
+    private lateinit var pref: IdPreference
+
     override fun createInitialState(): MainContract.MainStates {
+        pref = getPref()
         return MainContract.MainStates(
             loadState = LoadState.INIT,
             userInfo = MainContract.MainState.UserInfo(

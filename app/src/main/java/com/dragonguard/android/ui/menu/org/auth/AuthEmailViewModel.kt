@@ -4,7 +4,7 @@ import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.menu.org.auth.AuthEmailRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthEmailViewModel @Inject constructor(
-    private val repository: ApiRepository
+    private val repository: AuthEmailRepository
 ) : BaseViewModel<AuthEmailContract.AuthEmailEvent, AuthEmailContract.AuthEmailStates, AuthEmailContract.AuthEmailEffect>() {
 
     override fun createInitialState(): AuthEmailContract.AuthEmailStates {

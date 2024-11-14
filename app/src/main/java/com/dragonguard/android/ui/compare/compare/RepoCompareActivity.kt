@@ -65,7 +65,7 @@ class RepoCompareActivity : AppCompatActivity() {
         binding.rankingLottie.pauseAnimation()
         binding.rankingLottie.visibility = View.GONE
         binding.compareFrame.visibility = View.VISIBLE
-        compareRepoFragment = CompareRepoFragment(repo1, repo2)
+        compareRepoFragment = CompareRepoFragment(repo1, repo2, viewModel)
         compareUserFragment = CompareUserFragment(
             repo1,
             repo2,

@@ -1,8 +1,9 @@
 package com.dragonguard.android.ui.profile.user
 
 import androidx.lifecycle.viewModelScope
+import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.detail.ClientDetailModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.profile.user.ClientProfileRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
@@ -14,10 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ClientProfileViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
+    private val repository: ClientProfileRepository
 ) : BaseViewModel<ClientProfileContract.ClientProfileEvent, ClientProfileContract.ClientProfileStates, ClientProfileContract.ClientProfileEffect>() {
+    private lateinit var pref: IdPreference
+
     override fun createInitialState(): ClientProfileContract.ClientProfileStates {
+        pref = getPref()
         return ClientProfileContract.ClientProfileStates(
             LoadState.INIT,
             ClientProfileContract.ClientProfileState.ClientDetail(ClientDetailModel()),

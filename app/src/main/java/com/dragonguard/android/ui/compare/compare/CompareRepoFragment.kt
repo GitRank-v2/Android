@@ -13,7 +13,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -38,13 +37,13 @@ import java.text.DecimalFormat
 class CompareRepoFragment(
     repoName1: String,
     repoName2: String,
+    private val viewModel: RepoCompareViewModel
 ) : Fragment() {
     // TODO: Rename and change types of parameters
     private var repo1 = repoName1
     private var repo2 = repoName2
     private lateinit var binding: FragmentCompareRepoBinding
     private var count = 0
-    private val viewModel by viewModels<RepoCompareViewModel>()
     private val compareItems = arrayListOf(
         "forks",
         "closed issues",

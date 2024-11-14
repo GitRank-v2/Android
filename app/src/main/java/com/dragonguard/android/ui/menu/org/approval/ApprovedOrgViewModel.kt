@@ -2,9 +2,8 @@ package com.dragonguard.android.ui.menu.org.approval
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.menu.org.approval.ApprovedOrgRepository
 import com.dragonguard.android.ui.base.BaseViewModel
-import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.RequestStatus
 import com.dragonguard.android.util.onFail
@@ -15,8 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ApprovedOrgViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
+    private val repository: ApprovedOrgRepository
 ) : BaseViewModel<ApprovedOrgContract.ApprovedOrgEvent, ApprovedOrgContract.ApprovedOrgStates, ApprovedOrgContract.ApprovedOrgEffect>() {
     override fun createInitialState(): ApprovedOrgContract.ApprovedOrgStates {
 

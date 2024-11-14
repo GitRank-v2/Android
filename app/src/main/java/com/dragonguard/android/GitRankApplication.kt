@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.NetworkChecker
 import dagger.hilt.android.HiltAndroidApp
 
@@ -15,6 +16,7 @@ class GitRankApplication : Application(), DefaultLifecycleObserver {
         super<Application>.onCreate()
         context = applicationContext
         networkConnectionChecker = NetworkChecker(context)
+        pref = IdPreference(context)
     }
 
     override fun onStop(owner: LifecycleOwner) {
@@ -31,6 +33,8 @@ class GitRankApplication : Application(), DefaultLifecycleObserver {
         @SuppressLint("StaticFieldLeak")
         private lateinit var context: Context
 
+        private lateinit var pref: IdPreference
+        fun getPref(): IdPreference = pref
 
         private lateinit var networkConnectionChecker: NetworkChecker
         fun isOnline() = networkConnectionChecker.isOnline()

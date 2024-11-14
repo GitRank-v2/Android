@@ -2,9 +2,8 @@ package com.dragonguard.android.ui.search
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.search.SearchRepository
 import com.dragonguard.android.ui.base.BaseViewModel
-import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onException
@@ -16,10 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val pref: IdPreference,
-    private val repository: ApiRepository
-) :
-    BaseViewModel<SearchContract.SearchEvent, SearchContract.SearchStates, SearchContract.SearchEffect>() {
+    private val repository: SearchRepository
+) : BaseViewModel<SearchContract.SearchEvent, SearchContract.SearchStates, SearchContract.SearchEffect>() {
     override fun createInitialState(): SearchContract.SearchStates {
         return SearchContract.SearchStates(
             LoadState.INIT,
