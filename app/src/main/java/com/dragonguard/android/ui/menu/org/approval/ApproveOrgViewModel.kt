@@ -20,7 +20,7 @@ class ApproveOrgViewModel @Inject constructor(
     private val repository: ApproveOrgRepository
 ) : BaseViewModel<ApproveOrgContract.ApproveOrgEvent, ApproveOrgContract.ApproveOrgStates, ApproveOrgContract.ApproveOrgEffect>() {
     private lateinit var pref: IdPreference
-    
+
     override fun createInitialState(): ApproveOrgContract.ApproveOrgStates {
         pref = getPref()
         return ApproveOrgContract.ApproveOrgStates(

@@ -20,7 +20,6 @@ import javax.inject.Inject
 class AuthEmailViewModel @Inject constructor(
     private val repository: AuthEmailRepository
 ) : BaseViewModel<AuthEmailContract.AuthEmailEvent, AuthEmailContract.AuthEmailStates, AuthEmailContract.AuthEmailEffect>() {
-
     override fun createInitialState(): AuthEmailContract.AuthEmailStates {
         return AuthEmailContract.AuthEmailStates(
             LoadState.LOADING,

@@ -1,115 +1,107 @@
 package com.dragonguard.android.di
 
-import com.dragonguard.android.data.repository.ApiRepository
 import com.dragonguard.android.data.repository.compare.compare.RepoCompareRepository
+import com.dragonguard.android.data.repository.compare.compare.RepoCompareRepositoryImpl
 import com.dragonguard.android.data.repository.compare.search.CompareSearchRepository
+import com.dragonguard.android.data.repository.compare.search.CompareSearchRepositoryImpl
 import com.dragonguard.android.data.repository.main.MainRepository
+import com.dragonguard.android.data.repository.main.MainRepositoryImpl
 import com.dragonguard.android.data.repository.menu.MenuRepository
+import com.dragonguard.android.data.repository.menu.MenuRepositoryImpl
 import com.dragonguard.android.data.repository.menu.org.approval.ApproveOrgRepository
+import com.dragonguard.android.data.repository.menu.org.approval.ApproveOrgRepositoryImpl
 import com.dragonguard.android.data.repository.menu.org.approval.ApprovedOrgRepository
+import com.dragonguard.android.data.repository.menu.org.approval.ApprovedOrgRepositoryImpl
 import com.dragonguard.android.data.repository.menu.org.auth.AuthEmailRepository
+import com.dragonguard.android.data.repository.menu.org.auth.AuthEmailRepositoryImpl
 import com.dragonguard.android.data.repository.menu.org.regist.RegistOrgRepository
+import com.dragonguard.android.data.repository.menu.org.regist.RegistOrgRepositoryImpl
 import com.dragonguard.android.data.repository.menu.org.search.SearchOrganizationRepository
+import com.dragonguard.android.data.repository.menu.org.search.SearchOrganizationRepositoryImpl
 import com.dragonguard.android.data.repository.profile.other.OthersProfileRepository
+import com.dragonguard.android.data.repository.profile.other.OthersProfileRepositoryImpl
 import com.dragonguard.android.data.repository.profile.user.ClientProfileRepository
+import com.dragonguard.android.data.repository.profile.user.ClientProfileRepositoryImpl
 import com.dragonguard.android.data.repository.profile.user.ClientReposRepository
+import com.dragonguard.android.data.repository.profile.user.ClientReposRepositoryImpl
 import com.dragonguard.android.data.repository.ranking.OrganizationInternalRepository
+import com.dragonguard.android.data.repository.ranking.OrganizationInternalRepositoryImpl
 import com.dragonguard.android.data.repository.ranking.outer.RankingsRepository
+import com.dragonguard.android.data.repository.ranking.outer.RankingsRepositoryImpl
 import com.dragonguard.android.data.repository.search.SearchRepository
+import com.dragonguard.android.data.repository.search.SearchRepositoryImpl
 import com.dragonguard.android.data.repository.search.repo.RepoContributorsRepository
-import com.dragonguard.android.data.service.GitRankService
+import com.dragonguard.android.data.repository.search.repo.RepoContributorsRepositoryImpl
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule {
     @Singleton
-    @Provides
-    fun provideMainRepository(service: GitRankService): MainRepository =
-        MainRepository(service)
-
-    @Singleton
-    @Provides
-    fun provideCompareSearchRepository(service: GitRankService): CompareSearchRepository =
-        CompareSearchRepository(service)
+    @Binds
+    abstract fun bindRepoCompareRepository(repoCompareRepository: RepoCompareRepositoryImpl): RepoCompareRepository
 
     @Singleton
-    @Provides
-    fun provideRepoCompareRepository(service: GitRankService): RepoCompareRepository =
-        RepoCompareRepository(service)
+    @Binds
+    abstract fun bindCompareSearchRepository(compareSearchRepository: CompareSearchRepositoryImpl): CompareSearchRepository
 
     @Singleton
-    @Provides
-    fun provideMenuRepository(service: GitRankService): MenuRepository = MenuRepository(service)
+    @Binds
+    abstract fun bindMainRepository(mainRepository: MainRepositoryImpl): MainRepository
 
     @Singleton
-    @Provides
-    fun provideSearchOrganizationRepository(service: GitRankService): SearchOrganizationRepository =
-        SearchOrganizationRepository(service)
+    @Binds
+    abstract fun provideMenuRepository(menuRepository: MenuRepositoryImpl): MenuRepository
 
     @Singleton
-    @Provides
-    fun provideRegistOrgRepository(service: GitRankService): RegistOrgRepository =
-        RegistOrgRepository(service)
+    @Binds
+    abstract fun bindSearchOrganizationRepository(searchOrganizationRepository: SearchOrganizationRepositoryImpl): SearchOrganizationRepository
 
     @Singleton
-    @Provides
-    fun provideAuthEmailRepository(service: GitRankService): AuthEmailRepository =
-        AuthEmailRepository(service)
+    @Binds
+    abstract fun funbindRegistOrgRepository(registOrgRepository: RegistOrgRepositoryImpl): RegistOrgRepository
 
     @Singleton
-    @Provides
-    fun provideApprovedOrgRepository(service: GitRankService): ApprovedOrgRepository =
-        ApprovedOrgRepository(service)
+    @Binds
+    abstract fun bindAuthEmailRepository(authEmailRepository: AuthEmailRepositoryImpl): AuthEmailRepository
 
     @Singleton
-    @Provides
-    fun provideApproveOrgRepository(service: GitRankService): ApproveOrgRepository =
-        ApproveOrgRepository(service)
+    @Binds
+    abstract fun bindApprovedOrgRepository(approvedOrgRepository: ApprovedOrgRepositoryImpl): ApprovedOrgRepository
 
     @Singleton
-    @Provides
-    fun provideOthersProfileRepository(service: GitRankService): OthersProfileRepository =
-        OthersProfileRepository(service)
+    @Binds
+    abstract fun bindApproveOrgRepository(approveOrgRepository: ApproveOrgRepositoryImpl): ApproveOrgRepository
 
     @Singleton
-    @Provides
-    fun provideClientProfileRepository(service: GitRankService): ClientProfileRepository =
-        ClientProfileRepository(service)
+    @Binds
+    abstract fun bindOthersProfileRepository(othersProfileRepository: OthersProfileRepositoryImpl): OthersProfileRepository
 
     @Singleton
-    @Provides
-    fun provideClientReposRepository(service: GitRankService): ClientReposRepository =
-        ClientReposRepository(service)
+    @Binds
+    abstract fun bindClientProfileRepository(clientProfileRepository: ClientProfileRepositoryImpl): ClientProfileRepository
 
     @Singleton
-    @Provides
-    fun provideOrganizationInternalRepository(service: GitRankService): OrganizationInternalRepository =
-        OrganizationInternalRepository(service)
+    @Binds
+    abstract fun bindClientReposRepository(clientReposRepository: ClientReposRepositoryImpl): ClientReposRepository
 
     @Singleton
-    @Provides
-    fun provideRankingsRepository(service: GitRankService): RankingsRepository =
-        RankingsRepository(service)
+    @Binds
+    abstract fun bindOrganizationInternalRepository(organizationInternalRepository: OrganizationInternalRepositoryImpl): OrganizationInternalRepository
 
     @Singleton
-    @Provides
-    fun provideSearchRepository(service: GitRankService): SearchRepository =
-        SearchRepository(service)
+    @Binds
+    abstract fun bindRankingsRepository(rankingRepository: RankingsRepositoryImpl): RankingsRepository
 
     @Singleton
-    @Provides
-    fun provideRepoContributorsRepository(service: GitRankService): RepoContributorsRepository =
-        RepoContributorsRepository(service)
+    @Binds
+    abstract fun bindSearchRepository(searchRepository: SearchRepositoryImpl): SearchRepository
 
     @Singleton
-    @Provides
-    fun provideApiRepository(service: GitRankService): ApiRepository =
-        ApiRepository(service)
-
-
+    @Binds
+    abstract fun repoContributorsRepository(repoContributorsRepository: RepoContributorsRepositoryImpl): RepoContributorsRepository
 }

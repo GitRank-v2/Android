@@ -14,7 +14,6 @@ import javax.inject.Inject
 class RegistOrgViewModel @Inject constructor(
     private val repository: RegistOrgRepository
 ) : BaseViewModel<RegistOrgContract.RegistOrgEvent, RegistOrgContract.RegistOrgStates, RegistOrgContract.RegistOrgEffect>() {
-
     override fun createInitialState(): RegistOrgContract.RegistOrgStates {
         return RegistOrgContract.RegistOrgStates(
             LoadState.INIT,
