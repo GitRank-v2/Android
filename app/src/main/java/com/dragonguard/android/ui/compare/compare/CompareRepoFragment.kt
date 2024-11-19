@@ -28,10 +28,12 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
 //선택한 두 Repository를 비교하기 위한 fragment
+@AndroidEntryPoint
 class CompareRepoFragment(
     repoName1: String,
     repoName2: String,

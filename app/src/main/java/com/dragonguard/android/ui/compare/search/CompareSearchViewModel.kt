@@ -2,22 +2,24 @@ package com.dragonguard.android.ui.compare.search
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.compare.search.CompareSearchRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CompareSearchViewModel :
-    BaseViewModel<CompareSearchContract.CompareSearchEvent, CompareSearchContract.CompareSearchStates, CompareSearchContract.CompareSearchEffect>() {
+@HiltViewModel
+class CompareSearchViewModel @Inject constructor(
+    private val repository: CompareSearchRepository
+) : BaseViewModel<CompareSearchContract.CompareSearchEvent, CompareSearchContract.CompareSearchStates, CompareSearchContract.CompareSearchEffect>() {
     private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+
     override fun createInitialState(): CompareSearchContract.CompareSearchStates {
         pref = getPref()
-        repository = getRepository()
         return CompareSearchContract.CompareSearchStates(
             LoadState.INIT,
             CompareSearchContract.CompareSearchState.Token(pref.getJwtToken("")),

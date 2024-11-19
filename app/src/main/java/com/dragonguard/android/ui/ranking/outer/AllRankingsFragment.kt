@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -22,12 +23,13 @@ import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.ranking.OrganizationInternalActivity
 import com.dragonguard.android.ui.ranking.RankingsAdapter
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class AllRankingsFragment(private val rankingType: String) : Fragment() {
     private lateinit var binding: FragmentAllRankingsBinding
-    private val viewModel = RankingsViewModel()
+    private val viewModel by viewModels<RankingsViewModel>()
     private val size = 20
     private var page = 0
     private var position = 0

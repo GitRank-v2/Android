@@ -3,10 +3,9 @@ package com.dragonguard.android.ui.ranking.outer
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.ranking.outer.RankingsRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
@@ -14,15 +13,18 @@ import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onException
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RankingsViewModel :
-    BaseViewModel<RankingsContract.RankingsEvent, RankingsContract.RankingsStates, RankingsContract.RankingsEffect>() {
+@HiltViewModel
+class RankingsViewModel @Inject constructor(
+    private val repository: RankingsRepository
+) : BaseViewModel<RankingsContract.RankingsEvent, RankingsContract.RankingsStates, RankingsContract.RankingsEffect>() {
     private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+
     override fun createInitialState(): RankingsContract.RankingsStates {
         pref = getPref()
-        repository = getRepository()
         return RankingsContract.RankingsStates(
             LoadState.INIT,
             RankingsContract.RankingsState.Type(""),

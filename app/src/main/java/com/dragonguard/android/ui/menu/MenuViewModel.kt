@@ -2,22 +2,24 @@ package com.dragonguard.android.ui.menu
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.menu.MenuRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MenuViewModel :
-    BaseViewModel<MenuContract.MenuEvent, MenuContract.MenuStates, MenuContract.MenuEffect>() {
+@HiltViewModel
+class MenuViewModel @Inject constructor(
+    private val repository: MenuRepository
+) : BaseViewModel<MenuContract.MenuEvent, MenuContract.MenuStates, MenuContract.MenuEffect>() {
     private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+
     override fun createInitialState(): MenuContract.MenuStates {
         pref = getPref()
-        repository = getRepository()
         return MenuContract.MenuStates(
             MenuContract.MenuState.AdminState(false),
             MenuContract.MenuState.WithDrawState(false),

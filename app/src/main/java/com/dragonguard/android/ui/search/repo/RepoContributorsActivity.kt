@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -31,23 +32,25 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /*
  선택한 repo의 contributor들과 기여 정도를 보여주고
  막대그래프로 시각화해서 보여주는 activity
  */
+@AndroidEntryPoint
 class RepoContributorsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRepoContributorsBinding
     private lateinit var contributorsAdapter: ContributorsAdapter
     private var repoName = ""
-    private lateinit var viewModel: RepoContributorsViewModel
+    private val viewModel by viewModels<RepoContributorsViewModel>()
     private val colorSets = ArrayList<Int>()
     private var sparkLines = mutableListOf<Int>()
     private var refresh = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = RepoContributorsViewModel()
+        //viewModel = RepoContributorsViewModel()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_contributors)
         initObserver()
 

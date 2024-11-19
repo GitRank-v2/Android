@@ -18,17 +18,17 @@ import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.GitHistoryActivity
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.search.SearchActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class MainFragment(
     private var info: UserInfoModel,
     private val refresh: Boolean,
     private val viewModel: MainViewModel
-) :
-    Fragment() {
+) : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private val scope = CoroutineScope(Dispatchers.IO)
 

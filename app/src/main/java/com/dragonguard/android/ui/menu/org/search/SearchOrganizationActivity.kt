@@ -9,6 +9,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -21,12 +22,14 @@ import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.databinding.ActivitySearchOrganizationBinding
 import com.dragonguard.android.ui.menu.org.regist.RegistOrgActivity
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SearchOrganizationActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchOrganizationBinding
     lateinit var searchOrgAdapter: SearchOrganizationAdapter
-    private lateinit var viewModel: SearchOrganizationViewModel
+    private val viewModel by viewModels<SearchOrganizationViewModel>()
     private var position = 0
     private var count = 0
     private var type = ""
@@ -38,7 +41,6 @@ class SearchOrganizationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search_organization)
-        viewModel = SearchOrganizationViewModel()
         initObserver()
         chosenType = intent?.getStringExtra("type")
         if (chosenType != null) {

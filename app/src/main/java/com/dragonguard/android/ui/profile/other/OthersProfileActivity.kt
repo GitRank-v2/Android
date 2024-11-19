@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -14,18 +15,19 @@ import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.databinding.ActivityUserProfileBinding
 import com.dragonguard.android.ui.profile.OthersReposAdapter
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class OthersProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserProfileBinding
     private var name = ""
     private lateinit var othersReposAdapter: OthersReposAdapter
-    private lateinit var viewModel: OthersProfileViewModel
+    private val viewModel by viewModels<OthersProfileViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = OthersProfileViewModel()
         initObserver()
 
         intent.getStringExtra("userName")?.let {

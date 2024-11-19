@@ -2,23 +2,25 @@ package com.dragonguard.android.ui.ranking
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.ranking.OrganizationInternalRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class OrganizationInternalViewModel :
-    BaseViewModel<OrganizationInternalContract.OrganizationInternalEvent, OrganizationInternalContract.OrganizationInternalStates, OrganizationInternalContract.OrganizationInternalEffect>() {
+@HiltViewModel
+class OrganizationInternalViewModel @Inject constructor(
+    private val repository: OrganizationInternalRepository
+) : BaseViewModel<OrganizationInternalContract.OrganizationInternalEvent, OrganizationInternalContract.OrganizationInternalStates, OrganizationInternalContract.OrganizationInternalEffect>() {
     private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+
     override fun createInitialState(): OrganizationInternalContract.OrganizationInternalStates {
         pref = getPref()
-        repository = getRepository()
         return OrganizationInternalContract.OrganizationInternalStates(
             LoadState.INIT,
             OrganizationInternalContract.OrganizationInternalState.OrgId(-1L),

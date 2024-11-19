@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -15,14 +16,16 @@ import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityRepoCompareBinding
 import com.dragonguard.android.util.LoadState
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class RepoCompareActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRepoCompareBinding
     private lateinit var adapter: CompareAdapter
     private var repo1 = ""
     private var repo2 = ""
-    private lateinit var viewModel: RepoCompareViewModel
+    private val viewModel by viewModels<RepoCompareViewModel>()
     private lateinit var compareUserFragment: CompareUserFragment
     private lateinit var compareRepoFragment: CompareRepoFragment
     private var refresh = true
@@ -30,7 +33,6 @@ class RepoCompareActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_compare)
-        viewModel = RepoCompareViewModel()
         initObserver()
         this.onBackPressedDispatcher.addCallback(this, callback)
         repo1 = intent.getStringExtra("repo1")!!

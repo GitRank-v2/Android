@@ -2,25 +2,27 @@ package com.dragonguard.android.ui.compare.compare
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
 import com.dragonguard.android.data.model.compare.CompareRepoRequestModel
 import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.compare.compare.RepoCompareRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RepoCompareViewModel :
-    BaseViewModel<RepoCompareContract.RepoCompareEvent, RepoCompareContract.RepoCompareStates, RepoCompareContract.RepoCompareEffect>() {
+@HiltViewModel
+class RepoCompareViewModel @Inject constructor(
+    private val repository: RepoCompareRepository
+) : BaseViewModel<RepoCompareContract.RepoCompareEvent, RepoCompareContract.RepoCompareStates, RepoCompareContract.RepoCompareEffect>() {
     private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+
     override fun createInitialState(): RepoCompareContract.RepoCompareStates {
         pref = getPref()
-        repository = getRepository()
         return RepoCompareContract.RepoCompareStates(
             LoadState.INIT,
             RepoCompareContract.RepoCompareState.Token(pref.getJwtToken("")),

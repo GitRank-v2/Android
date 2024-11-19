@@ -2,23 +2,23 @@ package com.dragonguard.android.ui.profile.user
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.GitRankApplication.Companion.getRepository
 import com.dragonguard.android.data.model.GithubOrgReposModel
-import com.dragonguard.android.data.repository.ApiRepository
+import com.dragonguard.android.data.repository.profile.user.ClientReposRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ClientReposViewModel :
-    BaseViewModel<ClientReposContract.ClientReposEvent, ClientReposContract.ClientReposStates, ClientReposContract.ClientReposEffect>() {
+class ClientReposViewModel @Inject constructor(
+    private val repository: ClientReposRepository
+) : BaseViewModel<ClientReposContract.ClientReposEvent, ClientReposContract.ClientReposStates, ClientReposContract.ClientReposEffect>() {
     private lateinit var pref: IdPreference
-    private lateinit var repository: ApiRepository
+
     override fun createInitialState(): ClientReposContract.ClientReposStates {
         pref = getPref()
-        repository = getRepository()
         return ClientReposContract.ClientReposStates(
             LoadState.INIT,
             ClientReposContract.ClientReposState.Token(pref.getJwtToken("")),

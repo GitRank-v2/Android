@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -21,6 +22,7 @@ import com.dragonguard.android.ui.login.LoginActivity
 import com.dragonguard.android.ui.profile.user.ClientProfileFragment
 import com.dragonguard.android.ui.ranking.outer.RankingFragment
 import com.dragonguard.android.util.LoadState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -31,6 +33,7 @@ import kotlinx.coroutines.withContext
  사용자의 정보를 보여주고 검색, 랭킹등을
  보러가는 화면으로 이동할 수 있는 메인 activity
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val activityResultLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -39,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
+    private val viewModel by viewModels<MainViewModel>()
     private var backPressed: Long = 0
     private var refreshState = true
     private var mainFrag: MainFragment? = null
@@ -50,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     private var realModel = UserInfoModel()
     private var finish = false
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         finish = false
         Log.d("on", "onnewintent")
@@ -81,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = MainViewModel()
+
         Log.d("mainCreate", "main create")
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initObserver()

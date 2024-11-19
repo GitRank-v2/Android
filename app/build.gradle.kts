@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.agp)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -48,6 +50,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.constraintlayout)
     testImplementation(libs.junit)
+    implementation(libs.androidx.activity)
+    implementation(libs.fragment)
 
     //retrofit
     implementation(libs.retrofit)
@@ -75,6 +79,10 @@ dependencies {
 
     //MPAndroidChart
     implementation(libs.mpandroidchart)
+
+    //hilt
+    implementation(libs.hilt)
+    ksp(libs.hilt.compiler)
 
 
     androidTestImplementation(libs.ext.junit)
