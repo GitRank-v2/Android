@@ -27,7 +27,6 @@ class AuthEmailActivity : AppCompatActivity() {
     private val viewModel by viewModels<AuthEmailViewModel>()
     private var orgName = ""
     private var email = ""
-    private var emailAuthId: Long = 0
     private var orgId: Long = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +48,10 @@ class AuthEmailActivity : AppCompatActivity() {
 
         binding.resendCode.setOnClickListener {
             if (viewModel.currentState.resetTimer.reset) {
-                sendEmail()
+                reSendEmail()
             } else {
                 deleteEmail()
-                sendEmail()
+                reSendEmail()
             }
         }
 
@@ -97,15 +96,15 @@ class AuthEmailActivity : AppCompatActivity() {
     }
 
     private fun authEmail() {
-        viewModel.checkEmailCode(emailAuthId, binding.emailCode.text.toString(), orgId)
+        viewModel.checkEmailCode(binding.emailCode.text.toString(), orgId)
     }
 
     private fun deleteEmail() {
-        viewModel.deleteLateEmailCode(emailAuthId)
+        viewModel.deleteLateEmailCode()
     }
 
-    private fun sendEmail() {
-        viewModel.sendEmailAuth()
+    private fun reSendEmail() {
+        viewModel.reSendEmailAuth()
 
     }
 

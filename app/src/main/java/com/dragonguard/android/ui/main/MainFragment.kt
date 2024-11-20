@@ -80,15 +80,15 @@ class MainFragment(
         binding.userId.setOnClickListener {
             Log.d("userIcon", "userIcon")
             val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
-            intent.putExtra("token", "")
             intent.putExtra("userName", info.github_id)
+            intent.putExtra("isUser", true)
             startActivity(intent)
         }
         binding.githubProfile.setOnClickListener {
             Log.d("userIcon", "userIcon")
             val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
-            intent.putExtra("token", "")
             intent.putExtra("userName", info.github_id)
+            intent.putExtra("isUser", true)
             startActivity(intent)
         }
 

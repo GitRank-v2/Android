@@ -16,7 +16,7 @@ class MainRepositoryImpl @Inject constructor(private val service: GitRankService
         access: String,
         refresh: String
     ): DataResult<RefreshTokenModel> {
-        return handleApi({ service.getNewAccessToken(access, refresh) }) { it }
+        return handleApi({ service.getNewAccessToken(access, refresh) }) { it.data }
     }
 
     override suspend fun updateGitContributions(): DataResult<Unit> {

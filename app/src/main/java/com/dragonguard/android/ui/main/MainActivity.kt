@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.bottom_rankings -> {
-                    rankingFrag = RankingFragment()
+                    rankingFrag = RankingFragment(viewModel.currentState.userInfo.userInfo.name!!)
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, rankingFrag!!)
                         .commit()

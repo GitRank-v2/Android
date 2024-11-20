@@ -18,6 +18,6 @@ class SearchOrganizationRepositoryImpl @Inject constructor(private val service: 
         queryMap.put("name", name)
         queryMap.put("type", type)
         queryMap.put("size", "10")
-        return handleApi({ service.getOrgNames(queryMap) }) { it }
+        return handleApi({ service.getOrgNames(queryMap) }) { it.data }
     }
 }

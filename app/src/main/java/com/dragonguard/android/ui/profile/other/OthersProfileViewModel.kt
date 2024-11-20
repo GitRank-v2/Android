@@ -44,11 +44,30 @@ class OthersProfileViewModel @Inject constructor(
 
                     }
                 }
+
+                is OthersProfileContract.UserProfileEvent.GetUserProfile -> {
+                    setState { copy(loadState = LoadState.LOADING) }
+                    repository.getUserProfile().onSuccess {
+                        setState {
+                            copy(
+                                loadState = LoadState.SUCCESS,
+                                userProfile = OthersProfileContract.UserProfileState.UserProfile(it)
+                            )
+                        }
+                    }.onFail {
+
+                    }
+                }
             }
         }
     }
 
     fun getOthersProfile(name: String) {
         setEvent(OthersProfileContract.UserProfileEvent.GetOthersProfile(name))
+    }
+
+    fun getUserProfile() {
+        setEvent(OthersProfileContract.UserProfileEvent.GetUserProfile)
+
     }
 }

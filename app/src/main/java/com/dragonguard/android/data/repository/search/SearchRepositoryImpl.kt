@@ -1,8 +1,8 @@
 package com.dragonguard.android.data.repository.search
 
 import android.util.Log
-import com.dragonguard.android.data.model.search.RepoNameModel
-import com.dragonguard.android.data.model.search.UserNameModel
+import com.dragonguard.android.data.model.search.RepoSearchResultModel
+import com.dragonguard.android.data.model.search.UserNameModelItem
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
 import com.dragonguard.android.util.handleApi
@@ -14,25 +14,25 @@ class SearchRepositoryImpl @Inject constructor(private val service: GitRankServi
         name: String,
         count: Int,
         type: String
-    ): DataResult<UserNameModel> {
+    ): DataResult<List<UserNameModelItem>> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
         queryMap.put("name", name)
         queryMap.put("type", type)
-        return handleApi({ service.getUserName(queryMap) }) { it }
+        return handleApi({ service.getUserName(queryMap) }) { it.data }
     }
 
     override suspend fun getRepositoryNames(
         name: String,
         count: Int,
         type: String,
-    ): DataResult<RepoNameModel> {
+    ): DataResult<List<RepoSearchResultModel>> {
 
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
-        queryMap.put("name", name)
+        queryMap.put("q", name)
         queryMap.put("type", type)
-        return handleApi({ service.getRepoName(queryMap) }) { it }
+        return handleApi({ service.getRepoName(queryMap) }) { it.data }
 
     }
 
@@ -41,14 +41,14 @@ class SearchRepositoryImpl @Inject constructor(private val service: GitRankServi
         count: Int,
         filters: String,
         type: String,
-    ): DataResult<RepoNameModel> {
+    ): DataResult<List<RepoSearchResultModel>> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
-        queryMap.put("name", name)
+        queryMap.put("q", name)
         queryMap.put("type", type)
         queryMap.put("filters", filters)
         Log.d("api 호출", "이름: $name, type: $type filters: $filters")
         Log.d("api 호출", "$count 페이지 검색")
-        return handleApi({ service.getRepoName(queryMap) }) { it }
+        return handleApi({ service.getRepoName(queryMap) }) { it.data }
     }
 }

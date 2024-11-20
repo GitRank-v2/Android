@@ -20,7 +20,7 @@ import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 class RankingsAdapter(
     private val rankings: List<*>,
     private val context: Context,
-    private val token: String
+    private val userName: String
 ) : RecyclerView.Adapter<RankingsAdapter.ViewHolder>() {
     private lateinit var binding: RankingListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -69,7 +69,9 @@ class RankingsAdapter(
                         val mContext = context as MainActivity
                         val intent = Intent(context, OthersProfileActivity::class.java)
                         intent.putExtra("userName", data1.github_id)
-                        intent.putExtra("token", token)
+                        if (userName == data1.github_id) {
+                            intent.putExtra("isUser", true)
+                        }
                         context.startActivity(intent)
                     }
                 }
@@ -93,12 +95,10 @@ class RankingsAdapter(
                         if (data1.profile_image.isNullOrBlank()) {
                             val intent = Intent(context, OrganizationInternalActivity::class.java)
                             intent.putExtra("organization", data1.name)
-                            intent.putExtra("token", token)
                             context.startActivity(intent)
                         } else {
                             val intent = Intent(context, OthersProfileActivity::class.java)
                             intent.putExtra("userName", data1.github_id)
-                            intent.putExtra("token", token)
                             context.startActivity(intent)
                         }
                     }

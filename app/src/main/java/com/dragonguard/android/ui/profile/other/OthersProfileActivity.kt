@@ -1,7 +1,6 @@
 package com.dragonguard.android.ui.profile.other
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -22,6 +21,7 @@ import kotlinx.coroutines.launch
 class OthersProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserProfileBinding
     private var name = ""
+    private var isUser = false
     private lateinit var othersReposAdapter: OthersReposAdapter
     private val viewModel by viewModels<OthersProfileViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,19 +34,22 @@ class OthersProfileActivity : AppCompatActivity() {
             name = it
         }
 
+        intent.getBooleanExtra("isUser", false).let {
+            isUser = it
+        }
+
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         supportActionBar?.setTitle(name)
         binding.profileImg.clipToOutline = true
-        getOthersProfile()
+        if (isUser) {
+            viewModel.getUserProfile()
+        } else {
+            viewModel.getOthersProfile(name)
+        }
 
-    }
-
-    private fun getOthersProfile() {
-        Log.d("id", "id = $name")
-        viewModel.getOthersProfile(name)
     }
 
     private fun initObserver() {

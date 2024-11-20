@@ -27,7 +27,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AllRankingsFragment(private val rankingType: String) : Fragment() {
+class AllRankingsFragment(private val rankingType: String, private val userName: String) :
+    Fragment() {
     private lateinit var binding: FragmentAllRankingsBinding
     private val viewModel by viewModels<RankingsViewModel>()
     private val size = 20
@@ -60,7 +61,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
                     requireActivity(),
-                    viewModel.currentState.token.token
+                    userName
                 )
             }
 
@@ -70,7 +71,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
                     requireActivity(),
-                    viewModel.currentState.token.token
+                    userName
                 )
             }
 
@@ -80,7 +81,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
                     requireActivity(),
-                    viewModel.currentState.token.token
+                    userName
                 )
             }
 
@@ -90,7 +91,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
                     requireActivity(),
-                    viewModel.currentState.token.token
+                    userName
                 )
             }
 
@@ -100,7 +101,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
                     requireActivity(),
-                    viewModel.currentState.token.token
+                    userName
                 )
             }
 
@@ -110,7 +111,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
                     requireActivity(),
-                    viewModel.currentState.token.token
+                    userName
                 )
             }
         }
@@ -280,7 +281,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
                             requireActivity(),
-                            viewModel.currentState.token.token
+                            userName
                         )
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
@@ -363,7 +364,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
                             requireActivity(),
-                            viewModel.currentState.token.token
+                            userName
                         )
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())

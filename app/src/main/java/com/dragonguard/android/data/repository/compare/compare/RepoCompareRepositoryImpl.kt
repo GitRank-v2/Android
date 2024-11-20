@@ -11,10 +11,10 @@ import javax.inject.Inject
 class RepoCompareRepositoryImpl @Inject constructor(private val service: GitRankService) :
     RepoCompareRepository {
     override suspend fun postCompareRepoMembersRequest(body: CompareRepoRequestModel): DataResult<CompareRepoMembersResponseModel> {
-        return handleApi({ service.postCompareRepoMembers(body) }) { it }
+        return handleApi({ service.postCompareRepoMembers(body) }) { it.data }
     }
 
     override suspend fun postCompareRepoRequest(body: CompareRepoRequestModel): DataResult<CompareRepoResponseModel> {
-        return handleApi({ service.postCompareRepo(body) }) { it }
+        return handleApi({ service.postCompareRepo(body) }) { it.data }
     }
 }

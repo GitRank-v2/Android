@@ -3,7 +3,7 @@ package com.dragonguard.android.ui.ranking.outer
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class FragmentAdapter(fragment: Fragment, private val token: String) :
+class FragmentAdapter(fragment: Fragment, private val userName: String) :
     FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = fragmentList.size
 
@@ -11,6 +11,6 @@ class FragmentAdapter(fragment: Fragment, private val token: String) :
 
     override fun createFragment(position: Int): Fragment {
         val fragmentTag = fragmentList[position]
-        return AllRankingsFragment(fragmentTag)
+        return AllRankingsFragment(fragmentTag, userName)
     }
 }

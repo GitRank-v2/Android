@@ -6,7 +6,5 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class OrgApprovalModel(
     @field:Json(name = "decide")
-    val decide: String,
-    @field:Json(name = "id")
-    val id: Long
+    val organization_status: String,
 )

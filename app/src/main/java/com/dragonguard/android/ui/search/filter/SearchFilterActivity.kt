@@ -60,11 +60,11 @@ class SearchFilterActivity : AppCompatActivity() {
             binding.forkFilters.removeAllViews()
             binding.filterContent.visibility = View.INVISIBLE
             map.clear()
-            map.put("type", "USERS")
+            map.put("type", "MEMBER")
         }
 
         binding.filterRepository.setOnClickListener {
-            map.put("type", "REPOSITORIES")
+            map.put("type", "GIT_REPO")
             binding.filterContent.visibility = View.VISIBLE
         }
 

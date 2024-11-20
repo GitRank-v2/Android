@@ -44,7 +44,7 @@ class SearchActivity : AppCompatActivity() {
     private var filterLanguage = StringBuilder()
     private var filterOptions = StringBuilder()
     private var filterResult = StringBuilder()
-    private var type = "REPOSITORIES"
+    private var type = "GIT_REPO"
     private var token = ""
     private val imgList = HashMap<String, Int>()
     private var repoCount = 0
@@ -350,7 +350,7 @@ class SearchActivity : AppCompatActivity() {
         Log.d("필터", "total filters: ${filterResult.toString()}")
         if (!this@SearchActivity.isFinishing) {
             if (type.isNotBlank()) {
-                if (type == "USERS") {
+                if (type == "MEMBER") {
                     viewModel.searchUserNames(name, count, type)
                     count++
                 } else {
@@ -369,7 +369,7 @@ class SearchActivity : AppCompatActivity() {
                 }
             } else {
                 Log.d("필터 없음", "필터 없음")
-                viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
+                viewModel.searchRepositoryNamesNoFilters(name, count, "GIT_REPO")
             }
         }
     }
@@ -380,7 +380,7 @@ class SearchActivity : AppCompatActivity() {
         Log.d("count", "count: $count")
         Log.d("results", viewModel.currentState.userNames.userNames.toString())
         Log.d("results", viewModel.currentState.repoNames.repoNames.toString())
-        if (type == "USERS") {
+        if (type == "MEMBER") {
             if (count == 0) {
                 repositoryProfileAdapter =
                     RepositoryProfileAdapter(
@@ -405,7 +405,7 @@ class SearchActivity : AppCompatActivity() {
                         viewModel.currentState.repoNames.repoNames,
                         this,
                         token,
-                        "REPOSITORIES",
+                        "GIT_REPO",
                         imgList,
                         repoCount
                     )
@@ -433,7 +433,7 @@ class SearchActivity : AppCompatActivity() {
         binding.loadingLottie.pauseAnimation()
         binding.loadingLottie.visibility = View.GONE
         initScrollListener()
-        type = "REPOSITORIES"
+        type = "GIT_REPO"
     }
 
 

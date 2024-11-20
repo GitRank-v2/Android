@@ -38,7 +38,7 @@ class CompareSearchViewModel @Inject constructor(
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 receivedSearchResult = CompareSearchContract.CompareSearchState.ReceivedSearchResult(
-                                    it.data
+                                    it
                                 )
                             )
                         }

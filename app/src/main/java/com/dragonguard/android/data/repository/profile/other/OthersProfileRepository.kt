@@ -5,4 +5,5 @@ import com.dragonguard.android.util.DataResult
 
 interface OthersProfileRepository {
     suspend fun otherProfile(githubId: String): DataResult<UserProfileModel>
+    suspend fun getUserProfile(): DataResult<UserProfileModel>
 }

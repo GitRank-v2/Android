@@ -1,6 +1,6 @@
 package com.dragonguard.android.data.repository.compare.search
 
-import com.dragonguard.android.data.model.search.RepoNameModel
+import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.util.DataResult
 
 interface CompareSearchRepository {
@@ -8,5 +8,5 @@ interface CompareSearchRepository {
         name: String,
         count: Int,
         type: String,
-    ): DataResult<RepoNameModel>
+    ): DataResult<List<RepoSearchResultModel>>
 }

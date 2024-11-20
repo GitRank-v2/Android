@@ -17,14 +17,14 @@ class RankingsRepositoryImpl @Inject constructor(private val service: GitRankSer
         queryMap.put("page", "$page")
         queryMap.put("size", "$size")
         queryMap.put("sort", "tokens,DESC")
-        return handleApi({ service.getTotalUsersRanking(queryMap) }) { it }
+        return handleApi({ service.getTotalUsersRanking(queryMap) }) { it.data }
     }
 
     override suspend fun allOrgRanking(page: Int): DataResult<OrganizationRankingModel> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
-        return handleApi({ service.getAllOrgRankings(queryMap) }) { it }
+        return handleApi({ service.getAllOrgRankings(queryMap) }) { it.data }
     }
 
     override suspend fun typeOrgRanking(
@@ -35,6 +35,6 @@ class RankingsRepositoryImpl @Inject constructor(private val service: GitRankSer
         queryMap.put("type", type)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
-        return handleApi({ service.getOrgRankings(queryMap) }) { it }
+        return handleApi({ service.getOrgRankings(queryMap) }) { it.data }
     }
 }

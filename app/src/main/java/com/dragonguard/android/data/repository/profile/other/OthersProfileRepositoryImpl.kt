@@ -9,6 +9,10 @@ import javax.inject.Inject
 class OthersProfileRepositoryImpl @Inject constructor(private val service: GitRankService) :
     OthersProfileRepository {
     override suspend fun otherProfile(githubId: String): DataResult<UserProfileModel> {
-        return handleApi({ service.getOthersProfile(githubId) }) { it }
+        return handleApi({ service.getOthersProfile(githubId) }) { it.data }
+    }
+
+    override suspend fun getUserProfile(): DataResult<UserProfileModel> {
+        return handleApi({ service.getUserProfile() }) { it.data }
     }
 }
