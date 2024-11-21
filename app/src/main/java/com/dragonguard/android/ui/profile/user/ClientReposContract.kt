@@ -1,6 +1,6 @@
 package com.dragonguard.android.ui.profile.user
 
-import com.dragonguard.android.data.model.GithubOrgReposModel
+import com.dragonguard.android.data.model.profile.GithubOrgReposModel
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState

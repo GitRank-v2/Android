@@ -3,7 +3,7 @@ package com.dragonguard.android.ui.main
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.data.repository.main.MainRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
@@ -31,7 +31,8 @@ class MainViewModel @Inject constructor(
             clickUserIcon = MainContract.MainState.ClickUserIcon(false),
             newAccessToken = MainContract.MainState.NewAccessToken(pref.getJwtToken("")),
             newRefreshToken = MainContract.MainState.NewRefreshToken(pref.getRefreshToken("")),
-            repeatState = MainContract.MainState.RepeatState(false)
+            repeatState = MainContract.MainState.RepeatState(false),
+            refreshAmount = MainContract.MainState.RefreshAmount(emptyList())
         )
     }
 
@@ -96,6 +97,19 @@ class MainViewModel @Inject constructor(
                 is MainContract.MainEvent.SetFinish -> {
                     setState { copy(loadState = LoadState.FINISH) }
                 }
+
+                is MainContract.MainEvent.RefreshAmount -> {
+                    repository.updateGitContributions().onSuccess {
+                        setState {
+                            copy(
+                                loadState = LoadState.REFRESH,
+                                refreshAmount = MainContract.MainState.RefreshAmount(it)
+                            )
+                        }
+                    }.onFail {
+
+                    }
+                }
             }
         }
     }
@@ -128,4 +142,7 @@ class MainViewModel @Inject constructor(
         setEvent(MainContract.MainEvent.SetFinish)
     }
 
+    fun refreshAmount() {
+        setEvent(MainContract.MainEvent.RefreshAmount)
+    }
 }

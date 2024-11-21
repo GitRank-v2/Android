@@ -7,5 +7,6 @@ enum class LoadState {
     FINISH,
     REPOSUCCESS,
     USERSUCCESS,
-    ERROR
+    ERROR,
+    REFRESH
 }

@@ -1,15 +1,15 @@
 package com.dragonguard.android.data.service
 
 import com.dragonguard.android.data.model.AuthStateModel
-import com.dragonguard.android.data.model.GithubOrgReposModel
 import com.dragonguard.android.data.model.StandardResponse
-import com.dragonguard.android.data.model.UserInfoModel
 import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
 import com.dragonguard.android.data.model.compare.CompareRepoRequestModel
 import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.model.detail.UserProfileModel
+import com.dragonguard.android.data.model.main.UserContributionsModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
@@ -18,6 +18,7 @@ import com.dragonguard.android.data.model.org.OrgApprovalModel
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.data.model.org.RegistOrgModel
 import com.dragonguard.android.data.model.org.RegistOrgResultModel
+import com.dragonguard.android.data.model.profile.GithubOrgReposModel
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.model.rankings.OrganizationRankingModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingModel
@@ -59,7 +60,7 @@ interface GitRankService {
     @GET("git-repos")
     suspend fun getRepoContributors(@Query("name") repoName: String): Response<StandardResponse<RepoContributorsModel>>
 
-    @GET("git-repos/update")
+    @POST("git-repos/update")
     suspend fun getRepoContributorsUpdate(@Query("name") repoName: String): Response<StandardResponse<RepoContributorsModel>>
 
     //    모든 사용자들의 랭킹을 요청
@@ -68,7 +69,7 @@ interface GitRankService {
 
     //    서버에 사용자의 활용도 최산화를 요청
     @POST("members/contributions")
-    suspend fun updateGitContributions(): Response<Unit>
+    suspend fun updateGitContributions(): Response<StandardResponse<List<UserContributionsModel>>>
 
     @GET("members/git-organizations/git-repos")
     suspend fun getOrgRepoList(@Query("name") orgName: String): Response<StandardResponse<GithubOrgReposModel>>

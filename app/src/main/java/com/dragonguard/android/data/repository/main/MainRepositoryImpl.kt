@@ -1,6 +1,7 @@
 package com.dragonguard.android.data.repository.main
 
-import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.main.UserContributionsModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.data.model.token.RefreshTokenModel
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
@@ -19,7 +20,7 @@ class MainRepositoryImpl @Inject constructor(private val service: GitRankService
         return handleApi({ service.getNewAccessToken(access, refresh) }) { it.data }
     }
 
-    override suspend fun updateGitContributions(): DataResult<Unit> {
-        return handleApi({ service.updateGitContributions() }) { it }
+    override suspend fun updateGitContributions(): DataResult<List<UserContributionsModel>> {
+        return handleApi({ service.updateGitContributions() }) { it.data }
     }
 }

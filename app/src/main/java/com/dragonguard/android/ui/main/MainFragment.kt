@@ -11,13 +11,17 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.GitHistoryActivity
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.search.SearchActivity
+import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +35,7 @@ class MainFragment(
 ) : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val userActivity = HashMap<String, Int>()
 
     //    private var menuItem: MenuItem? = null
     val handler = Handler(Looper.getMainLooper()) {
@@ -158,12 +163,12 @@ class MainFragment(
         if (info.organization != null) {
             binding.userOrgName.text = info.organization
         }
-        val userActivity = HashMap<String, Int>()
-        userActivity.put("commits", info.commits!!)
-        userActivity.put("issues", info.issues!!)
-        userActivity.put("pullRequests", info.pull_requests!!)
+
+        userActivity.put("COMMIT", info.commits!!)
+        userActivity.put("ISSUE", info.issues!!)
+        userActivity.put("PULL_REQUEST", info.pull_requests!!)
         info.reviews?.let {
-            userActivity.put("review", it)
+            userActivity.put("CODE_REVIEW", it)
         }
         Log.d("map", "hashMap: $userActivity")
         binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList)
@@ -291,7 +296,17 @@ class MainFragment(
     }
 
     private fun initObserver() {
-
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.loadState == LoadState.REFRESH) {
+                        state.refreshAmount.amount.forEach { activity ->
+                            userActivity[activity.contribute_type] = activity.amount.toInt()
+                        }
+                    }
+                }
+            }
+        }
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

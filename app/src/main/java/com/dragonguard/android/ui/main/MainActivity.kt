@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
@@ -254,6 +254,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRestart() {
         super.onRestart()
         finish = false
+        viewModel.refreshAmount()
     }
 
     override fun onPause() {
