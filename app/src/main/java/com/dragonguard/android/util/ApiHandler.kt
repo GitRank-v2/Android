@@ -1,11 +1,14 @@
 package com.dragonguard.android.util
 
+import android.util.Log
 import com.dragonguard.android.GitRankApplication
+import com.dragonguard.android.data.model.ErrorModel
 import retrofit2.Response
+import retrofit2.Retrofit
 
 suspend fun <T : Any, R : Any> handleApi(
     execute: suspend () -> Response<T>,
-    mapper: (T) -> R
+    mapper: (T) -> R,
 ): DataResult<R> {
     if (GitRankApplication.isOnline().not()) {
         return DataResult.Error(Exception(NETWORK_EXCEPTION_OFFLINE_CASE))
@@ -21,12 +24,56 @@ suspend fun <T : Any, R : Any> handleApi(
                 throw NullPointerException(NETWORK_EXCEPTION_BODY_IS_NULL)
             }
         } else {
+            //Log.d("error", response.errorBody()!!.string())
             getFailDataResult(body, response)
         }
     } catch (e: Exception) {
         DataResult.Error(e)
     }
 }
+
+suspend fun <T : Any, R : Any> handleApi(
+    execute: suspend () -> Response<T>,
+    retrofit: Retrofit,
+    mapper: (T) -> R,
+): DataResult<R> {
+    if (GitRankApplication.isOnline().not()) {
+        return DataResult.Error(Exception(NETWORK_EXCEPTION_OFFLINE_CASE))
+    }
+
+    return try {
+        val response = execute()
+        val body = response.body()
+        if (response.isSuccessful) {
+            body?.let {
+                DataResult.Success(mapper(it))
+            } ?: run {
+                throw NullPointerException(NETWORK_EXCEPTION_BODY_IS_NULL)
+            }
+        } else {
+            response.errorBody()?.let { it ->
+                Log.d("error", "exist")
+                val errorBody = retrofit.responseBodyConverter<ErrorModel>(
+                    ErrorModel::class.java,
+                    ErrorModel::class.java.annotations
+                ).convert(it)
+                Log.d("error", errorBody.toString())
+                errorBody?.let { error ->
+                    Log.d("error", error.data.error_id)
+                    Log.d("error", error.code.toString())
+                    Log.d("error", error.message)
+                    DataResult.Fail(statusCode = error.code, message = error.data.error_id)
+                }
+            } ?: run {
+                Log.d("error", response.message())
+                getFailDataResult(body, response)
+            }
+        }
+    } catch (e: Exception) {
+        DataResult.Error(e)
+    }
+}
+
 
 suspend fun <T : Any> handleAdminApi(
     execute: suspend () -> Response<T>
@@ -42,32 +89,13 @@ suspend fun <T : Any> handleAdminApi(
             body?.let {
                 DataResult.Success(true)
             } ?: run {
+
                 throw NullPointerException(NETWORK_EXCEPTION_BODY_IS_NULL)
             }
         } else if (response.code() == 403) {
             DataResult.Success(false)
         } else {
             getFailDataResult(body, response)
-        }
-    } catch (e: Exception) {
-        DataResult.Error(e)
-    }
-}
-
-suspend fun <T : Any> handleLoginApi(
-    execute: suspend () -> Response<T>,
-): DataResult<Boolean?> {
-    if (GitRankApplication.isOnline().not()) {
-        return DataResult.Error(Exception(NETWORK_EXCEPTION_OFFLINE_CASE))
-    }
-
-    return try {
-        val response = execute()
-        val body = response.body()
-        if (response.code() == 200) {
-            return DataResult.Success(true)
-        } else {
-            return DataResult.Success(null)
         }
     } catch (e: Exception) {
         DataResult.Error(e)

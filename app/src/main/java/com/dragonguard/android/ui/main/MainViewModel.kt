@@ -8,6 +8,7 @@ import com.dragonguard.android.data.repository.main.MainRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +41,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is MainContract.MainEvent.GetUserInfo -> {
+                    Log.d("MainViewModel", pref.getJwtToken(""))
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getUserInfo().onSuccess {
                         Log.d("MainViewModel", pref.getJwtToken(""))
@@ -50,7 +52,11 @@ class MainViewModel @Inject constructor(
                             )
                         }
                     }.onFail {
+                        //setState { copy(loadState = LoadState.ERROR) }
+                    }.onError {
                         setState { copy(loadState = LoadState.ERROR) }
+                        Log.d("MainViewModel", "Login Fail")
+                        Log.d("MainViewModel", it.message.toString())
                     }
                 }
 

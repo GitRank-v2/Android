@@ -6,11 +6,15 @@ import com.dragonguard.android.data.model.token.RefreshTokenModel
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
 import com.dragonguard.android.util.handleApi
+import retrofit2.Retrofit
 import javax.inject.Inject
 
-class MainRepositoryImpl @Inject constructor(private val service: GitRankService) : MainRepository {
+class MainRepositoryImpl @Inject constructor(
+    private val service: GitRankService,
+    private val retrofit: Retrofit
+) : MainRepository {
     override suspend fun getUserInfo(): DataResult<UserInfoModel> {
-        return handleApi({ service.getUserInfo() }) { it }
+        return handleApi({ service.getUserInfo() }, retrofit) { it }
     }
 
     override suspend fun getNewAccessToken(
