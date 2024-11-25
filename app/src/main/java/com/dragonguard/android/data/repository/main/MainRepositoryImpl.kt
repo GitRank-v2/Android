@@ -25,6 +25,10 @@ class MainRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateGitContributions(): DataResult<List<UserContributionsModel>> {
-        return handleApi({ service.updateGitContributions() }) { it.data }
+        return handleApi({ service.updateGitContributions() }, retrofit) { it.data }
+    }
+
+    override suspend fun updateGitContribution(): DataResult<Unit> {
+        return handleApi({ service.updateGitContribution() }, retrofit) { it }
     }
 }

@@ -23,9 +23,7 @@ class UserActivityAdapter(
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //클릭리스너 구현
         fun bind(data: Int?, type: String) {
-            if (data != null) {
-                binding.contributeValue.text = data.toString()
-            }
+            binding.contributeValue.text = data.toString()
             binding.contributeType.text = type
         }
     }

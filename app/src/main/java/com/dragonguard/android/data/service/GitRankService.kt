@@ -69,6 +69,9 @@ interface GitRankService {
 
     //    서버에 사용자의 활용도 최산화를 요청
     @POST("members/contributions")
+    suspend fun updateGitContribution(): Response<Unit>
+
+    @GET("members/contributions")
     suspend fun updateGitContributions(): Response<StandardResponse<List<UserContributionsModel>>>
 
     @GET("members/git-organizations/git-repos")

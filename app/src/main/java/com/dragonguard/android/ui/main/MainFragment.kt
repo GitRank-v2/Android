@@ -46,7 +46,7 @@ class MainFragment(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         Log.d("mainCreate", "mainCreate")
         //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
@@ -156,20 +156,18 @@ class MainFragment(
             }
         }
 
-        if (info.token_amount != null) {
-            binding.tokenAmount.text = info.token_amount.toString()
-        }
-        val typeList = listOf("commits", "issues", "pullRequests", "review")
+        binding.tokenAmount.text =
+            (info.commits + info.issues + info.pull_requests + info.reviews).toString()
+        val typeList = listOf("COMMIT", "ISSUE", "PULL REQUEST", "REVIEW")
         if (info.organization != null) {
             binding.userOrgName.text = info.organization
         }
+        Log.d("info", "info: $info")
 
-        userActivity.put("COMMIT", info.commits!!)
-        userActivity.put("ISSUE", info.issues!!)
-        userActivity.put("PULL_REQUEST", info.pull_requests!!)
-        info.reviews?.let {
-            userActivity.put("CODE_REVIEW", it)
-        }
+        userActivity.put("COMMIT", info.commits)
+        userActivity.put("ISSUE", info.issues)
+        userActivity.put("PULL REQUEST", info.pull_requests)
+        userActivity.put("REVIEW", info.reviews)
         Log.d("map", "hashMap: $userActivity")
         binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList)
         binding.userUtil.orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -300,6 +298,7 @@ class MainFragment(
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     if (state.loadState == LoadState.REFRESH) {
+                        Log.d("refresh", "refresh main!!")
                         state.refreshAmount.amount.forEach { activity ->
                             userActivity[activity.contribute_type] = activity.amount.toInt()
                         }

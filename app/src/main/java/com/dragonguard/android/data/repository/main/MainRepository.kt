@@ -9,4 +9,5 @@ interface MainRepository {
     suspend fun getUserInfo(): DataResult<UserInfoModel>
     suspend fun getNewAccessToken(access: String, refresh: String): DataResult<RefreshTokenModel>
     suspend fun updateGitContributions(): DataResult<List<UserContributionsModel>>
+    suspend fun updateGitContribution(): DataResult<Unit>
 }

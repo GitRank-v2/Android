@@ -105,16 +105,19 @@ class MainViewModel @Inject constructor(
                 }
 
                 is MainContract.MainEvent.RefreshAmount -> {
-                    repository.updateGitContributions().onSuccess {
-                        setState {
-                            copy(
-                                loadState = LoadState.REFRESH,
-                                refreshAmount = MainContract.MainState.RefreshAmount(it)
-                            )
-                        }
-                    }.onFail {
+                    repository.updateGitContribution().onSuccess {
+                        repository.updateGitContributions().onSuccess {
+                            setState {
+                                copy(
+                                    loadState = LoadState.REFRESH,
+                                    refreshAmount = MainContract.MainState.RefreshAmount(it)
+                                )
+                            }
+                        }.onFail {
 
+                        }
                     }
+
                 }
             }
         }

@@ -93,8 +93,6 @@ class MainActivity : AppCompatActivity() {
         binding.mainLoading.resumeAnimation()
         binding.mainLoading.visibility = View.VISIBLE
 
-        // 유저 정보 가져오기
-        viewModel.getUserInfo()
         //refreshMain()
         binding.mainNav.setOnItemSelectedListener {
             when (it.itemId) {
@@ -107,7 +105,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.bottom_rankings -> {
-                    rankingFrag = RankingFragment(viewModel.currentState.userInfo.userInfo.name!!)
+                    rankingFrag =
+                        RankingFragment(viewModel.currentState.userInfo.userInfo.github_id!!)
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, rankingFrag!!)
                         .commit()
@@ -168,6 +167,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     if (state.loadState == LoadState.ERROR) {
+                        Log.d("main", "login error")
                         binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
                         viewModel.logout()
                         val transaction = supportFragmentManager.beginTransaction()
@@ -250,15 +250,11 @@ class MainActivity : AppCompatActivity() {
             }
         }*/
 
-
-    override fun onRestart() {
-        super.onRestart()
+    override fun onResume() {
+        super.onResume()
         finish = false
         viewModel.refreshAmount()
-    }
-
-    override fun onPause() {
-        super.onPause()
+        viewModel.getUserInfo()
     }
 
 
