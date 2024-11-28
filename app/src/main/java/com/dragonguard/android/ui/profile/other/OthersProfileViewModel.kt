@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.profile.other
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.detail.UserProfileModel
@@ -7,6 +8,7 @@ import com.dragonguard.android.data.repository.profile.other.OthersProfileReposi
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,6 +58,8 @@ class OthersProfileViewModel @Inject constructor(
                         }
                     }.onFail {
 
+                    }.onError {
+                        Log.d("error", it.message.toString())
                     }
                 }
             }
@@ -68,6 +72,5 @@ class OthersProfileViewModel @Inject constructor(
 
     fun getUserProfile() {
         setEvent(OthersProfileContract.UserProfileEvent.GetUserProfile)
-
     }
 }

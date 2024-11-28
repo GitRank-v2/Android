@@ -1,6 +1,7 @@
 package com.dragonguard.android.ui.profile.other
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -45,8 +46,10 @@ class OthersProfileActivity : AppCompatActivity() {
         supportActionBar?.setTitle(name)
         binding.profileImg.clipToOutline = true
         if (isUser) {
+            Log.d("otherProfile", "name: $name")
             viewModel.getUserProfile()
         } else {
+            Log.d("otherProfile", "name: $name")
             viewModel.getOthersProfile(name)
         }
 

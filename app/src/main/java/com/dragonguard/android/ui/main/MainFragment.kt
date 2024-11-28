@@ -156,7 +156,10 @@ class MainFragment(
         }
 
         binding.tokenAmount.text =
-            (info.commits + info.issues + info.pull_requests + info.reviews).toString()
+            String.format(
+                getString(R.string.activity_sum),
+                info.commits + info.issues + info.pull_requests + info.reviews
+            )
         val typeList = listOf("COMMIT", "ISSUE", "PULL REQUEST", "REVIEW")
         if (info.organization != null) {
             binding.userOrgName.text = info.organization
@@ -171,7 +174,7 @@ class MainFragment(
         binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList)
         binding.userUtil.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
-        if (info.organization == null) {
+        if (info.organization.isNullOrEmpty()) {
             binding.mainOrgFrame.visibility = View.GONE
         } else {
             when (info.organization_rank) {
