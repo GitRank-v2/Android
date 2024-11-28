@@ -36,6 +36,7 @@ class OthersProfileViewModel @Inject constructor(
                 is OthersProfileContract.UserProfileEvent.GetOthersProfile -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.otherProfile(event.name).onSuccess {
+                        Log.d("Other success", it.toString())
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
@@ -50,6 +51,7 @@ class OthersProfileViewModel @Inject constructor(
                 is OthersProfileContract.UserProfileEvent.GetUserProfile -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getUserProfile().onSuccess {
+                        Log.d("Other success", it.toString())
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
@@ -59,7 +61,7 @@ class OthersProfileViewModel @Inject constructor(
                     }.onFail {
 
                     }.onError {
-                        Log.d("error", it.message.toString())
+                        Log.d("Other error", it.message.toString())
                     }
                 }
             }

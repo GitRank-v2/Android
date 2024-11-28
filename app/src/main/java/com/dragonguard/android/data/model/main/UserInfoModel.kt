@@ -14,7 +14,7 @@ data class UserInfoModel(
     @field:Json(name = "commits")
     var commits: Int = 0,
     @field:Json(name = "github_id")
-    var github_id: String? = "",
+    var github_id: String = "",
     @field:Json(name = "id")
     var id: String? = "",
     @field:Json(name = "profile_image")

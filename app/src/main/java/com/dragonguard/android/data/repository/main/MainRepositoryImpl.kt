@@ -14,7 +14,7 @@ class MainRepositoryImpl @Inject constructor(
     private val retrofit: Retrofit
 ) : MainRepository {
     override suspend fun getUserInfo(): DataResult<UserInfoModel> {
-        return handleApi({ service.getUserInfo() }, retrofit) { it }
+        return handleApi({ service.getUserInfo() }, retrofit) { it.data }
     }
 
     override suspend fun getNewAccessToken(

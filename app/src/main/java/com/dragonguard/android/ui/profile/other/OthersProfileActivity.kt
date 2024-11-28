@@ -10,6 +10,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.signature.ObjectKey
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.databinding.ActivityUserProfileBinding
@@ -61,7 +64,7 @@ class OthersProfileActivity : AppCompatActivity() {
                 viewModel.uiState.collect { state ->
                     if (state.loadState == LoadState.SUCCESS) {
                         state.userProfile.userProfile.let {
-                            initRecycler(it)
+                            initView(it)
                         }
                     }
                 }
@@ -69,7 +72,23 @@ class OthersProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun initRecycler(result: UserProfileModel) {
+    private fun initView(result: UserProfileModel) {
+        Glide.with(this@OthersProfileActivity).load(result.profile_image)
+            .skipMemoryCache(true)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .signature(
+                ObjectKey(
+                    System.currentTimeMillis().toString()
+                )
+            )
+            .into(binding.profileImg)
+        binding.userRank.text = result.rank.toString()
+        binding.userCommit.text = result.commits.toString()
+        binding.userIssue.text = result.issues.toString()
+        initRecyclerView(result)
+    }
+
+    private fun initRecyclerView(result: UserProfileModel) {
         othersReposAdapter =
             OthersReposAdapter(
                 result.git_repos,

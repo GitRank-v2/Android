@@ -44,7 +44,7 @@ class MainViewModel @Inject constructor(
                     Log.d("MainViewModel", pref.getJwtToken(""))
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getUserInfo().onSuccess {
-                        Log.d("MainViewModel", pref.getJwtToken(""))
+                        Log.d("user success", it.toString())
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
@@ -82,6 +82,9 @@ class MainViewModel @Inject constructor(
                                 )
                             }
                         }.onError {
+                            Log.d("Login Error", it.message.toString())
+                            setEffect { MainContract.MainActivityEffect.LoginError }
+                        }.onFail {
                             setEffect { MainContract.MainActivityEffect.LoginError }
                         }
 

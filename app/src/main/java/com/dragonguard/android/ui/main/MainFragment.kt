@@ -15,6 +15,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.signature.ObjectKey
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
@@ -108,29 +111,15 @@ class MainFragment(
         }
         if (!requireActivity().isFinishing) {
             Log.d("profile", "profile image ${info.profile_image}")
-            if (refresh) {
-                //프로필 사진 넣기
-                /*val coroutine = CoroutineScope(Dispatchers.Main)
-                coroutine.launch {
-                    val deferred = coroutine.async(Dispatchers.IO) {
-                        Glide.get(requireContext()).clearDiskCache()
-                    }
-                    val result = deferred.await()
-                    Glide.with(this@MainFragment).load(info.profile_image)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .signature(
-                            ObjectKey(
-                                System.currentTimeMillis().toString()
-                            )
-                        )
-                        .into(binding.githubProfile)
-                }*/
-            } else {
-                /*Glide.with(this).load(info.profile_image)
-                    .into(binding.githubProfile)*/
-
-            }
+            Glide.with(this@MainFragment).load(info.profile_image)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .signature(
+                    ObjectKey(
+                        System.currentTimeMillis().toString()
+                    )
+                )
+                .into(binding.githubProfile)
         }
 
         when (info.tier) {

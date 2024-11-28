@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         this.onBackPressedDispatcher.addCallback(this, callback)
         binding.mainLoading.resumeAnimation()
         binding.mainLoading.visibility = View.VISIBLE
-
+        viewModel.getUserInfo()
         //refreshMain()
         binding.mainNav.setOnItemSelectedListener {
             when (it.itemId) {
@@ -129,11 +129,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-
-//        검색창, 검색 아이콘 눌렀을 때 검색화면으로 전환
-
-
     }
 
     private fun initObserver() {
@@ -153,11 +148,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
+        }
 
+        lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.effect.collect { effect ->
                     when (effect) {
                         is MainContract.MainActivityEffect.LoginError -> {
+                            Log.d("error", "Login Error")
                             binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
                             viewModel.logout()
                             val transaction = supportFragmentManager.beginTransaction()
@@ -175,7 +173,6 @@ class MainActivity : AppCompatActivity() {
                             Log.d("로그인 필요", "로그인 필요")
                             val intent = Intent(applicationContext, LoginActivity::class.java)
                             startActivity(intent)
-
                         }
                     }
                 }
@@ -187,7 +184,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkUserInfo(userInfo: UserInfoModel) {
         Log.d("success", "success userInfo: $userInfo")
-        if (userInfo.github_id == null) {
+        if (userInfo.github_id.isNullOrEmpty()) {
             if (!this@MainActivity.isFinishing) {
                 Log.d("not login", "login activity로 이동")
                 Toast.makeText(applicationContext, "다시 로그인 바랍니다.", Toast.LENGTH_SHORT).show()
@@ -243,8 +240,13 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         finish = false
-        viewModel.getUserInfo()
         viewModel.refreshAmount()
+        viewModel.getUserInfo()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        viewModel.setRepeat(false)
     }
 
 

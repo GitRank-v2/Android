@@ -47,7 +47,7 @@ interface GitRankService {
 
     //    id에 해당하는 사용자의 정보를 요청
     @GET("members/me")
-    suspend fun getUserInfo(): Response<UserInfoModel>
+    suspend fun getUserInfo(): Response<StandardResponse<UserInfoModel>>
 
     //@POST("members/me/update")
     //suspend fun userInfoUpdate(): Response<UserInfoModel>
