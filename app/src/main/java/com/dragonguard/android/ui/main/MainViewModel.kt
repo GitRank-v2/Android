@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(
                     }.onFail {
                         //setState { copy(loadState = LoadState.ERROR) }
                     }.onError {
-                        setState { copy(loadState = LoadState.ERROR) }
+                        setState { copy(loadState = LoadState.LOGIN_FAIL) }
                         Log.d("MainViewModel", "Login Fail")
                         Log.d("MainViewModel", it.message.toString())
                     }
@@ -73,14 +73,16 @@ class MainViewModel @Inject constructor(
                 is MainContract.MainEvent.GetNewToken -> {
                     repository.getNewAccessToken(pref.getJwtToken(""), pref.getRefreshToken(""))
                         .onSuccess {
+                            pref.setJwtToken(it.access_token)
+                            pref.setRefreshToken(it.refresh_token)
                             setState {
                                 copy(
                                     newAccessToken = MainContract.MainState.NewAccessToken(it.access_token),
                                     newRefreshToken = MainContract.MainState.NewRefreshToken(it.refresh_token)
                                 )
                             }
-                        }.onFail {
-
+                        }.onError {
+                            setEffect { MainContract.MainActivityEffect.LoginError }
                         }
 
                 }

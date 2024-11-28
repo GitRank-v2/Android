@@ -175,9 +175,9 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    if (it.searchState == LoadState.REPOSUCCESS) {
+                    if (it.searchState == LoadState.REPO_SUCCESS) {
                         checkRepoNames()
-                    } else if (it.searchState == LoadState.USERSUCCESS) {
+                    } else if (it.searchState == LoadState.USER_SUCCESS) {
                         checkUserNames()
                     }
                 }

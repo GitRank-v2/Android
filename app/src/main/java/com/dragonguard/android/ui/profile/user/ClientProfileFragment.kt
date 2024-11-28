@@ -102,7 +102,6 @@ class ClientProfileFragment(
         when (item.itemId) {
             R.id.settings_button -> {
                 val intent = Intent(requireContext(), MenuActivity::class.java)
-                intent.putExtra("token", token)
                 startActivity(intent)
             }
         }

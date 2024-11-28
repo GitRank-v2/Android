@@ -100,7 +100,7 @@ class CompareRepoFragment(
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.loadState == LoadState.REPOSUCCESS) {
+                    if (state.loadState == LoadState.REPO_SUCCESS) {
                         checkRepos(state.repo.repo)
                     }
                 }

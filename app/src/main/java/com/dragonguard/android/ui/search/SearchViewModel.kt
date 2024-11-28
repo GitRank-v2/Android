@@ -35,7 +35,7 @@ class SearchViewModel @Inject constructor(
                     repository.getUserNames(event.name, event.count, event.type).onSuccess {
                         setState {
                             copy(
-                                searchState = LoadState.USERSUCCESS,
+                                searchState = LoadState.USER_SUCCESS,
                                 receivedUserNames = SearchContract.SearchState.UserNames(it as ArrayList)
                             )
                         }
@@ -55,7 +55,7 @@ class SearchViewModel @Inject constructor(
                         currentState.receivedRepoNames.repoNames.addAll(it)
                         setState {
                             copy(
-                                searchState = LoadState.REPOSUCCESS,
+                                searchState = LoadState.REPO_SUCCESS,
                             )
                         }
                     }.onFail {
@@ -78,7 +78,7 @@ class SearchViewModel @Inject constructor(
                     ).onSuccess {
                         setState {
                             copy(
-                                searchState = LoadState.REPOSUCCESS,
+                                searchState = LoadState.REPO_SUCCESS,
                                 receivedRepoNames = SearchContract.SearchState.RepoNames(it as ArrayList)
                             )
                         }

@@ -23,8 +23,8 @@ class MainContract {
         data class UserInfo(val userInfo: UserInfoModel) : MainState()
         data class ClickSearch(val clicked: Boolean) : MainState()
         data class ClickUserIcon(val clicked: Boolean) : MainState()
-        data class NewAccessToken(val token: String?) : MainState()
-        data class NewRefreshToken(val refreshToken: String?) : MainState()
+        data class NewAccessToken(val token: String) : MainState()
+        data class NewRefreshToken(val refreshToken: String) : MainState()
         data class RepeatState(val repeat: Boolean) : MainState()
         data class RefreshAmount(val amount: List<UserContributionsModel>) : MainState()
     }
@@ -41,6 +41,6 @@ class MainContract {
     ) : UiState
 
     sealed class MainActivityEffect : UiEffect {
-
+        data object LoginError : MainActivityEffect()
     }
 }

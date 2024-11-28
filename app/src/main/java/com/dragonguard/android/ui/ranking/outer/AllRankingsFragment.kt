@@ -430,7 +430,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 binding.firstFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.firstRanker.visibility = View.VISIBLE
@@ -473,7 +472,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 binding.secondFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.secondRanker.visibility = View.VISIBLE
@@ -516,7 +514,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 binding.thirdFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.thirdRanker.visibility = View.VISIBLE

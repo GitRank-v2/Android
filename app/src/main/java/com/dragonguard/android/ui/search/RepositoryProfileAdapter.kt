@@ -55,7 +55,6 @@ class RepositoryProfileAdapter(
                             0 -> {
                                 Intent(context, RepoContributorsActivity::class.java).apply {
                                     putExtra("repoName", data.name)
-                                    putExtra("token", token)
                                 }.run { context.startActivity(this) }
                             }
 
@@ -63,7 +62,6 @@ class RepositoryProfileAdapter(
                                 context as SearchActivity
                                 val intent = Intent()
                                 intent.putExtra("repoName", data.name)
-                                intent.putExtra("token", token)
                                 context.setResult(repoCount, intent)
                                 context.finish()
                             }
@@ -73,18 +71,17 @@ class RepositoryProfileAdapter(
                 }
 
                 is UserNameModelItem -> {
-                    binding.repoName.text = data.name
+                    binding.repoName.text = data.github_id
                     itemView.setOnClickListener {
                         Log.d("users", "user = $data")
                         if (data.is_service_member) {
                             Intent(context, OthersProfileActivity::class.java).apply {
-                                putExtra("userName", data.name)
-                                putExtra("token", token)
+                                putExtra("userName", data.github_id)
                             }.run { context.startActivity(this) }
                         } else {
                             Toast.makeText(
                                 context,
-                                "${data.name}은(는) 회원이 아닙니다.",
+                                "${data.github_id}은(는) 회원이 아닙니다.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

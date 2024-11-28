@@ -51,7 +51,6 @@ class ContributorsAdapter(
                 if (data1.is_service_member == true) {
                     Intent(context, OthersProfileActivity::class.java).apply {
                         putExtra("userName", data1.github_id)
-                        putExtra("token", token)
                     }.run { context.startActivity(this) }
                 }
             }

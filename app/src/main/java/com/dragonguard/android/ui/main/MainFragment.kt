@@ -75,7 +75,6 @@ class MainFragment(
 
         binding.tokenFrame.setOnClickListener {
             val intent = Intent(requireActivity(), GitHistoryActivity::class.java)
-            intent.putExtra("token", viewModel.currentState.newAccessToken.token)
             startActivity(intent)
         }
         binding.searchName.setOnClickListener {

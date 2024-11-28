@@ -6,8 +6,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -35,11 +33,11 @@ import kotlinx.coroutines.withContext
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val activityResultLauncher: ActivityResultLauncher<Intent> =
+    /*private val activityResultLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
 
-        }
+        }*/
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<MainViewModel>()
@@ -75,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                     rankingFrag = null
                     Log.d("로그인 필요", "로그인 필요")
                     val intent = Intent(applicationContext, LoginActivity::class.java)
-                    activityResultLauncher.launch(intent)
+                    startActivity(intent)
                 }
             }
 
@@ -142,53 +140,45 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.newAccessToken.token == null || state.newRefreshToken.refreshToken == null) {
-                        if (!this@MainActivity.isFinishing) {
-                            Log.d("refresh fail", "token refresh 실패")
-                            if (refreshState) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "다시 로그인 바랍니다.",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                refreshState = false
-                                viewModel.logout()
-                                val intent = Intent(applicationContext, LoginActivity::class.java)
-                                activityResultLauncher.launch(intent)
-                            }
-                        }
-                    }
-
                     if (state.loadState == LoadState.SUCCESS) {
                         Log.d("success UserInfo", "success")
                         viewModel.setFinish()
                         checkUserInfo(state.userInfo.userInfo)
                     }
 
-                    if (state.loadState == LoadState.ERROR) {
-                        Log.d("main", "login error")
-                        binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
-                        viewModel.logout()
-                        val transaction = supportFragmentManager.beginTransaction()
-                        supportFragmentManager.fragments.forEach {
-                            transaction.remove(it)
-                        }
-                        transaction.commit()
-                        mainFrag?.let {
-                            it.clearView()
-                        }
-                        mainFrag = null
-                        compareFrag = null
-                        profileFrag = null
-                        rankingFrag = null
-                        Log.d("로그인 필요", "로그인 필요")
-                        val intent = Intent(applicationContext, LoginActivity::class.java)
-                        activityResultLauncher.launch(intent)
+                    if (state.loadState == LoadState.LOGIN_FAIL) {
+                        refreshToken()
                     }
 
                 }
 
+            }
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effect.collect { effect ->
+                    when (effect) {
+                        is MainContract.MainActivityEffect.LoginError -> {
+                            binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
+                            viewModel.logout()
+                            val transaction = supportFragmentManager.beginTransaction()
+                            supportFragmentManager.fragments.forEach {
+                                transaction.remove(it)
+                            }
+                            transaction.commit()
+                            mainFrag?.let {
+                                it.clearView()
+                            }
+                            mainFrag = null
+                            compareFrag = null
+                            profileFrag = null
+                            rankingFrag = null
+                            Log.d("로그인 필요", "로그인 필요")
+                            val intent = Intent(applicationContext, LoginActivity::class.java)
+                            startActivity(intent)
+
+                        }
+                    }
+                }
             }
         }
 
@@ -203,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "다시 로그인 바랍니다.", Toast.LENGTH_SHORT).show()
                 viewModel.logout()
                 val intent = Intent(applicationContext, LoginActivity::class.java)
-                activityResultLauncher.launch(intent)
+                startActivity(intent)
             }
         } else {
 
@@ -253,8 +243,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         finish = false
-        viewModel.refreshAmount()
         viewModel.getUserInfo()
+        viewModel.refreshAmount()
     }
 
 
@@ -271,9 +261,7 @@ class MainActivity : AppCompatActivity() {
                     )
                         .show()
                     return
-                }
-
-                if (System.currentTimeMillis() <= backPressed + 2500) {
+                } else {
                     finishAffinity()
                 }
             } else {

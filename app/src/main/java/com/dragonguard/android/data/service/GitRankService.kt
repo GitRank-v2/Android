@@ -36,11 +36,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
-/*
- 사용하는 모든 api의 네트워크 통신이 필요한 순간에 호출할 함수를 포함하는 인터페이스
- */
 interface GitRankService {
-
     // repo 검색 요청
     @GET("search")
     suspend fun getRepoName(@QueryMap query: Map<String, String>): Response<StandardResponse<List<RepoSearchResultModel>>>
@@ -125,8 +121,8 @@ interface GitRankService {
 
     @GET("auth/refresh")
     suspend fun getNewAccessToken(
-        @Header("accessToken") access: String,
-        @Header("refreshToken") refresh: String
+        @Header("access_token") access: String,
+        @Header("refresh_token") refresh: String
     ): Response<StandardResponse<RefreshTokenModel>>
 
     @GET("organizations/search")

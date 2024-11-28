@@ -20,7 +20,6 @@ class GitHistoryActivity : AppCompatActivity() {
 
     //var viewmodel = Viewmodel()
     private lateinit var tokenAdapter: GitListAdapter
-    private var refresh = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +29,6 @@ class GitHistoryActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
-
-        token = intent.getStringExtra("token")!!
         //callTokenHistory()
     }
 

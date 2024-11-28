@@ -45,14 +45,11 @@ class AuthOrgActivity : AppCompatActivity() {
             }
         }
     private lateinit var binding: ActivityAuthOrgBinding
-    private var token = ""
     private var organizationId: Long = 0
     private var emailEndPoint = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_auth_org)
-
-        token = intent.getStringExtra("token")!!
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
@@ -97,7 +94,6 @@ class AuthOrgActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "조직 타입을 먼저 정해주세요!!", Toast.LENGTH_SHORT).show()
             } else {
                 val intent = Intent(applicationContext, SearchOrganizationActivity::class.java)
-                intent.putExtra("token", token)
                 intent.putExtra("type", binding.orgTypeSpinner.selectedItem.toString())
                 activityResultLauncher.launch(intent)
             }
