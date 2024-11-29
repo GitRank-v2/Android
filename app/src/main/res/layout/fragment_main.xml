@@ -8,6 +8,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:id="@+id/main_frame"
+        android:visibility="invisible"
         android:weightSum="3.4"
         tools:context=".ui.main.MainFragment">
 
@@ -77,6 +78,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.25"
                 android:adjustViewBounds="true"
+                android:src="@drawable/user"
                 android:background="@drawable/round_title" />
 
             <LinearLayout

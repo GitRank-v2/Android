@@ -9,6 +9,6 @@ data class UserContributionsModel(
     val contribute_type: String,
     @field:Json(name = "amount")
     val amount: Long,
-    @field:Json(name = "create_at")
-    val create_at: String
+    @field:Json(name = "created_at")
+    val created_at: String
 )

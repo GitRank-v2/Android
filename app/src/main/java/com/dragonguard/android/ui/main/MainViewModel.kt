@@ -111,7 +111,9 @@ class MainViewModel @Inject constructor(
 
                 is MainContract.MainEvent.RefreshAmount -> {
                     repository.updateGitContribution().onSuccess {
+                        Log.d("refresh viewModel", "refresh")
                         repository.updateGitContributions().onSuccess {
+                            Log.d("refresh viewModel", "refreshes")
                             setState {
                                 copy(
                                     loadState = LoadState.REFRESH,
@@ -119,10 +121,18 @@ class MainViewModel @Inject constructor(
                                 )
                             }
                         }.onFail {
-
+                            Log.d("refresh viewModel", "fail")
+                        }.onError {
+                            Log.d("refresh viewModel", it.message.toString())
                         }
+                    }.onFail {
+
                     }
 
+                }
+
+                is MainContract.MainEvent.ProfileImageLoaded -> {
+                    setState { copy(loadState = LoadState.IMAGE_LOADED) }
                 }
             }
         }
@@ -158,5 +168,9 @@ class MainViewModel @Inject constructor(
 
     fun refreshAmount() {
         setEvent(MainContract.MainEvent.RefreshAmount)
+    }
+
+    fun profileImageLoaded() {
+        setEvent(MainContract.MainEvent.ProfileImageLoaded)
     }
 }

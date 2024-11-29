@@ -9,5 +9,6 @@ enum class LoadState {
     USER_SUCCESS,
     ERROR,
     REFRESH,
-    LOGIN_FAIL
+    LOGIN_FAIL,
+    IMAGE_LOADED
 }

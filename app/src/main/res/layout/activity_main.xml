@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:visibility="gone"
+
             app:itemIconTint="@drawable/compare_menu_selector"
             app:itemTextColor="@drawable/compare_menu_selector"
             app:labelVisibilityMode="unlabeled"

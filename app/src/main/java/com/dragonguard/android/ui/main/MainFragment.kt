@@ -1,6 +1,8 @@
 package com.dragonguard.android.ui.main
 
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,7 +18,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.main.UserInfoModel
@@ -108,18 +114,6 @@ class MainFragment(
         binding.mainFrame.layoutParams = layoutParams
         info.github_id?.let {
             binding.userId.text = info.github_id
-        }
-        if (!requireActivity().isFinishing) {
-            Log.d("profile", "profile image ${info.profile_image}")
-            Glide.with(this@MainFragment).load(info.profile_image)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .signature(
-                    ObjectKey(
-                        System.currentTimeMillis().toString()
-                    )
-                )
-                .into(binding.githubProfile)
         }
 
         when (info.tier) {
@@ -282,6 +276,44 @@ class MainFragment(
                 }
             }
         }
+
+        if (!requireActivity().isFinishing) {
+            if (binding.mainFrame.visibility == View.INVISIBLE) {
+                Log.d("profile image", "profile image ${info.profile_image}")
+                Glide.with(this@MainFragment).load(info.profile_image)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .listener(object : RequestListener<Drawable?> {
+                        override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any?,
+                            target: Target<Drawable?>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            binding.mainFrame.visibility = View.VISIBLE
+                            viewModel.profileImageLoaded()
+                            return false
+                        }
+
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable?>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            return false
+                        }
+                    })
+                    .signature(
+                        ObjectKey(
+                            System.currentTimeMillis().toString()
+                        )
+                    )
+                    .into(binding.githubProfile)
+            }
+
+        }
     }
 
     private fun initObserver() {
@@ -346,6 +378,15 @@ class MainFragment(
 
     private fun setPage() {
         binding.userUtil.setCurrentItem((binding.userUtil.currentItem + 1) % 4, false)
+    }
+
+    private fun areDrawablesEqual(drawable1: Drawable, drawable2: Drawable): Boolean {
+        if (drawable1 is BitmapDrawable && drawable2 is BitmapDrawable) {
+            val bitmap1 = drawable1.bitmap
+            val bitmap2 = drawable2.bitmap
+            return bitmap1.sameAs(bitmap2) // 같은 비트맵인지 비교
+        }
+        return false
     }
 
 }

@@ -145,6 +145,11 @@ class MainActivity : AppCompatActivity() {
                         refreshToken()
                     }
 
+                    if (state.loadState == LoadState.IMAGE_LOADED) {
+                        Log.d("image", "image loaded")
+                        binding.mainLoading.visibility = View.GONE
+                        binding.mainLoading.pauseAnimation()
+                    }
                 }
 
             }
@@ -178,7 +183,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
 
@@ -201,15 +205,14 @@ class MainActivity : AppCompatActivity() {
                 delay(1000)
                 finish = true
                 withContext(Dispatchers.Main) {
-                    binding.mainLoading.pauseAnimation()
-                    binding.mainLoading.visibility = View.GONE
-                    binding.mainNav.visibility = View.VISIBLE
-                    mainFrag =
-                        MainFragment(
-                            viewModel.currentState.userInfo.userInfo,
-                            imgRefresh,
-                            viewModel
-                        )
+                    if (mainFrag == null) {
+                        mainFrag =
+                            MainFragment(
+                                viewModel.currentState.userInfo.userInfo,
+                                imgRefresh,
+                                viewModel
+                            )
+                    }
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, mainFrag!!)
                         .commit()
@@ -222,31 +225,15 @@ class MainActivity : AppCompatActivity() {
         viewModel.getNewToken()
     }
 
-    /*private fun postCommits() {
-            val coroutine2 = CoroutineScope(Dispatchers.Main)
-            coroutine2.launch {
-                Log.d("post", "post commit")
-                if (!this@MainActivity.isFinishing) {
-                    val refreshDeffered = coroutine2.async(Dispatchers.IO) {
-                        viewModel.postCommits(prefs.getJwtToken(""))
-                    }
-                    val refreshResult = refreshDeffered.await()
-                    Log.d("post", "post token : $token")
-                    Handler(Looper.getMainLooper()).postDelayed({ searchUser() }, 2000)
-                }
-            }
-        }*/
-
-    override fun onResume() {
-        super.onResume()
-        finish = false
-        viewModel.refreshAmount()
-        viewModel.getUserInfo()
-    }
 
     override fun onRestart() {
         super.onRestart()
-        viewModel.setRepeat(false)
+        if (binding.mainNav.selectedItemId == R.id.bottom_main) {
+            viewModel.setRepeat(false)
+            finish = false
+            viewModel.refreshAmount()
+            viewModel.getUserInfo()
+        }
     }
 
 

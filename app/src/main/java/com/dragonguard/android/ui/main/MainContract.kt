@@ -17,6 +17,7 @@ class MainContract {
         data class SetRepeat(val repeat: Boolean) : MainEvent()
         data object SetFinish : MainEvent()
         data object RefreshAmount : MainEvent()
+        data object ProfileImageLoaded : MainEvent()
     }
 
     sealed class MainState {
