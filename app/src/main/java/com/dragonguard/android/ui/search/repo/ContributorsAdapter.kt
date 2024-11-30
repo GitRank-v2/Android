@@ -7,11 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.ContributorsListBinding
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
+import com.dragonguard.android.util.CustomGlide
 
 /*
  선택한 repo의 contributor들의 정보를 나열하기 위한 recycleradapter
@@ -41,10 +40,7 @@ class ContributorsAdapter(
             val green = (Math.random() * 255).toInt()
             val blue = (Math.random() * 255).toInt()
 //            binding.contributorColor.imageTintList = ColorStateList.valueOf(Color.rgb(red,green,blue))
-            Glide.with(binding.contributorProfile).load(data1.profile_url)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.contributorProfile)
+            CustomGlide.drawImage(binding.contributorProfile, data1.profile_url) {}
             colors.add(Color.rgb(red, green, blue))
             binding.contributorProfile.clipToOutline = true
             binding.contributorsLayout.setOnClickListener {

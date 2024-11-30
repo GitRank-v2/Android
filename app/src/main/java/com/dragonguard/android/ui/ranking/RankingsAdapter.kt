@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
@@ -16,6 +14,7 @@ import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.databinding.RankingListBinding
 import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
+import com.dragonguard.android.util.CustomGlide
 
 class RankingsAdapter(
     private val rankings: List<*>,
@@ -34,10 +33,7 @@ class RankingsAdapter(
             when (data1) {
                 is TotalUsersRankingsModel -> {
                     binding.eachRanking.text = data1.ranking.toString()
-                    Glide.with(binding.eachProfile).load(data1.profile_image)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.eachProfile)
+                    CustomGlide.drawImage(binding.eachProfile, data1.profile_image) {}
                     binding.rankingGithubId.text = data1.github_id
                     binding.rankingContribute.text = data1.tokens.toString()
                     when (data1.tier) {
@@ -85,10 +81,7 @@ class RankingsAdapter(
                     }
 
                     binding.eachRanking.text = data1.ranking.toString()
-                    Glide.with(binding.eachProfile).load(data1.profile_image)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.eachProfile)
+                    CustomGlide.drawImage(binding.eachProfile, data1.profile_image) {}
                     binding.rankingGithubId.text = data1.github_id
                     binding.rankingContribute.text = data1.tokens.toString()
                     binding.rankingItem.setOnClickListener {

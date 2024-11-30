@@ -13,8 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
@@ -22,6 +20,7 @@ import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.ranking.OrganizationInternalActivity
 import com.dragonguard.android.ui.ranking.RankingsAdapter
+import com.dragonguard.android.util.CustomGlide
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -422,10 +421,8 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                     }
                 }
                 binding.firstId.text = model.github_id
-                Glide.with(binding.firstProfile).load(model.profile_image)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(binding.firstProfile)
+                CustomGlide.drawImage(binding.firstProfile, model.profile_image) { }
+
                 binding.firstContribute.text = model.tokens.toString()
                 binding.firstFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
@@ -464,10 +461,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                     }
                 }
                 binding.secondId.text = model.github_id
-                Glide.with(binding.secondProfile).load(model.profile_image)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(binding.secondProfile)
+                CustomGlide.drawImage(binding.secondProfile, model.profile_image) { }
                 binding.secondContribute.text = model.tokens.toString()
                 binding.secondFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
@@ -506,10 +500,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                     }
                 }
                 binding.thirdId.text = model.github_id
-                Glide.with(binding.thirdProfile).load(model.profile_image)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(binding.thirdProfile)
+                CustomGlide.drawImage(binding.thirdProfile, model.profile_image) { }
                 binding.thirdContribute.text = model.tokens.toString()
                 binding.thirdFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)

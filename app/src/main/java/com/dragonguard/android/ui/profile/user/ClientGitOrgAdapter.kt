@@ -6,10 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.data.model.detail.GitOrganization
 import com.dragonguard.android.databinding.GitOrganizationListBinding
+import com.dragonguard.android.util.CustomGlide
 
 class ClientGitOrgAdapter(
     private val datas: List<GitOrganization>, private val context: Context,
@@ -27,10 +26,7 @@ class ClientGitOrgAdapter(
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //클릭리스너 구현
         fun bind(data: GitOrganization) {
-            Glide.with(binding.gitOrganizationProfile).load(data.profile_image)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.gitOrganizationProfile)
+            CustomGlide.drawImage(binding.gitOrganizationProfile, data.profile_image) {}
 
             binding.gitOrganizationName.text = data.name
             binding.gitOrgImg.setOnClickListener {

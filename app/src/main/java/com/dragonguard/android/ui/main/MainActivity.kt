@@ -209,7 +209,6 @@ class MainActivity : AppCompatActivity() {
                         mainFrag =
                             MainFragment(
                                 viewModel.currentState.userInfo.userInfo,
-                                imgRefresh,
                                 viewModel
                             )
                     }

@@ -1,8 +1,6 @@
 package com.dragonguard.android.ui.main
 
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,19 +15,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.signature.ObjectKey
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.GitHistoryActivity
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.search.SearchActivity
+import com.dragonguard.android.util.CustomGlide
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -39,15 +31,13 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainFragment(
     private var info: UserInfoModel,
-    private val refresh: Boolean,
     private val viewModel: MainViewModel
 ) : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private val scope = CoroutineScope(Dispatchers.IO)
     private val userActivity = HashMap<String, Int>()
 
-    //    private var menuItem: MenuItem? = null
-    val handler = Handler(Looper.getMainLooper()) {
+    private val handler = Handler(Looper.getMainLooper()) {
         setPage()
         true
     }
@@ -60,15 +50,11 @@ class MainFragment(
         //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
         Log.d("token", info.toString())
-//        val main = activity as MainActivity
-//        main.setSupportActionBar(binding.toolbar)
-//        main.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        binding.toolbar.inflateMenu(R.menu.refresh)
         binding.githubProfile.clipToOutline = true
         initObserver()
         drawInfo()
@@ -280,37 +266,10 @@ class MainFragment(
         if (!requireActivity().isFinishing) {
             if (binding.mainFrame.visibility == View.INVISIBLE) {
                 Log.d("profile image", "profile image ${info.profile_image}")
-                Glide.with(this@MainFragment).load(info.profile_image)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .listener(object : RequestListener<Drawable?> {
-                        override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
-                            target: Target<Drawable?>?,
-                            dataSource: DataSource?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            binding.mainFrame.visibility = View.VISIBLE
-                            viewModel.profileImageLoaded()
-                            return false
-                        }
-
-                        override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable?>?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            return false
-                        }
-                    })
-                    .signature(
-                        ObjectKey(
-                            System.currentTimeMillis().toString()
-                        )
-                    )
-                    .into(binding.githubProfile)
+                CustomGlide.drawImage(binding.githubProfile, info.profile_image) {
+                    binding.mainFrame.visibility = View.VISIBLE
+                    viewModel.profileImageLoaded()
+                }
             }
 
         }
@@ -331,35 +290,6 @@ class MainFragment(
         }
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.refresh, binding.toolbar.menu)
-//        menuItem = menu.findItem(R.id.refresh_button)
-//        menuItem?.icon?.alpha = 64
-//        super.onCreateOptionsMenu(menu, inflater)
-//    }
-
-    //    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.refresh_button -> {
-//                if(refresh) {
-//                    refresh = false
-//                    val coroutine = CoroutineScope(Dispatchers.Main)
-//                    coroutine.launch {
-//                        if(this@MainFragment.isResumed) {
-//                            Log.d("refresh", "refresh main!!")
-//                            val resultRepoDeferred = coroutine.async(Dispatchers.IO) {
-//                                viewmodel.updateUserInfo(token)
-//                            }
-//                            val resultRepo = resultRepoDeferred.await()
-//                            info = resultRepo
-//                            drawInfo()
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
     fun clearView() {
         if (this@MainFragment.isAdded && !this@MainFragment.isDetached && this@MainFragment.isVisible && !this@MainFragment.isRemoving) {
             binding.githubProfile.setImageResource(0)
@@ -371,22 +301,7 @@ class MainFragment(
 
     }
 
-    override fun onDestroy() {
-        //viewModel.setRepeat(false)
-        super.onDestroy()
-    }
-
     private fun setPage() {
         binding.userUtil.setCurrentItem((binding.userUtil.currentItem + 1) % 4, false)
     }
-
-    private fun areDrawablesEqual(drawable1: Drawable, drawable2: Drawable): Boolean {
-        if (drawable1 is BitmapDrawable && drawable2 is BitmapDrawable) {
-            val bitmap1 = drawable1.bitmap
-            val bitmap2 = drawable2.bitmap
-            return bitmap1.sameAs(bitmap2) // 같은 비트맵인지 비교
-        }
-        return false
-    }
-
 }

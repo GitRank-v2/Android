@@ -10,13 +10,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.signature.ObjectKey
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.databinding.ActivityUserProfileBinding
 import com.dragonguard.android.ui.profile.OthersReposAdapter
+import com.dragonguard.android.util.CustomGlide
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -73,15 +71,7 @@ class OthersProfileActivity : AppCompatActivity() {
     }
 
     private fun initView(result: UserProfileModel) {
-        Glide.with(this@OthersProfileActivity).load(result.profile_image)
-            .skipMemoryCache(true)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .signature(
-                ObjectKey(
-                    System.currentTimeMillis().toString()
-                )
-            )
-            .into(binding.profileImg)
+        CustomGlide.drawImage(binding.profileImg, result.profile_image) {}
         binding.userRank.text = result.rank.toString()
         binding.userCommit.text = result.commits.toString()
         binding.userIssue.text = result.issues.toString()

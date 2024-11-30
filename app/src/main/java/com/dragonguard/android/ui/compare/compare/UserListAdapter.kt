@@ -3,11 +3,10 @@ package com.dragonguard.android.ui.compare.compare
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.FragmentCompareUserBinding
 import com.dragonguard.android.databinding.LanguageListBinding
+import com.dragonguard.android.util.CustomGlide
 
 class UserListAdapter(
     private val users: ArrayList<GitRepoMember>,
@@ -31,10 +30,11 @@ class UserListAdapter(
             binding.languageText.setOnClickListener {
                 when (type) {
                     1 -> {
-                        Glide.with(fragmentBinding.user1Profile).load(users[position].profile_url)
-                            .skipMemoryCache(true)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .into(fragmentBinding.user1Profile)
+                        CustomGlide.drawImage(
+                            fragmentBinding.user1Profile,
+                            users[position].profile_url
+                        ) {}
+
                         fragmentBinding.user1GithubId.text = users[position].github_id
                         users[position].github_id?.let {
                             userFragment.user1 = it
@@ -46,10 +46,10 @@ class UserListAdapter(
                     }
 
                     2 -> {
-                        Glide.with(fragmentBinding.user2Profile).load(users[position].profile_url)
-                            .skipMemoryCache(true)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .into(fragmentBinding.user2Profile)
+                        CustomGlide.drawImage(
+                            fragmentBinding.user2Profile,
+                            users[position].profile_url
+                        ) { }
                         fragmentBinding.user2GithubId.text = users[position].github_id
                         userFragment.user2 = users[position].github_id.toString()
                         if (userFragment.user1 != "null" && userFragment.user2 != "null" && userFragment.user1.isNotBlank() && userFragment.user2.isNotBlank()) {

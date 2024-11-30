@@ -6,10 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.databinding.OthersReposListBinding
 import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
+import com.dragonguard.android.util.CustomGlide
 
 class OthersReposAdapter(
     private val datas: List<String>,
@@ -31,10 +30,7 @@ class OthersReposAdapter(
         fun bind(data: String) {
             binding.reposFrame.clipToOutline = true
             binding.repoName.text = data
-            Glide.with(binding.othersProfileImg).load(img)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.othersProfileImg)
+            CustomGlide.drawImage(binding.othersProfileImg, img) { }
             binding.othersProfileImg.clipToOutline = true
             binding.userName.text = userName
             binding.repoContributeImg.setOnClickListener {
