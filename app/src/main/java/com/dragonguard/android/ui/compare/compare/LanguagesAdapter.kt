@@ -7,34 +7,37 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.databinding.ActivitySearchFilterBinding
 import com.dragonguard.android.databinding.LanguageListBinding
-import com.dragonguard.android.ui.search.filter.SearchFilterActivity
 import com.google.android.material.chip.Chip
 
 class LanguagesAdapter(
-    private val languages: MutableList<String>, context: Context, private val type: String,
-    private val activityBinding: ActivitySearchFilterBinding
+    private val context: Context,
+    private val type: String,
+    private val listener: OnChipClickListener
 ) :
-    RecyclerView.Adapter<LanguagesAdapter.ViewHolder>() {
+    ListAdapter<String, LanguagesAdapter.ViewHolder>(differ) {
 
-    private val filterActivity = context as SearchFilterActivity
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding =
-            LanguageListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(
+            LanguageListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun getItemCount(): Int = languages.size
 
     inner class ViewHolder(private val binding: LanguageListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(position: Int) {
+        fun bind(data: String) {
             Log.d("type", type)
-            binding.languageText.text = languages[position]
-            val chip = Chip(filterActivity)
+            binding.languageText.text = data
+            val chip = Chip(context)
             chip.chipBackgroundColor = ColorStateList.valueOf(Color.rgb(195, 202, 251))
             chip.setTextAppearanceResource(R.style.textAppearance)
             chip.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
@@ -44,122 +47,41 @@ class LanguagesAdapter(
                     binding.languageText.tag = "off"
                     binding.languageText.setBackgroundResource(R.drawable.shadow_off)
                     when (type) {
-                        "language" -> {
-                            for (i in 0 until activityBinding.languageFilters.childCount) {
-                                val chipL: Chip =
-                                    activityBinding.languageFilters.getChildAt(i) as Chip
-                                if (chipL.text.toString() == binding.languageText.text.toString()) {
-                                    val language =
-                                        filterActivity.map[type]!!.split(",").toMutableList()
-                                    language.remove(chipL.text.toString())
-                                    val sb = StringBuilder()
-                                    language.forEachIndexed { index, s ->
-                                        if (index != language.lastIndex) {
-                                            sb.append("$s,")
-                                        } else {
-                                            sb.append(s)
-                                        }
-                                    }
-                                    filterActivity.map[type] = sb.toString()
-                                    activityBinding.languageFilters.removeView(chipL)
-                                    break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
-                                }
-                            }
-                        }
+                        "language" -> listener.onOffLanguageClick(
+                            type,
+                            binding.languageText.text.toString()
+                        )
 
-                        "stars" -> {
-                            for (i in 0 until activityBinding.starFilters.childCount) {
-                                val chipL: Chip = activityBinding.starFilters.getChildAt(i) as Chip
-                                Log.d("child", chipL.text.toString())
-                                if (chipL.text.toString() == binding.languageText.text.toString()) {
-                                    filterActivity.map[type] = ""
-                                    activityBinding.starFilters.removeView(chipL)
-                                    break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
-                                }
-                            }
-                            filterActivity.map[type] = ""
-                        }
+                        "stars" -> listener.onOffStarClick(
+                            type,
+                            binding.languageText.text.toString()
+                        )
 
-                        "forks" -> {
-                            for (i in 0 until activityBinding.forkFilters.childCount) {
-                                val chipL: Chip = activityBinding.forkFilters.getChildAt(i) as Chip
-                                if (chipL.text.toString() == binding.languageText.text.toString()) {
-                                    filterActivity.map[type] = ""
-                                    activityBinding.forkFilters.removeView(chipL)
-                                    break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
-                                }
-                            }
-                            filterActivity.map[type] = ""
-                        }
+                        "forks" -> listener.onOffForkClick(
+                            type,
+                            binding.languageText.text.toString()
+                        )
 
-                        "topics" -> {
-                            for (i in 0 until activityBinding.topicFilters.childCount) {
-                                val chipL: Chip = activityBinding.topicFilters.getChildAt(i) as Chip
-                                if (chipL.text.toString() == binding.languageText.text.toString()) {
-                                    filterActivity.map[type] = ""
-                                    activityBinding.topicFilters.removeView(chipL)
-                                    break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
-                                }
-                            }
-                            filterActivity.map[type] = ""
-                        }
+                        "topics" -> listener.onOffTopicClick(
+                            type,
+                            binding.languageText.text.toString()
+                        )
                     }
                 } else {
                     binding.languageText.tag = "on"
                     binding.languageText.setBackgroundResource(R.drawable.shadow_on)
                     when (type) {
-                        "language" -> {
-                            val before = filterActivity.map[type]
-                            if (!before.isNullOrBlank()) {
-                                filterActivity.map.put(type, "$before,${binding.languageText.text}")
-                            } else {
-                                filterActivity.map.put(type, binding.languageText.text.toString())
-                            }
-                            chip.setOnClickListener {
-                                val language = filterActivity.map[type]!!.split(",").toMutableList()
-                                language.remove(chip.text.toString())
-                                val sb = StringBuilder()
-                                language.forEachIndexed { index, s ->
-                                    if (index != language.lastIndex) {
-                                        sb.append("$s,")
-                                    } else {
-                                        sb.append(s)
-                                    }
-                                }
-                                filterActivity.map[type] = sb.toString()
-                                activityBinding.languageFilters.removeView(it)
-                            }
-                            activityBinding.languageFilters.addView(chip)
-                        }
+                        "language" -> listener.onOnLanguageClick(
+                            chip,
+                            type,
+                            binding.languageText.text.toString()
+                        )
 
-                        else -> {
-                            filterActivity.map.put(type, binding.languageText.text.toString())
-                            when (type) {
-                                "stars" -> {
-                                    chip.setOnClickListener {
-                                        filterActivity.map[type] = ""
-                                        activityBinding.starFilters.removeView(it)
-                                    }
-                                    activityBinding.starFilters.addView(chip)
-                                }
+                        "stars" -> listener.onOnStarClick(chip, type)
 
-                                "forks" -> {
-                                    chip.setOnClickListener {
-                                        filterActivity.map[type] = ""
-                                        activityBinding.forkFilters.removeView(it)
-                                    }
-                                    activityBinding.forkFilters.addView(chip)
-                                }
+                        "forks" -> listener.onOnForkClick(chip, type)
 
-                                "topics" -> {
-                                    chip.setOnClickListener {
-                                        filterActivity.map[type] = ""
-                                        activityBinding.topicFilters.removeView(it)
-                                    }
-                                    activityBinding.topicFilters.addView(chip)
-                                }
-                            }
-                        }
+                        "topics" -> listener.onOnTopicClick(chip, type)
                     }
                 }
             }
@@ -172,6 +94,28 @@ class LanguagesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
+        holder.bind(getItem(position))
+    }
+
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<String>() {
+            override fun areItemsTheSame(oldItem: String, newItem: String) =
+                oldItem == newItem
+
+            override fun areContentsTheSame(oldItem: String, newItem: String) =
+                oldItem == newItem
+        }
+    }
+
+    interface OnChipClickListener {
+        fun onOffLanguageClick(type: String, prev: String)
+        fun onOffStarClick(type: String, prev: String)
+        fun onOffForkClick(type: String, prev: String)
+        fun onOffTopicClick(type: String, prev: String)
+
+        fun onOnLanguageClick(chip: Chip, type: String, prev: String)
+        fun onOnStarClick(chip: Chip, type: String)
+        fun onOnForkClick(chip: Chip, type: String)
+        fun onOnTopicClick(chip: Chip, type: String)
     }
 }

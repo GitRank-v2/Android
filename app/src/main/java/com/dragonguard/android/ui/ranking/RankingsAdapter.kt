@@ -1,7 +1,5 @@
 package com.dragonguard.android.ui.ranking
 
-import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,22 +10,24 @@ import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
 import com.dragonguard.android.databinding.RankingListBinding
-import com.dragonguard.android.ui.main.MainActivity
-import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.util.CustomGlide
 
 class RankingsAdapter(
     private val rankings: List<*>,
-    private val context: Context,
-    private val userName: String
+    private val listener: OnRankingClickListener
 ) : RecyclerView.Adapter<RankingsAdapter.ViewHolder>() {
-    private lateinit var binding: RankingListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = RankingListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(
+            RankingListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(private val binding: RankingListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(data1: Any?) {
             binding.eachProfile.clipToOutline = true
             when (data1) {
@@ -62,13 +62,7 @@ class RankingsAdapter(
                         }
                     }
                     binding.rankingItem.setOnClickListener {
-                        val mContext = context as MainActivity
-                        val intent = Intent(context, OthersProfileActivity::class.java)
-                        intent.putExtra("userName", data1.github_id)
-                        if (userName == data1.github_id) {
-                            intent.putExtra("isUser", true)
-                        }
-                        context.startActivity(intent)
+                        listener.onUserRankingClick(data1.github_id!!)
                     }
                 }
 
@@ -86,13 +80,9 @@ class RankingsAdapter(
                     binding.rankingContribute.text = data1.tokens.toString()
                     binding.rankingItem.setOnClickListener {
                         if (data1.profile_image.isNullOrBlank()) {
-                            val intent = Intent(context, OrganizationInternalActivity::class.java)
-                            intent.putExtra("organization", data1.name)
-                            context.startActivity(intent)
+                            listener.onOrgInternalRankingClick(data1.name!!)
                         } else {
-                            val intent = Intent(context, OthersProfileActivity::class.java)
-                            intent.putExtra("userName", data1.github_id)
-                            context.startActivity(intent)
+                            listener.onOrgInternalRankingUserClick(data1.github_id!!)
                         }
                     }
                     when (data1.tier) {
@@ -144,6 +134,9 @@ class RankingsAdapter(
                         }
                     }
                     binding.rankingContribute.text = data1.token_sum.toString()
+                    binding.rankingItem.setOnClickListener {
+                        listener.onOrgRankingClick(data1.name!!)
+                    }
                 }
             }
         }
@@ -158,5 +151,12 @@ class RankingsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(rankings[position])
+    }
+
+    interface OnRankingClickListener {
+        fun onUserRankingClick(userName: String)
+        fun onOrgInternalRankingClick(orgName: String)
+        fun onOrgInternalRankingUserClick(userName: String)
+        fun onOrgRankingClick(orgName: String)
     }
 }

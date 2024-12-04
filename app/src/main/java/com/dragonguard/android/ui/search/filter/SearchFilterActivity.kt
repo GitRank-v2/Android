@@ -2,6 +2,7 @@ package com.dragonguard.android.ui.search.filter
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
@@ -10,11 +11,13 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivitySearchFilterBinding
+import com.dragonguard.android.ui.compare.compare.LanguagesAdapter
 import com.dragonguard.android.ui.search.SearchActivity
+import com.google.android.material.chip.Chip
 
-class SearchFilterActivity : AppCompatActivity() {
+class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickListener {
     private lateinit var binding: ActivitySearchFilterBinding
-    val map = HashMap<String, String>()
+    private val map = HashMap<String, String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchFilterBinding.inflate(layoutInflater)
@@ -69,22 +72,22 @@ class SearchFilterActivity : AppCompatActivity() {
         }
 
         binding.languageFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(this, languages, "language", binding)
+            val bottomSheetFragment = FilterSheetFragment(languages, "language", this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.starFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(this, extras, "stars", binding)
+            val bottomSheetFragment = FilterSheetFragment(extras, "stars", this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.forkFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(this, extras, "forks", binding)
+            val bottomSheetFragment = FilterSheetFragment(extras, "stars", this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.topicFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(this, topics, "topics", binding)
+            val bottomSheetFragment = FilterSheetFragment(topics, "stars", this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
@@ -124,5 +127,113 @@ class SearchFilterActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onOffLanguageClick(type: String, prev: String) {
+        for (i in 0 until binding.languageFilters.childCount) {
+            val chipL: Chip =
+                binding.languageFilters.getChildAt(i) as Chip
+            if (chipL.text.toString() == prev) {
+                val language =
+                    map[type]!!.split(",").toMutableList()
+                language.remove(chipL.text.toString())
+                val sb = StringBuilder()
+                language.forEachIndexed { index, s ->
+                    if (index != language.lastIndex) {
+                        sb.append("$s,")
+                    } else {
+                        sb.append(s)
+                    }
+                }
+                map[type] = sb.toString()
+                binding.languageFilters.removeView(chipL)
+                break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
+            }
+        }
+    }
+
+    override fun onOffStarClick(type: String, prev: String) {
+        for (i in 0 until binding.starFilters.childCount) {
+            val chipL: Chip = binding.starFilters.getChildAt(i) as Chip
+            Log.d("child", chipL.text.toString())
+            if (chipL.text.toString() == prev) {
+                map[type] = ""
+                binding.starFilters.removeView(chipL)
+                break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
+            }
+        }
+        map[type] = ""
+    }
+
+    override fun onOffForkClick(type: String, prev: String) {
+        for (i in 0 until binding.forkFilters.childCount) {
+            val chipL: Chip = binding.forkFilters.getChildAt(i) as Chip
+            if (chipL.text.toString() == prev) {
+                map[type] = ""
+                binding.forkFilters.removeView(chipL)
+                break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
+            }
+        }
+        map[type] = ""
+    }
+
+    override fun onOffTopicClick(type: String, prev: String) {
+        for (i in 0 until binding.topicFilters.childCount) {
+            val chipL: Chip = binding.topicFilters.getChildAt(i) as Chip
+            if (chipL.text.toString() == prev) {
+                map[type] = ""
+                binding.topicFilters.removeView(chipL)
+                break // 원하는 Chip을 찾았으므로 반복문을 종료합니다.
+            }
+        }
+        map[type] = ""
+    }
+
+    override fun onOnLanguageClick(chip: Chip, type: String, prev: String) {
+        val before = map[type]
+        if (!before.isNullOrBlank()) {
+            map.put(type, "$before, $prev")
+        } else {
+            map.put(type, prev)
+        }
+        chip.setOnClickListener {
+            val language = map[type]!!.split(",").toMutableList()
+            language.remove(chip.text.toString())
+            val sb = StringBuilder()
+            language.forEachIndexed { index, s ->
+                if (index != language.lastIndex) {
+                    sb.append("$s,")
+                } else {
+                    sb.append(s)
+                }
+            }
+            map[type] = sb.toString()
+            binding.languageFilters.removeView(it)
+        }
+        binding.languageFilters.addView(chip)
+    }
+
+    override fun onOnStarClick(chip: Chip, type: String) {
+        chip.setOnClickListener {
+            map[type] = ""
+            binding.starFilters.removeView(it)
+        }
+        binding.starFilters.addView(chip)
+    }
+
+    override fun onOnForkClick(chip: Chip, type: String) {
+        chip.setOnClickListener {
+            map[type] = ""
+            binding.forkFilters.removeView(it)
+        }
+        binding.forkFilters.addView(chip)
+    }
+
+    override fun onOnTopicClick(chip: Chip, type: String) {
+        chip.setOnClickListener {
+            map[type] = ""
+            binding.topicFilters.removeView(it)
+        }
+        binding.topicFilters.addView(chip)
     }
 }

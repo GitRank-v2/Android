@@ -1,31 +1,31 @@
 package com.dragonguard.android.ui.profile
 
-import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.databinding.OthersReposListBinding
-import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 import com.dragonguard.android.util.CustomGlide
 
 class OthersReposAdapter(
-    private val datas: List<String>,
-    private val context: Context,
     private val img: String,
-    private val userName: String
-) : RecyclerView.Adapter<OthersReposAdapter.ViewHolder>() {
-    private lateinit var binding: OthersReposListBinding
+    private val userName: String,
+    private val listener: OnRepoClickListener
+) : ListAdapter<String, OthersReposAdapter.ViewHolder>(differ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = OthersReposListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(
+            OthersReposListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun getItemCount(): Int = datas.size
-
     //리사이클러 뷰의 요소들을 넣어줌
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(private val binding: OthersReposListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         //클릭리스너 구현
         fun bind(data: String) {
             binding.reposFrame.clipToOutline = true
@@ -34,16 +34,10 @@ class OthersReposAdapter(
             binding.othersProfileImg.clipToOutline = true
             binding.userName.text = userName
             binding.repoContributeImg.setOnClickListener {
-                Intent(context, RepoContributorsActivity::class.java).apply {
-                    putExtra("repoName", data)
-                }.run { context.startActivity(this) }
+                listener.onRepoClick(data)
             }
 
         }
-    }
-
-    override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -51,7 +45,20 @@ class OthersReposAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(datas[position])
+        holder.bind(getItem(position))
     }
 
+    interface OnRepoClickListener {
+        fun onRepoClick(repoName: String)
+    }
+
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<String>() {
+            override fun areItemsTheSame(oldItem: String, newItem: String) =
+                oldItem == newItem
+
+            override fun areContentsTheSame(oldItem: String, newItem: String) =
+                oldItem == newItem
+        }
+    }
 }

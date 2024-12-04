@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.ranking
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,6 +19,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +30,7 @@ import kotlinx.coroutines.launch
  사용자의 대학교 내의 랭킹을 보여주는 activity
  */
 @AndroidEntryPoint
-class OrganizationInternalActivity : AppCompatActivity() {
+class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRankingClickListener {
     private lateinit var binding: ActivityOrganizationInternalRankingBinding
     private val viewModel by viewModels<OrganizationInternalViewModel>()
     private var orgName = ""
@@ -144,7 +146,7 @@ class OrganizationInternalActivity : AppCompatActivity() {
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =
-                RankingsAdapter(orgInternalRankings, this, viewModel.currentState.token.token)
+                RankingsAdapter(orgInternalRankings, this)
             binding.orgInternalRanking.adapter = organizationInternalRankingAdapter
             binding.orgInternalRanking.layoutManager = LinearLayoutManager(this)
             binding.orgInternalRanking.visibility = View.VISIBLE
@@ -195,4 +197,20 @@ class OrganizationInternalActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onUserRankingClick(userName: String) = Unit
+
+    override fun onOrgInternalRankingClick(orgName: String) {
+        val intent = Intent(this, OrganizationInternalActivity::class.java)
+        intent.putExtra("organization", orgName)
+        startActivity(intent)
+    }
+
+    override fun onOrgInternalRankingUserClick(userName: String) {
+        val intent = Intent(this, OthersProfileActivity::class.java)
+        intent.putExtra("userName", userName)
+        startActivity(intent)
+    }
+
+    override fun onOrgRankingClick(orgName: String) = Unit
 }

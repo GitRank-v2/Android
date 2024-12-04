@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +21,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivitySearchBinding
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.search.filter.SearchFilterActivity
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 import com.dragonguard.android.util.HorizontalItemDecorator
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.VerticalItemDecorator
@@ -31,7 +34,7 @@ import kotlinx.coroutines.launch
  repo를 이름으로 검색하는 activity
  */
 @AndroidEntryPoint
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositoryClickListener {
     private lateinit var binding: ActivitySearchBinding
     lateinit var repositoryProfileAdapter: RepositoryProfileAdapter
     private var position = 0
@@ -385,38 +388,30 @@ class SearchActivity : AppCompatActivity() {
                 repositoryProfileAdapter =
                     RepositoryProfileAdapter(
                         viewModel.currentState.userNames.userNames,
-                        this,
-                        token,
-                        type,
                         imgList,
-                        repoCount
+                        repoCount,
+                        this@SearchActivity
                     )
                 binding.searchResult.adapter = repositoryProfileAdapter
                 binding.searchResult.layoutManager = LinearLayoutManager(this)
-                repositoryProfileAdapter.notifyDataSetChanged()
                 binding.searchResult.visibility = View.VISIBLE
-            } else {
-                repositoryProfileAdapter.notifyDataSetChanged()
             }
+            repositoryProfileAdapter.notifyDataSetChanged()
         } else {
             if (count == 0) {
                 repositoryProfileAdapter = if (type.isBlank()) {
                     RepositoryProfileAdapter(
                         viewModel.currentState.repoNames.repoNames,
-                        this,
-                        token,
-                        "GIT_REPO",
                         imgList,
-                        repoCount
+                        repoCount,
+                        this@SearchActivity
                     )
                 } else {
                     RepositoryProfileAdapter(
                         viewModel.currentState.repoNames.repoNames,
-                        this,
-                        token,
-                        type,
                         imgList,
-                        repoCount
+                        repoCount,
+                        this@SearchActivity
                     )
                 }
                 binding.searchResult.adapter = repositoryProfileAdapter
@@ -490,5 +485,32 @@ class SearchActivity : AppCompatActivity() {
 
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onSearchRepositoryClick(repoName: String) {
+        Intent(this, RepoContributorsActivity::class.java).apply {
+            putExtra("repoName", repoName)
+        }.run { startActivity(this) }
+    }
+
+    override fun onCompareSearchResultRepositoryClick(repoName: String) {
+        val intent = Intent()
+        intent.putExtra("repoName", repoName)
+        setResult(repoCount, intent)
+        finish()
+    }
+
+    override fun onUserNameSearchClick(userName: String) {
+        Intent(this, OthersProfileActivity::class.java).apply {
+            putExtra("userName", userName)
+        }.run { startActivity(this) }
+    }
+
+    override fun onUserNotServiceMemberClick(userName: String) {
+        Toast.makeText(
+            this,
+            "$userName 은(는) 회원이 아닙니다.",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }

@@ -3,29 +3,32 @@ package com.dragonguard.android.ui.menu.org.search
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.dragonguard.android.data.model.org.OrganizationNamesModel
 import com.dragonguard.android.data.model.org.OrganizationNamesModelItem
 import com.dragonguard.android.databinding.RepositoryListBinding
 import com.dragonguard.android.ui.menu.org.auth.AuthOrgActivity
 
 class SearchOrganizationAdapter(
-    private val datas: OrganizationNamesModel,
     private val context: Context,
-    private val token: String
-) : RecyclerView.Adapter<SearchOrganizationAdapter.ViewHolder>() {
-    private lateinit var binding: RepositoryListBinding
+) : ListAdapter<OrganizationNamesModelItem, SearchOrganizationAdapter.ViewHolder>(differ) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = RepositoryListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(
+            RepositoryListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun getItemCount(): Int = datas.data.size
 
     //리사이클러 뷰의 요소들을 넣어줌
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(private val binding: RepositoryListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         //클릭리스너 구현
         fun bind(data: OrganizationNamesModelItem) {
             binding.repoName.text = data.name
@@ -46,6 +49,20 @@ class SearchOrganizationAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(datas.data[position])
+        holder.bind(getItem(position))
+    }
+
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<OrganizationNamesModelItem>() {
+            override fun areItemsTheSame(
+                oldItem: OrganizationNamesModelItem,
+                newItem: OrganizationNamesModelItem
+            ) = oldItem.id == newItem.id
+
+            override fun areContentsTheSame(
+                oldItem: OrganizationNamesModelItem,
+                newItem: OrganizationNamesModelItem
+            ) = oldItem == newItem
+        }
     }
 }

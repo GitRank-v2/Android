@@ -1,38 +1,36 @@
 package com.dragonguard.android.ui.search.repo
 
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.ContributorsListBinding
-import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.util.CustomGlide
 
 /*
  선택한 repo의 contributor들의 정보를 나열하기 위한 recycleradapter
  */
 class ContributorsAdapter(
-    private val datas: ArrayList<GitRepoMember>,
-    private val context: Context,
     private val colors: ArrayList<Int>,
-    private val token: String,
-    private val repoName: String
-) : RecyclerView.Adapter<ContributorsAdapter.ViewHolder>() {
-    private lateinit var binding: ContributorsListBinding
+    private val listener: OnRepoContributorClickListener
+) :
+    ListAdapter<GitRepoMember, ContributorsAdapter.ViewHolder>(differ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding =
-            ContributorsListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(
+            ContributorsListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun getItemCount(): Int = datas.size
-
     //리사이클러 뷰의 요소들을 넣어줌
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(private val binding: ContributorsListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(data1: GitRepoMember) {
             binding.contributeRanking.text = data1.commits.toString()
             binding.contrubutorId.text = data1.github_id
@@ -45,24 +43,31 @@ class ContributorsAdapter(
             binding.contributorProfile.clipToOutline = true
             binding.contributorsLayout.setOnClickListener {
                 if (data1.is_service_member == true) {
-                    Intent(context, OthersProfileActivity::class.java).apply {
-                        putExtra("userName", data1.github_id)
-                    }.run { context.startActivity(this) }
+                    listener.onRepoContributorClick(data1.github_id!!)
                 }
             }
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(datas[position])
-    }
-
-    override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
+        holder.bind(getItem(position))
     }
 
     override fun getItemViewType(position: Int): Int {
         return position
     }
 
+    interface OnRepoContributorClickListener {
+        fun onRepoContributorClick(userName: String)
+    }
+
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<GitRepoMember>() {
+            override fun areItemsTheSame(oldItem: GitRepoMember, newItem: GitRepoMember) =
+                oldItem.github_id == newItem.github_id
+
+            override fun areContentsTheSame(oldItem: GitRepoMember, newItem: GitRepoMember) =
+                oldItem == newItem
+        }
+    }
 }

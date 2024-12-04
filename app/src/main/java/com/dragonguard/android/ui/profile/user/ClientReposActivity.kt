@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.profile.user
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -11,12 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityClientReposBinding
 import com.dragonguard.android.ui.profile.OthersReposAdapter
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ClientReposActivity : AppCompatActivity() {
+class ClientReposActivity : AppCompatActivity(), OthersReposAdapter.OnRepoClickListener {
     private lateinit var binding: ActivityClientReposBinding
     private val viewModel by viewModels<ClientReposViewModel>()
     private var orgName = ""
@@ -58,15 +60,10 @@ class ClientReposActivity : AppCompatActivity() {
 
 
     private fun initRecycler() {
-        reposAdapter = OthersReposAdapter(
-            viewModel.currentState.githubOrgRepos.githubOrgRepos.git_repos,
-            this,
-            img,
-            orgName
-        )
+        reposAdapter = OthersReposAdapter(img, orgName, this)
         binding.memberRepositoryList.adapter = reposAdapter
         binding.memberRepositoryList.layoutManager = LinearLayoutManager(this)
-        reposAdapter.notifyDataSetChanged()
+        reposAdapter.submitList(viewModel.currentState.githubOrgRepos.githubOrgRepos.git_repos)
     }
 
 
@@ -78,5 +75,11 @@ class ClientReposActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRepoClick(repoName: String) {
+        Intent(this, RepoContributorsActivity::class.java).apply {
+            putExtra("repoName", data)
+        }.run { startActivity(this) }
     }
 }

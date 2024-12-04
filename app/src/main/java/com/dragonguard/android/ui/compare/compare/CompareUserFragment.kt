@@ -15,6 +15,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.compare.RepoMembersResult
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.databinding.FragmentCompareUserBinding
+import com.dragonguard.android.util.CustomGlide
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -30,7 +31,7 @@ class CompareUserFragment(
     private val repoName2: String,
     private val repo1: List<RepoMembersResult>,
     private val repo2: List<RepoMembersResult>
-) : Fragment() {
+) : Fragment(), UserListAdapter.OnUserClickListener {
 
     private val contributors1: ArrayList<GitRepoMember> = repo1.map {
         GitRepoMember(
@@ -52,8 +53,8 @@ class CompareUserFragment(
             is_service_member = it.is_service_member
         )
     } as ArrayList<GitRepoMember>
-    var user1 = ""
-    var user2 = ""
+    private var user1 = ""
+    private var user2 = ""
     private var count = 0
     private lateinit var binding: FragmentCompareUserBinding
     lateinit var userGroup1: UserSheetfragment
@@ -299,6 +300,35 @@ class CompareUserFragment(
         override fun getFormattedValue(value: Float): String {
             return "" + value.toInt()
         }
+    }
+
+    override fun onFirstUserClick(data: GitRepoMember) {
+        CustomGlide.drawImage(
+            binding.user1Profile,
+            data.profile_url
+        ) {}
+
+        binding.user1GithubId.text = data.github_id
+        data.github_id?.let {
+            user1 = it
+        }
+        if (user1 != "null" && user2 != "null" && user1.isNotBlank() && user2.isNotBlank()) {
+            initGraph()
+        }
+        userGroup1.dismiss()
+    }
+
+    override fun onSecondUserClick(data: GitRepoMember) {
+        CustomGlide.drawImage(
+            binding.user2Profile,
+            data.profile_url
+        ) { }
+        binding.user2GithubId.text = data.github_id
+        user2 = data.github_id.toString()
+        if (user1 != "null" && user2 != "null" && user1.isNotBlank() && user2.isNotBlank()) {
+            initGraph()
+        }
+        userGroup2.dismiss()
     }
 
 }

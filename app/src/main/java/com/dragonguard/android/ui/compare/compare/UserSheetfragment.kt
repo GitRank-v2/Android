@@ -13,13 +13,17 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 class UserSheetfragment(
     private val context: CompareUserFragment,
     private val firstList: ArrayList<GitRepoMember>,
-    private val second: ArrayList<GitRepoMember>,
+    private val secondList: ArrayList<GitRepoMember>,
     private val type: Int,
     private val repo1: String,
     private val repo2: String,
     private val fragmentBinding: FragmentCompareUserBinding
 ) : BottomSheetDialogFragment() {
     private lateinit var binding: UserSheetBinding
+    private val firstFilterAdapter by lazy { UserListAdapter(type, context) }
+    private val secondFilterAdapter by lazy { UserListAdapter(type, context) }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,14 +37,14 @@ class UserSheetfragment(
         super.onViewCreated(view, savedInstanceState)
         binding.filterTitleFirst.text = repo1
         binding.filterTitleSecond.text = repo2
-        binding.firstFilterItems.adapter =
-            UserListAdapter(firstList, context, type, fragmentBinding)
+        binding.firstFilterItems.adapter = firstFilterAdapter
         binding.firstFilterItems.layoutManager = LinearLayoutManager(requireContext())
-        binding.firstFilterItems.adapter?.notifyDataSetChanged()
+        firstFilterAdapter.submitList(firstList)
 
-        binding.secondFilterItems.adapter = UserListAdapter(second, context, type, fragmentBinding)
+
+        binding.secondFilterItems.adapter = secondFilterAdapter
         binding.secondFilterItems.layoutManager = LinearLayoutManager(requireContext())
-        binding.secondFilterItems.adapter?.notifyDataSetChanged()
+        secondFilterAdapter.submitList(secondList)
     }
 
 }

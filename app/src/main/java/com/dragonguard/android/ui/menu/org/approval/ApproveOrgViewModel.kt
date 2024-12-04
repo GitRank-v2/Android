@@ -78,7 +78,7 @@ class ApproveOrgViewModel @Inject constructor(
                     repository.approveOrgRequest(
                         event.orgId,
                         OrgApprovalModel(
-                            RequestStatus.ACCEPTED.status
+                            RequestStatus.DENIED.status
                         )
                     ).onSuccess {
                         setState {

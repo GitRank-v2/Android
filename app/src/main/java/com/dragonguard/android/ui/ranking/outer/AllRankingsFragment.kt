@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AllRankingsFragment(private val rankingType: String, private val userName: String) :
-    Fragment() {
+    Fragment(), RankingsAdapter.OnRankingClickListener {
     private lateinit var binding: FragmentAllRankingsBinding
     private val viewModel by viewModels<RankingsViewModel>()
     private val size = 20
@@ -59,8 +59,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getTotalUserRanking(page, size)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                    requireActivity(),
-                    userName
+                    this
                 )
             }
 
@@ -69,8 +68,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getTotalOrganizationRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    userName
+                    this
                 )
             }
 
@@ -79,8 +77,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getCompanyRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    userName
+                    this
                 )
             }
 
@@ -89,8 +86,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getUniversityRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    userName
+                    this
                 )
             }
 
@@ -99,8 +95,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getHighSchoolRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    userName
+                    this
                 )
             }
 
@@ -109,8 +104,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getEtcRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    userName
+                    this
                 )
             }
         }
@@ -279,8 +273,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                            requireActivity(),
-                            userName
+                            this
                         )
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
@@ -362,8 +355,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                            requireActivity(),
-                            userName
+                            this
                         )
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
@@ -632,5 +624,24 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 }
             }
         }
+    }
+
+    override fun onUserRankingClick(userName: String) {
+        val intent = Intent(context, OthersProfileActivity::class.java)
+        intent.putExtra("userName", userName)
+        if (userName == this.userName) {
+            intent.putExtra("isUser", true)
+        }
+        startActivity(intent)
+    }
+
+    override fun onOrgInternalRankingClick(orgName: String) = Unit
+
+    override fun onOrgInternalRankingUserClick(userName: String) = Unit
+
+    override fun onOrgRankingClick(orgName: String) {
+        val intent = Intent(context, OrganizationInternalActivity::class.java)
+        intent.putExtra("organization", orgName)
+        startActivity(intent)
     }
 }

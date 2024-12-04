@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SearchOrganizationActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchOrganizationBinding
-    lateinit var searchOrgAdapter: SearchOrganizationAdapter
+    private val searchOrgAdapter by lazy { SearchOrganizationAdapter(this) }
     private val viewModel by viewModels<SearchOrganizationViewModel>()
     private var position = 0
     private var count = 0
@@ -214,15 +214,13 @@ class SearchOrganizationActivity : AppCompatActivity() {
         Log.d("count", "count: $count")
         if (count == 0) {
             binding.orgListTitle.text = "$type 목록"
-            searchOrgAdapter =
-                SearchOrganizationAdapter(orgNames, this, viewModel.currentState.token.token)
             binding.searchResult.adapter = searchOrgAdapter
             binding.searchResult.layoutManager = LinearLayoutManager(this)
-            searchOrgAdapter.notifyDataSetChanged()
+
             binding.searchResult.visibility = View.VISIBLE
         }
+        searchOrgAdapter.submitList(orgNames.data)
         count++
-        binding.searchResult.adapter?.notifyDataSetChanged()
         Log.d("api 횟수", "$count 페이지 검색")
         binding.progressBar.visibility = View.GONE
         initScrollListener()

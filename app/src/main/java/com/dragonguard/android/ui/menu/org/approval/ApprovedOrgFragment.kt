@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 class ApprovedOrgFragment : Fragment() {
     private lateinit var binding: FragmentApprovedOrgBinding
     private val viewModel by viewModels<ApprovedOrgViewModel>()
+    private val adapter by lazy { ApprovedOrgAdapter() }
     private var count = 0
     private var page = 0
     private var position = 0
@@ -62,17 +63,13 @@ class ApprovedOrgFragment : Fragment() {
         viewModel.addReceivedOrg()
         Log.d("count", "count: $count")
         if (page == 0) {
-            val adapter =
-                ApprovedOrgAdapter(
-                    viewModel.currentState.approvedOrg.approvedOrg.data as ArrayList,
-                    requireContext()
-                )
+
             binding.acceptedOrgList.adapter = adapter
             binding.acceptedOrgList.layoutManager = LinearLayoutManager(requireContext())
         }
-        Log.d("list", "결과 : ${viewModel.currentState.approvedOrg.approvedOrg}")
+        Log.d("list", "결과 : ${viewModel.currentState.approvedOrg.approvedOrg.data}")
         page++
-        binding.acceptedOrgList.adapter?.notifyDataSetChanged()
+        adapter.submitList(viewModel.currentState.approvedOrg.approvedOrg.data)
         binding.acceptedOrgList.visibility = View.VISIBLE
         initScrollListener()
     }

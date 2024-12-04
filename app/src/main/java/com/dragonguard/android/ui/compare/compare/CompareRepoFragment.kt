@@ -42,6 +42,7 @@ class CompareRepoFragment(
     private var repo1 = repoName1
     private var repo2 = repoName2
     private lateinit var binding: FragmentCompareRepoBinding
+    private lateinit var repoCompareAdapter: RepoCompareAdapter
     private var count = 0
     private val compareItems = arrayListOf(
         "forks",
@@ -155,11 +156,10 @@ class CompareRepoFragment(
             val handler = Handler(Looper.getMainLooper())
             handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
         } else {
-            val repoCompareAdapter =
-                RepoCompareAdapter(result.first_repo!!, result.second_repo!!, compareItems)
+            repoCompareAdapter = RepoCompareAdapter(result.first_repo!!, result.second_repo!!)
             binding.repoCompareList.adapter = repoCompareAdapter
             binding.repoCompareList.layoutManager = LinearLayoutManager(requireContext())
-            repoCompareAdapter.notifyDataSetChanged()
+            repoCompareAdapter.submitList(compareItems)
             initGraph(result.first_repo, result.second_repo)
         }
     }

@@ -1,12 +1,14 @@
 package com.dragonguard.android.ui.history
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
@@ -14,12 +16,12 @@ import com.dragonguard.android.data.model.klip.TokenHistoryModelItem
 import com.dragonguard.android.databinding.ActivityGitHistoryBinding
 import com.dragonguard.android.ui.main.MainActivity
 
-class GitHistoryActivity : AppCompatActivity() {
+class GitHistoryActivity : AppCompatActivity(), GitListAdapter.OnHistoryClickListener {
     private lateinit var binding: ActivityGitHistoryBinding
     private var token = ""
 
     //var viewmodel = Viewmodel()
-    private lateinit var tokenAdapter: GitListAdapter
+    private val tokenAdapter by lazy { GitListAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +50,9 @@ class GitHistoryActivity : AppCompatActivity() {
     */
 
     private fun initRecycler(result: ArrayList<TokenHistoryModelItem>) {
-        tokenAdapter = GitListAdapter(result, this@GitHistoryActivity)
         binding.tokenContributeList.adapter = tokenAdapter
         binding.tokenContributeList.layoutManager = LinearLayoutManager(this)
-        tokenAdapter.notifyDataSetChanged()
+        tokenAdapter.submitList(result)
 
         Handler(Looper.getMainLooper()).postDelayed({
             binding.tokenContributeList.visibility = View.VISIBLE
@@ -82,5 +83,11 @@ class GitHistoryActivity : AppCompatActivity() {
 //            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onHistoryClick(url: String?) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(url)
+        ContextCompat.startActivity(this@GitHistoryActivity, intent, null)
     }
 }

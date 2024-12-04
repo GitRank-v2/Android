@@ -132,20 +132,13 @@ class CompareSearchActivity : AppCompatActivity(), SearchCompareRepoAdapter.OnIt
     private fun initRecycler() {
         Log.d("count", "count: $count")
         if (count == 0) {
-            compareRepositoryAdapter = SearchCompareRepoAdapter(
-                viewModel.currentState.searchResults.searchResults,
-                this,
-                repoCount,
-                viewModel.currentState.token.token,
-                this
-            )
+            compareRepositoryAdapter = SearchCompareRepoAdapter(repoCount, this)
             binding.searchResult.adapter = compareRepositoryAdapter
             binding.searchResult.layoutManager = LinearLayoutManager(this)
-            compareRepositoryAdapter.notifyDataSetChanged()
             binding.searchResult.visibility = View.VISIBLE
         }
+        compareRepositoryAdapter.submitList(viewModel.currentState.searchResults.searchResults)
         count++
-        binding.searchResult.adapter?.notifyDataSetChanged()
         Log.d("api 횟수", "$count 페이지 검색")
         binding.loadingLottie.visibility = View.GONE
         if (viewModel.currentState.searchResults.searchResults.size == 10 * (count + 1)) {

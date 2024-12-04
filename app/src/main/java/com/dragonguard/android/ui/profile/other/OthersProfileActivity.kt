@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.profile.other
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -14,13 +15,14 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.detail.UserProfileModel
 import com.dragonguard.android.databinding.ActivityUserProfileBinding
 import com.dragonguard.android.ui.profile.OthersReposAdapter
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 import com.dragonguard.android.util.CustomGlide
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class OthersProfileActivity : AppCompatActivity() {
+class OthersProfileActivity : AppCompatActivity(), OthersReposAdapter.OnRepoClickListener {
     private lateinit var binding: ActivityUserProfileBinding
     private var name = ""
     private var isUser = false
@@ -79,17 +81,11 @@ class OthersProfileActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView(result: UserProfileModel) {
-        othersReposAdapter =
-            OthersReposAdapter(
-                result.git_repos,
-                this,
-                result.profile_image,
-                name
-            )
+        othersReposAdapter = OthersReposAdapter(result.profile_image, name, this)
         binding.userRepoList.adapter = othersReposAdapter
         binding.userRepoList.layoutManager = LinearLayoutManager(this)
         binding.userRepoList.visibility = View.VISIBLE
-        othersReposAdapter.notifyDataSetChanged()
+        othersReposAdapter.submitList(result.git_repos)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -99,5 +95,11 @@ class OthersProfileActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRepoClick(repoName: String) {
+        Intent(this, RepoContributorsActivity::class.java).apply {
+            putExtra("repoName", data)
+        }.run { startActivity(this) }
     }
 }
