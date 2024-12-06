@@ -2,7 +2,7 @@ package com.dragonguard.android.ui.profile.user
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.data.model.GithubOrgReposModel
+import com.dragonguard.android.data.model.profile.GithubOrgReposModel
 import com.dragonguard.android.data.repository.profile.user.ClientReposRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference

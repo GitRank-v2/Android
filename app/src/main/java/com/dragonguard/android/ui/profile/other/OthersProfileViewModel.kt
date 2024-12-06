@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.profile.other
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.detail.UserProfileModel
@@ -7,6 +8,7 @@ import com.dragonguard.android.data.repository.profile.other.OthersProfileReposi
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +36,7 @@ class OthersProfileViewModel @Inject constructor(
                 is OthersProfileContract.UserProfileEvent.GetOthersProfile -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.otherProfile(event.name).onSuccess {
+                        Log.d("Other success", it.toString())
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
@@ -44,11 +47,32 @@ class OthersProfileViewModel @Inject constructor(
 
                     }
                 }
+
+                is OthersProfileContract.UserProfileEvent.GetUserProfile -> {
+                    setState { copy(loadState = LoadState.LOADING) }
+                    repository.getUserProfile().onSuccess {
+                        Log.d("Other success", it.toString())
+                        setState {
+                            copy(
+                                loadState = LoadState.SUCCESS,
+                                userProfile = OthersProfileContract.UserProfileState.UserProfile(it)
+                            )
+                        }
+                    }.onFail {
+
+                    }.onError {
+                        Log.d("Other error", it.message.toString())
+                    }
+                }
             }
         }
     }
 
     fun getOthersProfile(name: String) {
         setEvent(OthersProfileContract.UserProfileEvent.GetOthersProfile(name))
+    }
+
+    fun getUserProfile() {
+        setEvent(OthersProfileContract.UserProfileEvent.GetUserProfile)
     }
 }

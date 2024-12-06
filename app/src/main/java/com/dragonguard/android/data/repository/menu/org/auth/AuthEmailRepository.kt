@@ -7,5 +7,5 @@ interface AuthEmailRepository {
     suspend fun addOrgMember(body: AddOrgMemberModel): DataResult<Long>
     suspend fun emailAuthResult(id: Long, code: String, orgId: Long): DataResult<Boolean>
     suspend fun deleteEmailCode(id: Long): DataResult<Unit>
-    suspend fun sendEmailAuth(): DataResult<Long>
+    suspend fun sendEmailAuth(id: Long): DataResult<Long>
 }

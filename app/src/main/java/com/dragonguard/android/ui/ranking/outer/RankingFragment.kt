@@ -12,9 +12,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RankingFragment() : Fragment() {
+class RankingFragment(private val userName: String) : Fragment() {
 
-    private val token = ""
     private lateinit var binding: FragmentRankingBinding
 
     override fun onCreateView(
@@ -28,7 +27,7 @@ class RankingFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.fragmentContent.adapter = FragmentAdapter(this, token = token)
+        binding.fragmentContent.adapter = FragmentAdapter(this, userName)
         val tabs = arrayOf("사용자 전체", "조직 전체", "회사", "대학교", "고등학교", "ETC")
         TabLayoutMediator(binding.rankingTab, binding.fragmentContent) { tab, position ->
             val tabView = LayoutInflater.from(requireContext())

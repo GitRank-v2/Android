@@ -6,8 +6,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -15,7 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.databinding.ActivityMainBinding
 import com.dragonguard.android.ui.compare.SearchCompareRepoFragment
 import com.dragonguard.android.ui.login.LoginActivity
@@ -35,11 +33,11 @@ import kotlinx.coroutines.withContext
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val activityResultLauncher: ActivityResultLauncher<Intent> =
+    /*private val activityResultLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
 
-        }
+        }*/
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<MainViewModel>()
@@ -75,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                     rankingFrag = null
                     Log.d("로그인 필요", "로그인 필요")
                     val intent = Intent(applicationContext, LoginActivity::class.java)
-                    activityResultLauncher.launch(intent)
+                    startActivity(intent)
                 }
             }
 
@@ -92,8 +90,6 @@ class MainActivity : AppCompatActivity() {
         this.onBackPressedDispatcher.addCallback(this, callback)
         binding.mainLoading.resumeAnimation()
         binding.mainLoading.visibility = View.VISIBLE
-
-        // 유저 정보 가져오기
         viewModel.getUserInfo()
         //refreshMain()
         binding.mainNav.setOnItemSelectedListener {
@@ -107,7 +103,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.bottom_rankings -> {
-                    rankingFrag = RankingFragment()
+                    rankingFrag =
+                        RankingFragment(viewModel.currentState.userInfo.userInfo.github_id!!)
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, rankingFrag!!)
                         .commit()
@@ -132,78 +129,72 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-
-//        검색창, 검색 아이콘 눌렀을 때 검색화면으로 전환
-
-
     }
 
     private fun initObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.newAccessToken.token == null || state.newRefreshToken.refreshToken == null) {
-                        if (!this@MainActivity.isFinishing) {
-                            Log.d("refresh fail", "token refresh 실패")
-                            if (refreshState) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "다시 로그인 바랍니다.",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                refreshState = false
-                                viewModel.logout()
-                                val intent = Intent(applicationContext, LoginActivity::class.java)
-                                activityResultLauncher.launch(intent)
-                            }
-                        }
-                    }
-
                     if (state.loadState == LoadState.SUCCESS) {
                         Log.d("success UserInfo", "success")
                         viewModel.setFinish()
                         checkUserInfo(state.userInfo.userInfo)
                     }
 
-                    if (state.loadState == LoadState.ERROR) {
-                        binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
-                        viewModel.logout()
-                        val transaction = supportFragmentManager.beginTransaction()
-                        supportFragmentManager.fragments.forEach {
-                            transaction.remove(it)
-                        }
-                        transaction.commit()
-                        mainFrag?.let {
-                            it.clearView()
-                        }
-                        mainFrag = null
-                        compareFrag = null
-                        profileFrag = null
-                        rankingFrag = null
-                        Log.d("로그인 필요", "로그인 필요")
-                        val intent = Intent(applicationContext, LoginActivity::class.java)
-                        activityResultLauncher.launch(intent)
+                    if (state.loadState == LoadState.LOGIN_FAIL) {
+                        refreshToken()
                     }
 
+                    if (state.loadState == LoadState.IMAGE_LOADED) {
+                        Log.d("image", "image loaded")
+                        binding.mainLoading.visibility = View.GONE
+                        binding.mainLoading.pauseAnimation()
+                    }
                 }
 
             }
         }
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effect.collect { effect ->
+                    when (effect) {
+                        is MainContract.MainActivityEffect.LoginError -> {
+                            Log.d("error", "Login Error")
+                            binding.mainNav.selectedItemId = binding.mainNav.menu.getItem(0).itemId
+                            viewModel.logout()
+                            val transaction = supportFragmentManager.beginTransaction()
+                            supportFragmentManager.fragments.forEach {
+                                transaction.remove(it)
+                            }
+                            transaction.commit()
+                            mainFrag?.let {
+                                it.clearView()
+                            }
+                            mainFrag = null
+                            compareFrag = null
+                            profileFrag = null
+                            rankingFrag = null
+                            Log.d("로그인 필요", "로그인 필요")
+                            val intent = Intent(applicationContext, LoginActivity::class.java)
+                            startActivity(intent)
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
     private fun checkUserInfo(userInfo: UserInfoModel) {
         Log.d("success", "success userInfo: $userInfo")
-        if (userInfo.github_id == null) {
+        if (userInfo.github_id.isNullOrEmpty()) {
             if (!this@MainActivity.isFinishing) {
                 Log.d("not login", "login activity로 이동")
                 Toast.makeText(applicationContext, "다시 로그인 바랍니다.", Toast.LENGTH_SHORT).show()
                 viewModel.logout()
                 val intent = Intent(applicationContext, LoginActivity::class.java)
-                activityResultLauncher.launch(intent)
+                startActivity(intent)
             }
         } else {
 
@@ -214,15 +205,13 @@ class MainActivity : AppCompatActivity() {
                 delay(1000)
                 finish = true
                 withContext(Dispatchers.Main) {
-                    binding.mainLoading.pauseAnimation()
-                    binding.mainLoading.visibility = View.GONE
-                    binding.mainNav.visibility = View.VISIBLE
-                    mainFrag =
-                        MainFragment(
-                            viewModel.currentState.userInfo.userInfo,
-                            imgRefresh,
-                            viewModel
-                        )
+                    if (mainFrag == null) {
+                        mainFrag =
+                            MainFragment(
+                                viewModel.currentState.userInfo.userInfo,
+                                viewModel
+                            )
+                    }
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, mainFrag!!)
                         .commit()
@@ -235,29 +224,15 @@ class MainActivity : AppCompatActivity() {
         viewModel.getNewToken()
     }
 
-    /*private fun postCommits() {
-            val coroutine2 = CoroutineScope(Dispatchers.Main)
-            coroutine2.launch {
-                Log.d("post", "post commit")
-                if (!this@MainActivity.isFinishing) {
-                    val refreshDeffered = coroutine2.async(Dispatchers.IO) {
-                        viewModel.postCommits(prefs.getJwtToken(""))
-                    }
-                    val refreshResult = refreshDeffered.await()
-                    Log.d("post", "post token : $token")
-                    Handler(Looper.getMainLooper()).postDelayed({ searchUser() }, 2000)
-                }
-            }
-        }*/
-
 
     override fun onRestart() {
         super.onRestart()
-        finish = false
-    }
-
-    override fun onPause() {
-        super.onPause()
+        if (binding.mainNav.selectedItemId == R.id.bottom_main) {
+            viewModel.setRepeat(false)
+            finish = false
+            viewModel.refreshAmount()
+            viewModel.getUserInfo()
+        }
     }
 
 
@@ -274,9 +249,7 @@ class MainActivity : AppCompatActivity() {
                     )
                         .show()
                     return
-                }
-
-                if (System.currentTimeMillis() <= backPressed + 2500) {
+                } else {
                     finishAffinity()
                 }
             } else {

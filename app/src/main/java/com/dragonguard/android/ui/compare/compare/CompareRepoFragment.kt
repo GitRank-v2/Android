@@ -17,12 +17,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.compare.RepoStats
 import com.dragonguard.android.databinding.FragmentCompareRepoBinding
+import com.dragonguard.android.util.CustomGlide
 import com.dragonguard.android.util.LoadState
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -43,6 +42,7 @@ class CompareRepoFragment(
     private var repo1 = repoName1
     private var repo2 = repoName2
     private lateinit var binding: FragmentCompareRepoBinding
+    private lateinit var repoCompareAdapter: RepoCompareAdapter
     private var count = 0
     private val compareItems = arrayListOf(
         "forks",
@@ -100,7 +100,7 @@ class CompareRepoFragment(
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.loadState == LoadState.REPOSUCCESS) {
+                    if (state.loadState == LoadState.REPO_SUCCESS) {
                         checkRepos(state.repo.repo)
                     }
                 }
@@ -156,11 +156,10 @@ class CompareRepoFragment(
             val handler = Handler(Looper.getMainLooper())
             handler.postDelayed({ viewModel.requestCompareRepo(repo1, repo2) }, 5000)
         } else {
-            val repoCompareAdapter =
-                RepoCompareAdapter(result.first_repo!!, result.second_repo!!, compareItems)
+            repoCompareAdapter = RepoCompareAdapter(result.first_repo!!, result.second_repo!!)
             binding.repoCompareList.adapter = repoCompareAdapter
             binding.repoCompareList.layoutManager = LinearLayoutManager(requireContext())
-            repoCompareAdapter.notifyDataSetChanged()
+            repoCompareAdapter.submitList(compareItems)
             initGraph(result.first_repo, result.second_repo)
         }
     }
@@ -469,66 +468,42 @@ class CompareRepoFragment(
         url?.let {
             when (order) {
                 1 -> {
-                    Glide.with(binding.repo1User1).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo1User1)
+                    CustomGlide.drawImage(binding.repo1User1, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
 
                 2 -> {
-                    Glide.with(binding.repo1User2).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo1User2)
+                    CustomGlide.drawImage(binding.repo1User2, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
 
                 3 -> {
-                    Glide.with(binding.repo1User3).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo1User3)
+                    CustomGlide.drawImage(binding.repo1User3, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
 
                 4 -> {
-                    Glide.with(binding.repo1User4).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo1User4)
+                    CustomGlide.drawImage(binding.repo1User4, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
 
                 5 -> {
-                    Glide.with(binding.repo2User1).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo2User1)
+                    CustomGlide.drawImage(binding.repo2User1, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
 
                 6 -> {
-                    Glide.with(binding.repo2User2).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo2User2)
+                    CustomGlide.drawImage(binding.repo2User2, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
 
                 7 -> {
-                    Glide.with(binding.repo2User3).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo2User3)
+                    CustomGlide.drawImage(binding.repo2User3, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
 
                 8 -> {
-                    Glide.with(binding.repo2User4).load(url)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(binding.repo2User4)
+                    CustomGlide.drawImage(binding.repo2User4, url) { }
                     binding.compareRepoFrame.visibility = View.VISIBLE
                 }
             }

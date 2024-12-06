@@ -1,7 +1,6 @@
 package com.dragonguard.android.ui.main
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.databinding.UserActivityListBinding
@@ -14,18 +13,17 @@ class UserActivityAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         binding =
             UserActivityListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int = Int.MAX_VALUE
 
     //리사이클러 뷰의 요소들을 넣어줌
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(binding: UserActivityListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         //클릭리스너 구현
         fun bind(data: Int?, type: String) {
-            if (data != null) {
-                binding.contributeValue.text = data.toString()
-            }
+            binding.contributeValue.text = data.toString()
             binding.contributeType.text = type
         }
     }

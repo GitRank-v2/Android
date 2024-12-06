@@ -1,6 +1,5 @@
 package com.dragonguard.android.ui.compare
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,8 +15,6 @@ import com.dragonguard.android.ui.compare.compare.RepoCompareActivity
 import com.dragonguard.android.ui.compare.search.CompareSearchActivity
 
 class SearchCompareRepoFragment : Fragment() {
-
-
     private lateinit var binding: FragmentCompareSearchBinding
 
     override fun onCreateView(
@@ -32,7 +29,7 @@ class SearchCompareRepoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         binding.repoCompare1.setOnClickListener {
             val intent = Intent(activity, CompareSearchActivity::class.java)
             intent.putExtra("count", FIRST_REPO_NUMBER)

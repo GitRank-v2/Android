@@ -55,9 +55,9 @@ class ApproveOrgViewModel @Inject constructor(
                 is ApproveOrgContract.ApproveOrgEvent.ClickApprove -> {
                     setState { copy(approveOrg = ApproveOrgContract.ApproveOrgState.ApproveOrg(true)) }
                     repository.approveOrgRequest(
+                        event.orgId,
                         OrgApprovalModel(
-                            RequestStatus.ACCEPTED.status,
-                            event.orgId
+                            RequestStatus.ACCEPTED.status
                         )
                     ).onSuccess {
                         setState {
@@ -76,7 +76,10 @@ class ApproveOrgViewModel @Inject constructor(
                 is ApproveOrgContract.ApproveOrgEvent.ClickReject -> {
                     setState { copy(rejectOrg = ApproveOrgContract.ApproveOrgState.RejectOrg(true)) }
                     repository.approveOrgRequest(
-                        OrgApprovalModel(RequestStatus.DENIED.status, event.orgId)
+                        event.orgId,
+                        OrgApprovalModel(
+                            RequestStatus.DENIED.status
+                        )
                     ).onSuccess {
                         setState {
                             copy(

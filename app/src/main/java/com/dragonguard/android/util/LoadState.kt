@@ -5,7 +5,10 @@ enum class LoadState {
     LOADING,
     SUCCESS,
     FINISH,
-    REPOSUCCESS,
-    USERSUCCESS,
-    ERROR
+    REPO_SUCCESS,
+    USER_SUCCESS,
+    ERROR,
+    REFRESH,
+    LOGIN_FAIL,
+    IMAGE_LOADED
 }

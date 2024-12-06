@@ -9,6 +9,6 @@ import javax.inject.Inject
 class ClientProfileRepositoryImpl @Inject constructor(private val service: GitRankService) :
     ClientProfileRepository {
     override suspend fun getClientDetails(): DataResult<ClientDetailModel> {
-        return handleApi({ service.getMemberDetails() }) { it }
+        return handleApi({ service.getMemberDetails() }) { it.data }
     }
 }

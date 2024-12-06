@@ -3,11 +3,12 @@ package com.dragonguard.android.ui.main
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.data.repository.main.MainRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +32,8 @@ class MainViewModel @Inject constructor(
             clickUserIcon = MainContract.MainState.ClickUserIcon(false),
             newAccessToken = MainContract.MainState.NewAccessToken(pref.getJwtToken("")),
             newRefreshToken = MainContract.MainState.NewRefreshToken(pref.getRefreshToken("")),
-            repeatState = MainContract.MainState.RepeatState(false)
+            repeatState = MainContract.MainState.RepeatState(false),
+            refreshAmount = MainContract.MainState.RefreshAmount(emptyList())
         )
     }
 
@@ -39,9 +41,10 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is MainContract.MainEvent.GetUserInfo -> {
+                    Log.d("MainViewModel", pref.getJwtToken(""))
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getUserInfo().onSuccess {
-                        Log.d("MainViewModel", pref.getJwtToken(""))
+                        Log.d("user success", it.toString())
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
@@ -49,7 +52,11 @@ class MainViewModel @Inject constructor(
                             )
                         }
                     }.onFail {
-                        setState { copy(loadState = LoadState.ERROR) }
+                        //setState { copy(loadState = LoadState.ERROR) }
+                    }.onError {
+                        setState { copy(loadState = LoadState.LOGIN_FAIL) }
+                        Log.d("MainViewModel", "Login Fail")
+                        Log.d("MainViewModel", it.message.toString())
                     }
                 }
 
@@ -66,14 +73,19 @@ class MainViewModel @Inject constructor(
                 is MainContract.MainEvent.GetNewToken -> {
                     repository.getNewAccessToken(pref.getJwtToken(""), pref.getRefreshToken(""))
                         .onSuccess {
+                            pref.setJwtToken(it.access_token)
+                            pref.setRefreshToken(it.refresh_token)
                             setState {
                                 copy(
                                     newAccessToken = MainContract.MainState.NewAccessToken(it.access_token),
                                     newRefreshToken = MainContract.MainState.NewRefreshToken(it.refresh_token)
                                 )
                             }
+                        }.onError {
+                            Log.d("Login Error", it.message.toString())
+                            setEffect { MainContract.MainActivityEffect.LoginError }
                         }.onFail {
-
+                            setEffect { MainContract.MainActivityEffect.LoginError }
                         }
 
                 }
@@ -95,6 +107,32 @@ class MainViewModel @Inject constructor(
 
                 is MainContract.MainEvent.SetFinish -> {
                     setState { copy(loadState = LoadState.FINISH) }
+                }
+
+                is MainContract.MainEvent.RefreshAmount -> {
+                    repository.updateGitContribution().onSuccess {
+                        Log.d("refresh viewModel", "refresh")
+                        repository.updateGitContributions().onSuccess {
+                            Log.d("refresh viewModel", "refreshes")
+                            setState {
+                                copy(
+                                    loadState = LoadState.REFRESH,
+                                    refreshAmount = MainContract.MainState.RefreshAmount(it)
+                                )
+                            }
+                        }.onFail {
+                            Log.d("refresh viewModel", "fail")
+                        }.onError {
+                            Log.d("refresh viewModel", it.message.toString())
+                        }
+                    }.onFail {
+
+                    }
+
+                }
+
+                is MainContract.MainEvent.ProfileImageLoaded -> {
+                    setState { copy(loadState = LoadState.IMAGE_LOADED) }
                 }
             }
         }
@@ -128,4 +166,11 @@ class MainViewModel @Inject constructor(
         setEvent(MainContract.MainEvent.SetFinish)
     }
 
+    fun refreshAmount() {
+        setEvent(MainContract.MainEvent.RefreshAmount)
+    }
+
+    fun profileImageLoaded() {
+        setEvent(MainContract.MainEvent.ProfileImageLoaded)
+    }
 }

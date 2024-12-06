@@ -8,6 +8,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:id="@+id/main_frame"
+        android:visibility="invisible"
         android:weightSum="3.4"
         tools:context=".ui.main.MainFragment">
 
@@ -77,6 +78,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.25"
                 android:adjustViewBounds="true"
+                android:src="@drawable/user"
                 android:background="@drawable/round_title" />
 
             <LinearLayout
@@ -206,7 +208,7 @@
                             android:layout_marginHorizontal="25dp"
                             android:layout_marginTop="15dp"
                             android:adjustViewBounds="true"
-                            android:src="@drawable/coins" />
+                            android:src="@drawable/branch" />
 
                         <TextView
                             android:id="@+id/token_amount"
@@ -230,7 +232,7 @@
                         android:fontFamily="@font/ibm_semibold"
                         android:gravity="center"
                         android:includeFontPadding="false"
-                        android:text="Token"
+                        android:text="Activities"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="parent"

@@ -9,6 +9,6 @@ import javax.inject.Inject
 class RepoContributorsRepositoryImpl @Inject constructor(private val service: GitRankService) :
     RepoContributorsRepository {
     override suspend fun getRepoContributors(repoName: String): DataResult<RepoContributorsModel> {
-        return handleApi({ service.getRepoContributors(repoName) }) { it }
+        return handleApi({ service.getRepoContributors(repoName) }) { it.data }
     }
 }

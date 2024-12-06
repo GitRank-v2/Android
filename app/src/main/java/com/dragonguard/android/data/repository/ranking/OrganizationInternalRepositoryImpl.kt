@@ -9,7 +9,7 @@ import javax.inject.Inject
 class OrganizationInternalRepositoryImpl @Inject constructor(private val service: GitRankService) :
     OrganizationInternalRepository {
     override suspend fun searchOrgId(orgName: String): DataResult<Long> {
-        return handleApi({ service.getOrgId(orgName) }) { it.id }
+        return handleApi({ service.getOrgId(orgName) }) { it.data.id }
     }
 
     override suspend fun orgInternalRankings(
@@ -20,6 +20,6 @@ class OrganizationInternalRepositoryImpl @Inject constructor(private val service
         queryMap.put("organizationId", id.toString())
         queryMap.put("page", count.toString())
         queryMap.put("size", "20")
-        return handleApi({ service.getOrgInternalRankings(queryMap) }) { it }
+        return handleApi({ service.getOrgInternalRankings(queryMap) }) { it.data }
     }
 }

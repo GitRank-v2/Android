@@ -1,4 +1,4 @@
-package com.dragonguard.android.data.model
+package com.dragonguard.android.data.model.profile
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

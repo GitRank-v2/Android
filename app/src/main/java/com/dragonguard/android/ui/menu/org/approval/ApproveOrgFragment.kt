@@ -15,15 +15,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
+import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
 import com.dragonguard.android.databinding.FragmentApproveOrgBinding
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ApproveOrgFragment : Fragment() {
+class ApproveOrgFragment : Fragment(), ItemClickListener {
     private lateinit var binding: FragmentApproveOrgBinding
     private val viewModel by viewModels<ApproveOrgViewModel>()
+    private val adapter by lazy { ApproveRequestOrgAdapter(this) }
     var page = 0
     private var count = 0
     private var position = 0
@@ -61,8 +63,6 @@ class ApproveOrgFragment : Fragment() {
                         binding.waitingOrgList.adapter?.notifyDataSetChanged()
                         viewModel.resetClick()
                     }
-
-
                 }
             }
         }
@@ -80,22 +80,13 @@ class ApproveOrgFragment : Fragment() {
         viewModel.addReceivedOrg()
         Log.d("count", "count: $count")
         if (page == 0) {
-            val adapter =
-                ApproveRequestOrgAdapter(
-                    viewModel.currentState.requestedOrg.org.data,
-                    requireContext(),
-                    viewModel.currentState.token.token,
-                    viewModel,
-                    this
-                )
             binding.waitingOrgList.adapter = adapter
             binding.waitingOrgList.layoutManager = LinearLayoutManager(requireContext())
-            adapter.notifyDataSetChanged()
             binding.waitingOrgList.visibility = View.VISIBLE
         }
+        adapter.submitList(viewModel.currentState.requestedOrg.org.data)
         page++
         count = 0
-        binding.waitingOrgList.adapter?.notifyDataSetChanged()
         initScrollListener()
     }
 
@@ -124,5 +115,13 @@ class ApproveOrgFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onClick(data: ApproveRequestOrgModelItem, position: Int, isApproved: Boolean) {
+        if (isApproved) {
+            viewModel.clickApprove(data.id, position)
+        } else {
+            viewModel.clickReject(data.id, position)
+        }
     }
 }

@@ -1,35 +1,35 @@
 package com.dragonguard.android.ui.search
 
-import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.data.model.search.UserNameModelItem
 import com.dragonguard.android.databinding.RepositoryListBinding
-import com.dragonguard.android.ui.profile.other.OthersProfileActivity
-import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 
 //검색한 레포지토리 나열하는 리사이클러뷰 어댑터 구현
 class RepositoryProfileAdapter(
-    private val datas: ArrayList<*>, private val context: Context,
-    private val token: String, private val type: String, private val imgList: HashMap<String, Int>,
-    private val repoCount: Int
+    private val datas: ArrayList<*>,
+    private val imgList: HashMap<String, Int>,
+    private val repoCount: Int,
+    private val listener: OnRepositoryClickListener
 ) : RecyclerView.Adapter<RepositoryProfileAdapter.ViewHolder>() {
-    private lateinit var binding: RepositoryListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = RepositoryListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(
+            RepositoryListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount(): Int = datas.size
 
     //리사이클러 뷰의 요소들을 넣어줌
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(private val binding: RepositoryListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         //클릭리스너 구현
         fun bind(data: Any?) {
             when (data) {
@@ -53,19 +53,12 @@ class RepositoryProfileAdapter(
                         Log.d("몇번", "현재 repoCount : $repoCount")
                         when (repoCount) {
                             0 -> {
-                                Intent(context, RepoContributorsActivity::class.java).apply {
-                                    putExtra("repoName", data.name)
-                                    putExtra("token", token)
-                                }.run { context.startActivity(this) }
+                                listener.onSearchRepositoryClick(data.name)
                             }
 
                             else -> {
-                                context as SearchActivity
-                                val intent = Intent()
-                                intent.putExtra("repoName", data.name)
-                                intent.putExtra("token", token)
-                                context.setResult(repoCount, intent)
-                                context.finish()
+                                listener.onCompareSearchResultRepositoryClick(data.name)
+
                             }
                         }
 
@@ -73,20 +66,14 @@ class RepositoryProfileAdapter(
                 }
 
                 is UserNameModelItem -> {
-                    binding.repoName.text = data.name
+                    binding.repoName.text = data.github_id
                     itemView.setOnClickListener {
                         Log.d("users", "user = $data")
                         if (data.is_service_member) {
-                            Intent(context, OthersProfileActivity::class.java).apply {
-                                putExtra("userName", data.name)
-                                putExtra("token", token)
-                            }.run { context.startActivity(this) }
+                            listener.onUserNameSearchClick(data.github_id)
+
                         } else {
-                            Toast.makeText(
-                                context,
-                                "${data.name}은(는) 회원이 아닙니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            listener.onUserNotServiceMemberClick(data.github_id)
                         }
                     }
                 }
@@ -94,8 +81,11 @@ class RepositoryProfileAdapter(
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
+    interface OnRepositoryClickListener {
+        fun onSearchRepositoryClick(repoName: String)
+        fun onCompareSearchResultRepositoryClick(repoName: String)
+        fun onUserNameSearchClick(userName: String)
+        fun onUserNotServiceMemberClick(userName: String)
     }
 
     override fun getItemViewType(position: Int): Int {

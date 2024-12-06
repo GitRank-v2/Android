@@ -16,6 +16,6 @@ class ApprovedOrgRepositoryImpl @Inject constructor(private val service: GitRank
         queryMap.put("status", status)
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
-        return handleApi({ service.getOrgStatus(queryMap) }) { it }
+        return handleApi({ service.getOrgStatus(queryMap) }) { it.data }
     }
 }

@@ -1,37 +1,39 @@
 package com.dragonguard.android.ui.compare.compare
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.dragonguard.android.databinding.RepoCompareListBinding
 import com.dragonguard.android.data.model.compare.RepoStats
+import com.dragonguard.android.databinding.RepoCompareListBinding
 import kotlin.math.round
 
-class RepoCompareAdapter(
-    private val data1: RepoStats,
-    private val data2: RepoStats,
-    private val compareItems: ArrayList<String>
-) : RecyclerView.Adapter<RepoCompareAdapter.ViewHolder>() {
-    private lateinit var binding: RepoCompareListBinding
+class RepoCompareAdapter(private val data1: RepoStats, private val data2: RepoStats) :
+    ListAdapter<String, RepoCompareAdapter.ViewHolder>(differ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = RepoCompareListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(
+            RepoCompareListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun getItemCount(): Int = compareItems.size
 
     //리사이클러 뷰의 요소들을 넣어줌
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(private val binding: RepoCompareListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(data1: RepoStats, data2: RepoStats, position: Int) {
+        fun bind(data1: RepoStats, data2: RepoStats, head: String, position: Int) {
             data1.git_repo!!
             data2.git_repo!!
             data1.statistics!!
             data2.statistics!!
             data1.languages_stats!!
             data2.languages_stats!!
-            binding.compareHead.text = compareItems[position]
+            binding.compareHead.text = head
             when (position) {
                 0 -> {
                     binding.repo1Value.text = data1.git_repo.forks_count.toString()
@@ -164,7 +166,16 @@ class RepoCompareAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(data1, data2, position)
+        holder.bind(data1, data2, getItem(position), position)
     }
 
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<String>() {
+            override fun areItemsTheSame(oldItem: String, newItem: String) =
+                oldItem == newItem
+
+            override fun areContentsTheSame(oldItem: String, newItem: String) =
+                oldItem == newItem
+        }
+    }
 }

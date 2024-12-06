@@ -9,8 +9,6 @@ import java.io.Serializable
  */
 @JsonClass(generateAdapter = true)
 data class RepoSearchResultModel(
-    @field:Json(name = "id")
-    val id: Long,
     @field:Json(name = "name")
     val name: String,
     @field:Json(name = "language")

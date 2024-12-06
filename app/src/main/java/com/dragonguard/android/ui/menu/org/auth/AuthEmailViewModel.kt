@@ -96,7 +96,11 @@ class AuthEmailViewModel @Inject constructor(
                 }
 
                 is AuthEmailContract.AuthEmailEvent.CheckEmailCode -> {
-                    repository.emailAuthResult(event.emailAuthId, event.code, event.orgId)
+                    repository.emailAuthResult(
+                        currentState.emailAuthId.emailAuthId,
+                        event.code,
+                        event.orgId
+                    )
                         .onSuccess {
                             if (it) {
                                 setState { copy(state = LoadState.SUCCESS) }
@@ -110,7 +114,7 @@ class AuthEmailViewModel @Inject constructor(
                 }
 
                 is AuthEmailContract.AuthEmailEvent.DeleteLateEmailCode -> {
-                    repository.deleteEmailCode(event.emailAuthId).onSuccess {
+                    repository.deleteEmailCode(currentState.emailAuthId.emailAuthId).onSuccess {
                         setState {
                             copy(
                                 resetTimer = AuthEmailContract.AuthEmailState.ResetTimer(true),
@@ -126,8 +130,8 @@ class AuthEmailViewModel @Inject constructor(
                     }
                 }
 
-                is AuthEmailContract.AuthEmailEvent.SendEmailAuth -> {
-                    repository.sendEmailAuth().onSuccess {
+                is AuthEmailContract.AuthEmailEvent.ResendEmailAuth -> {
+                    repository.sendEmailAuth(currentState.emailAuthId.emailAuthId).onSuccess {
                         if (it != -1L) {
                             setState {
                                 copy(
@@ -158,15 +162,15 @@ class AuthEmailViewModel @Inject constructor(
         setEvent(AuthEmailContract.AuthEmailEvent.RequestAuthEmail(orgId, email))
     }
 
-    fun checkEmailCode(emailAuthId: Long, code: String, orgId: Long) {
-        setEvent(AuthEmailContract.AuthEmailEvent.CheckEmailCode(emailAuthId, code, orgId))
+    fun checkEmailCode(code: String, orgId: Long) {
+        setEvent(AuthEmailContract.AuthEmailEvent.CheckEmailCode(code, orgId))
     }
 
-    fun deleteLateEmailCode(emailAuthId: Long) {
-        setEvent(AuthEmailContract.AuthEmailEvent.DeleteLateEmailCode(emailAuthId))
+    fun deleteLateEmailCode() {
+        setEvent(AuthEmailContract.AuthEmailEvent.DeleteLateEmailCode)
     }
 
-    fun sendEmailAuth() {
-        setEvent(AuthEmailContract.AuthEmailEvent.SendEmailAuth)
+    fun reSendEmailAuth() {
+        setEvent(AuthEmailContract.AuthEmailEvent.ResendEmailAuth)
     }
 }

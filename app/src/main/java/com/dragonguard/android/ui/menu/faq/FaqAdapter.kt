@@ -3,31 +3,37 @@ package com.dragonguard.android.ui.menu.faq
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.dragonguard.android.databinding.FaqListBinding
 import com.dragonguard.android.data.model.menu.FaqModel
+import com.dragonguard.android.databinding.FaqListBinding
 
-class FaqAdapter(private val faqList: ArrayList<FaqModel>) :
-    RecyclerView.Adapter<FaqAdapter.ViewHolder>() {
+class FaqAdapter :
+    ListAdapter<FaqModel, FaqAdapter.ViewHolder>(differ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = FaqListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(
+            FaqListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun getItemCount(): Int = faqList.size
 
     inner class ViewHolder(private val binding: FaqListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(position: Int) {
-            binding.faqTitle.text = faqList[position].title
-            binding.faqAnswer.text = faqList[position].content
+        fun bind(data: FaqModel) {
+            binding.faqTitle.text = data.title
+            binding.faqAnswer.text = data.content
             binding.faqTitle.setOnClickListener {
-                if (faqList[position].expandable) {
+                if (data.expandable) {
                     binding.ctChild.visibility = View.GONE
-                    faqList[position].expandable = false
+                    data.expandable = false
                 } else {
                     binding.ctChild.visibility = View.VISIBLE
-                    faqList[position].expandable = true
+                    data.expandable = true
                 }
             }
         }
@@ -39,6 +45,16 @@ class FaqAdapter(private val faqList: ArrayList<FaqModel>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
+        holder.bind(getItem(position))
+    }
+
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<FaqModel>() {
+            override fun areItemsTheSame(oldItem: FaqModel, newItem: FaqModel) =
+                oldItem.title == newItem.title
+
+            override fun areContentsTheSame(oldItem: FaqModel, newItem: FaqModel) =
+                oldItem == newItem
+        }
     }
 }

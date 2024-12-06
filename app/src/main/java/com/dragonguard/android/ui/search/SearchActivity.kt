@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +21,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivitySearchBinding
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.search.filter.SearchFilterActivity
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 import com.dragonguard.android.util.HorizontalItemDecorator
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.VerticalItemDecorator
@@ -31,7 +34,7 @@ import kotlinx.coroutines.launch
  repo를 이름으로 검색하는 activity
  */
 @AndroidEntryPoint
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositoryClickListener {
     private lateinit var binding: ActivitySearchBinding
     lateinit var repositoryProfileAdapter: RepositoryProfileAdapter
     private var position = 0
@@ -44,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private var filterLanguage = StringBuilder()
     private var filterOptions = StringBuilder()
     private var filterResult = StringBuilder()
-    private var type = "REPOSITORIES"
+    private var type = "GIT_REPO"
     private var token = ""
     private val imgList = HashMap<String, Int>()
     private var repoCount = 0
@@ -175,9 +178,9 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    if (it.searchState == LoadState.REPOSUCCESS) {
+                    if (it.searchState == LoadState.REPO_SUCCESS) {
                         checkRepoNames()
-                    } else if (it.searchState == LoadState.USERSUCCESS) {
+                    } else if (it.searchState == LoadState.USER_SUCCESS) {
                         checkUserNames()
                     }
                 }
@@ -350,7 +353,7 @@ class SearchActivity : AppCompatActivity() {
         Log.d("필터", "total filters: ${filterResult.toString()}")
         if (!this@SearchActivity.isFinishing) {
             if (type.isNotBlank()) {
-                if (type == "USERS") {
+                if (type == "MEMBER") {
                     viewModel.searchUserNames(name, count, type)
                     count++
                 } else {
@@ -369,7 +372,7 @@ class SearchActivity : AppCompatActivity() {
                 }
             } else {
                 Log.d("필터 없음", "필터 없음")
-                viewModel.searchRepositoryNamesNoFilters(name, count, "REPOSITORIES")
+                viewModel.searchRepositoryNamesNoFilters(name, count, "GIT_REPO")
             }
         }
     }
@@ -380,43 +383,35 @@ class SearchActivity : AppCompatActivity() {
         Log.d("count", "count: $count")
         Log.d("results", viewModel.currentState.userNames.userNames.toString())
         Log.d("results", viewModel.currentState.repoNames.repoNames.toString())
-        if (type == "USERS") {
+        if (type == "MEMBER") {
             if (count == 0) {
                 repositoryProfileAdapter =
                     RepositoryProfileAdapter(
                         viewModel.currentState.userNames.userNames,
-                        this,
-                        token,
-                        type,
                         imgList,
-                        repoCount
+                        repoCount,
+                        this@SearchActivity
                     )
                 binding.searchResult.adapter = repositoryProfileAdapter
                 binding.searchResult.layoutManager = LinearLayoutManager(this)
-                repositoryProfileAdapter.notifyDataSetChanged()
                 binding.searchResult.visibility = View.VISIBLE
-            } else {
-                repositoryProfileAdapter.notifyDataSetChanged()
             }
+            repositoryProfileAdapter.notifyDataSetChanged()
         } else {
             if (count == 0) {
                 repositoryProfileAdapter = if (type.isBlank()) {
                     RepositoryProfileAdapter(
                         viewModel.currentState.repoNames.repoNames,
-                        this,
-                        token,
-                        "REPOSITORIES",
                         imgList,
-                        repoCount
+                        repoCount,
+                        this@SearchActivity
                     )
                 } else {
                     RepositoryProfileAdapter(
                         viewModel.currentState.repoNames.repoNames,
-                        this,
-                        token,
-                        type,
                         imgList,
-                        repoCount
+                        repoCount,
+                        this@SearchActivity
                     )
                 }
                 binding.searchResult.adapter = repositoryProfileAdapter
@@ -433,7 +428,7 @@ class SearchActivity : AppCompatActivity() {
         binding.loadingLottie.pauseAnimation()
         binding.loadingLottie.visibility = View.GONE
         initScrollListener()
-        type = "REPOSITORIES"
+        type = "GIT_REPO"
     }
 
 
@@ -490,5 +485,32 @@ class SearchActivity : AppCompatActivity() {
 
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onSearchRepositoryClick(repoName: String) {
+        Intent(this, RepoContributorsActivity::class.java).apply {
+            putExtra("repoName", repoName)
+        }.run { startActivity(this) }
+    }
+
+    override fun onCompareSearchResultRepositoryClick(repoName: String) {
+        val intent = Intent()
+        intent.putExtra("repoName", repoName)
+        setResult(repoCount, intent)
+        finish()
+    }
+
+    override fun onUserNameSearchClick(userName: String) {
+        Intent(this, OthersProfileActivity::class.java).apply {
+            putExtra("userName", userName)
+        }.run { startActivity(this) }
+    }
+
+    override fun onUserNotServiceMemberClick(userName: String) {
+        Toast.makeText(
+            this,
+            "$userName 은(는) 회원이 아닙니다.",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }

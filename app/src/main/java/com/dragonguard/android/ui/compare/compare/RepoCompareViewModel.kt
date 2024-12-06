@@ -70,7 +70,7 @@ class RepoCompareViewModel @Inject constructor(
                     ).onSuccess {
                         setState {
                             copy(
-                                loadState = LoadState.REPOSUCCESS,
+                                loadState = LoadState.REPO_SUCCESS,
                                 repo = RepoCompareContract.RepoCompareState.Repo(it)
                             )
                         }

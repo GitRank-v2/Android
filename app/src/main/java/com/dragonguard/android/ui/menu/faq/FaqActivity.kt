@@ -1,8 +1,8 @@
 package com.dragonguard.android.ui.menu.faq
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dragonguard.android.R
@@ -15,6 +15,7 @@ import com.dragonguard.android.util.HorizontalItemDecorator
  */
 class FaqActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFaqBinding
+    private val faqAdapter by lazy { FaqAdapter() }
     private val faqList = arrayListOf(
         FaqModel("Q. 로딩이 너무 느려요!", "서버에서 열심히 계산중이예요~~"),
         FaqModel("Q. 학교별 랭킹이 보이지 않아요!", "조직 인증을 통해 소속 학교를 인증해야 해요"),
@@ -43,9 +44,10 @@ class FaqActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
         supportActionBar?.title = "  자주 묻는 질문들!!"
-        binding.faqLists.adapter = FaqAdapter(faqList)
+        binding.faqLists.adapter = faqAdapter
         binding.faqLists.addItemDecoration(HorizontalItemDecorator(10))
         binding.faqLists.layoutManager = LinearLayoutManager(this)
+        faqAdapter.submitList(faqList)
 
     }
 //    override fun onCreateOptionsMenu(menu: Menu?): Boolean {

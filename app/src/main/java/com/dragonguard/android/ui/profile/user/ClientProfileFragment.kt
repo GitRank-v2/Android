@@ -4,9 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -15,11 +12,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dragonguard.android.R
+import com.dragonguard.android.data.model.detail.GitOrganization
 import com.dragonguard.android.databinding.FragmentClientProfileBinding
-import com.dragonguard.android.ui.main.MainActivity
 import com.dragonguard.android.ui.menu.MenuActivity
 import com.dragonguard.android.ui.profile.OthersReposAdapter
+import com.dragonguard.android.ui.search.repo.RepoContributorsActivity
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,8 +24,8 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ClientProfileFragment(
     private val userName: String
-) : Fragment() {
-    private val token = ""
+) : Fragment(), OthersReposAdapter.OnRepoClickListener,
+    ClientGitOrgAdapter.OnOrganizationClickListener {
     private lateinit var binding: FragmentClientProfileBinding
     private lateinit var orgAdapter: ClientGitOrgAdapter
     private lateinit var repoAdapter: OthersReposAdapter
@@ -38,11 +35,6 @@ class ClientProfileFragment(
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentClientProfileBinding.inflate(inflater, container, false)
-        val main = activity as MainActivity
-        setHasOptionsMenu(true)
-        main.setSupportActionBar(binding.toolbar)
-        main.supportActionBar?.setDisplayShowTitleEnabled(false)
-        main.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 
@@ -51,6 +43,9 @@ class ClientProfileFragment(
         initObserver()
 
         viewModel.getClientDetail()
+        binding.setting.setOnClickListener {
+            Intent(requireContext(), MenuActivity::class.java).run { startActivity(this) }
+        }
     }
 
     private fun initObserver() {
@@ -73,39 +68,32 @@ class ClientProfileFragment(
         )
         Log.d("결과", "사용자 repos: ${viewModel.currentState.clientDetail.clientDetail.git_repos}")
         if (!this@ClientProfileFragment.isDetached && this@ClientProfileFragment.isAdded) {
-            orgAdapter = ClientGitOrgAdapter(
-                viewModel.currentState.clientDetail.clientDetail.git_organizations,
-                requireContext()
-            )
+            orgAdapter = ClientGitOrgAdapter(this)
             binding.memberOrganizaitonList.adapter = orgAdapter
             binding.memberOrganizaitonList.layoutManager = LinearLayoutManager(requireContext())
             orgAdapter.notifyDataSetChanged()
 
             repoAdapter = OthersReposAdapter(
-                viewModel.currentState.clientDetail.clientDetail.git_repos,
-                requireContext(),
                 viewModel.currentState.clientDetail.clientDetail.member_profile_image,
-                userName
+                userName,
+                this
             )
             binding.memberRepositoryList.adapter = repoAdapter
             binding.memberRepositoryList.layoutManager = LinearLayoutManager(requireContext())
-            repoAdapter.notifyDataSetChanged()
+            repoAdapter.submitList(viewModel.currentState.clientDetail.clientDetail.git_repos)
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.setting, binding.toolbar.menu)
+    override fun onRepoClick(repoName: String) {
+        Intent(requireContext(), RepoContributorsActivity::class.java).apply {
+            putExtra("repoName", repoName)
+        }.run { startActivity(this) }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.settings_button -> {
-                val intent = Intent(requireContext(), MenuActivity::class.java)
-                intent.putExtra("token", token)
-                startActivity(intent)
-            }
-        }
-        return super.onOptionsItemSelected(item)
+    override fun onOrganizationClick(organization: GitOrganization) {
+        Intent(requireContext(), ClientReposActivity::class.java).apply {
+            putExtra("orgName", organization.name)
+            putExtra("img", organization.profile_image)
+        }.run { startActivity(this) }
     }
 }

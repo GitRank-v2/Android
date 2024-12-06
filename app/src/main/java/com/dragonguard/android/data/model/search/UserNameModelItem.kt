@@ -5,10 +5,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class UserNameModelItem(
-    @field:Json(name = "id")
-    val id: Int,
-    @field:Json(name = "name")
-    val name: String,
+    @field:Json(name = "github_id")
+    val github_id: String,
     @field:Json(name = "is_service_member")
     val is_service_member: Boolean
 )

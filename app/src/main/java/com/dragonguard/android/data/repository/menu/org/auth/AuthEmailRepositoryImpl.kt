@@ -9,22 +9,27 @@ import javax.inject.Inject
 class AuthEmailRepositoryImpl @Inject constructor(private val service: GitRankService) :
     AuthEmailRepository {
     override suspend fun addOrgMember(body: AddOrgMemberModel): DataResult<Long> {
-        return handleApi({ service.postAddOrgMember(body) }) { it.id }
+        return handleApi({ service.postAddOrgMember(body) }) { it.data.id }
     }
 
     override suspend fun emailAuthResult(id: Long, code: String, orgId: Long): DataResult<Boolean> {
         val queryMap = mutableMapOf<String, String>()
-        queryMap.put("id", id.toString())
+
         queryMap.put("code", code)
         queryMap.put("organizationId", orgId.toString())
-        return handleApi({ service.getEmailAuthResult(queryMap) }) { it.is_valid_code }
+        return handleApi({
+            service.getEmailAuthResult(
+                queryMap,
+                id.toString()
+            )
+        }) { it.data.is_valid_code }
     }
 
     override suspend fun deleteEmailCode(id: Long): DataResult<Unit> {
         return handleApi({ service.deleteEmailCode(id) }) { it }
     }
 
-    override suspend fun sendEmailAuth(): DataResult<Long> {
-        return handleApi({ service.postAuthEmail() }) { it.id }
+    override suspend fun sendEmailAuth(id: Long): DataResult<Long> {
+        return handleApi({ service.postResendEmail(id) }) { it.data.id }
     }
 }

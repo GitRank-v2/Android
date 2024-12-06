@@ -19,8 +19,8 @@ data class UserProfileModel(
     val pull_requests: Int,
     @field:Json(name = "rank")
     val rank: Int,
-    @field:Json(name = "reviews")
-    val reviews: Int
+    @field:Json(name = "code_reviews")
+    val code_reviews: Int
 ) {
     constructor() : this(0, emptyList(), 0, "", "", 0, 0, 0)
 }

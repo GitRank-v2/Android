@@ -10,6 +10,6 @@ import javax.inject.Inject
 class RegistOrgRepositoryImpl @Inject constructor(private val service: GitRankService) :
     RegistOrgRepository {
     override suspend fun postRegistOrg(body: RegistOrgModel): DataResult<RegistOrgResultModel> {
-        return handleApi({ service.postOrgRegist(body) }) { it }
+        return handleApi({ service.postOrgRegist(body) }) { it.data }
     }
 }

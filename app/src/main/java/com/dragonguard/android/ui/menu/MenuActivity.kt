@@ -79,7 +79,7 @@ class MenuActivity : AppCompatActivity() {
 
         binding.organizationAuth.setOnClickListener {
             val intent = Intent(applicationContext, AuthOrgActivity::class.java)
-            intent.putExtra("token", viewModel.currentState.token.token)
+
             startActivity(intent)
         }
         binding.organizationApprove.setOnClickListener {

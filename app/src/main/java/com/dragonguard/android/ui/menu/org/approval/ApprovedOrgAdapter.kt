@@ -1,27 +1,30 @@
 package com.dragonguard.android.ui.menu.org.approval
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
 import com.dragonguard.android.databinding.ApprovedOrgListBinding
 
 //승인된 조직 목록 adapter
-class ApprovedOrgAdapter(
-    private val datas: ArrayList<ApproveRequestOrgModelItem>, private val context: Context,
-) : RecyclerView.Adapter<ApprovedOrgAdapter.ViewHolder>() {
-    private lateinit var binding: ApprovedOrgListBinding
+class ApprovedOrgAdapter :
+    ListAdapter<ApproveRequestOrgModelItem, ApprovedOrgAdapter.ViewHolder>(differ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ApprovedOrgListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding.root)
+        return ViewHolder(
+            ApprovedOrgListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun getItemCount(): Int = datas.size
 
     //리사이클러 뷰의 요소들을 넣어줌
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(private val binding: ApprovedOrgListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(data1: ApproveRequestOrgModelItem) {
             binding.emailEndpoint.text = data1.email_endpoint
             binding.approvedOrgName.text = data1.name
@@ -30,15 +33,24 @@ class ApprovedOrgAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(datas[position])
-    }
-
-    override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
+        holder.bind(getItem(position))
     }
 
     override fun getItemViewType(position: Int): Int {
         return position
     }
 
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<ApproveRequestOrgModelItem>() {
+            override fun areItemsTheSame(
+                oldItem: ApproveRequestOrgModelItem,
+                newItem: ApproveRequestOrgModelItem
+            ) = oldItem.id == newItem.id
+
+            override fun areContentsTheSame(
+                oldItem: ApproveRequestOrgModelItem,
+                newItem: ApproveRequestOrgModelItem
+            ) = oldItem == newItem
+        }
+    }
 }

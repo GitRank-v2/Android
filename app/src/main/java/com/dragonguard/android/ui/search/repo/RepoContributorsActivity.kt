@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.search.repo
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +20,7 @@ import com.dragonguard.android.R
 import com.dragonguard.android.data.model.contributors.GitRepoMember
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.databinding.ActivityRepoContributorsBinding
+import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.util.LoadState
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase
@@ -40,7 +42,8 @@ import kotlinx.coroutines.launch
  막대그래프로 시각화해서 보여주는 activity
  */
 @AndroidEntryPoint
-class RepoContributorsActivity : AppCompatActivity() {
+class RepoContributorsActivity : AppCompatActivity(),
+    ContributorsAdapter.OnRepoContributorClickListener {
     private lateinit var binding: ActivityRepoContributorsBinding
     private lateinit var contributorsAdapter: ContributorsAdapter
     private var repoName = ""
@@ -131,13 +134,7 @@ class RepoContributorsActivity : AppCompatActivity() {
         binding.repoContributors.setItemViewCacheSize(viewModel.currentState.repoState.repoState.git_repo_members!!.size)
 //        Toast.makeText(applicationContext, "리사이클러뷰 시작", Toast.LENGTH_SHORT).show()
 //        Toast.makeText(applicationContext, "contributors 수 : ${contributors.size}", Toast.LENGTH_SHORT).show()
-        contributorsAdapter = ContributorsAdapter(
-            viewModel.currentState.repoState.repoState.git_repo_members!! as ArrayList<GitRepoMember>,
-            this,
-            colorSets,
-            viewModel.currentState.token.token,
-            repoName
-        )
+        contributorsAdapter = ContributorsAdapter(colorSets, this)
         binding.repoContributors.adapter = contributorsAdapter
         binding.repoContributors.layoutManager = LinearLayoutManager(this)
         binding.repoTitle.text = repoName
@@ -326,5 +323,11 @@ class RepoContributorsActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRepoContributorClick(userName: String) {
+        Intent(this, OthersProfileActivity::class.java).apply {
+            putExtra("userName", userName)
+        }.run { startActivity(this) }
     }
 }

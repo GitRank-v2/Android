@@ -13,8 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.TotalOrganizationModel
 import com.dragonguard.android.data.model.rankings.TotalUsersRankingsModel
@@ -22,12 +20,14 @@ import com.dragonguard.android.databinding.FragmentAllRankingsBinding
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.ranking.OrganizationInternalActivity
 import com.dragonguard.android.ui.ranking.RankingsAdapter
+import com.dragonguard.android.util.CustomGlide
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AllRankingsFragment(private val rankingType: String) : Fragment() {
+class AllRankingsFragment(private val rankingType: String, private val userName: String) :
+    Fragment(), RankingsAdapter.OnRankingClickListener {
     private lateinit var binding: FragmentAllRankingsBinding
     private val viewModel by viewModels<RankingsViewModel>()
     private val size = 20
@@ -59,8 +59,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 viewModel.getTotalUserRanking(page, size)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                    requireActivity(),
-                    viewModel.currentState.token.token
+                    this
                 )
             }
 
@@ -69,8 +68,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 viewModel.getTotalOrganizationRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    viewModel.currentState.token.token
+                    this
                 )
             }
 
@@ -79,8 +77,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 viewModel.getCompanyRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    viewModel.currentState.token.token
+                    this
                 )
             }
 
@@ -89,8 +86,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 viewModel.getUniversityRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    viewModel.currentState.token.token
+                    this
                 )
             }
 
@@ -99,8 +95,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 viewModel.getHighSchoolRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    viewModel.currentState.token.token
+                    this
                 )
             }
 
@@ -109,8 +104,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 viewModel.getEtcRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    requireActivity(),
-                    viewModel.currentState.token.token
+                    this
                 )
             }
         }
@@ -279,8 +273,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                            requireActivity(),
-                            viewModel.currentState.token.token
+                            this
                         )
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
@@ -362,8 +355,7 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                            requireActivity(),
-                            viewModel.currentState.token.token
+                            this
                         )
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
@@ -421,15 +413,12 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     }
                 }
                 binding.firstId.text = model.github_id
-                Glide.with(binding.firstProfile).load(model.profile_image)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(binding.firstProfile)
+                CustomGlide.drawImage(binding.firstProfile, model.profile_image) { }
+
                 binding.firstContribute.text = model.tokens.toString()
                 binding.firstFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.firstRanker.visibility = View.VISIBLE
@@ -464,15 +453,11 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     }
                 }
                 binding.secondId.text = model.github_id
-                Glide.with(binding.secondProfile).load(model.profile_image)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(binding.secondProfile)
+                CustomGlide.drawImage(binding.secondProfile, model.profile_image) { }
                 binding.secondContribute.text = model.tokens.toString()
                 binding.secondFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.secondRanker.visibility = View.VISIBLE
@@ -507,15 +492,11 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                     }
                 }
                 binding.thirdId.text = model.github_id
-                Glide.with(binding.thirdProfile).load(model.profile_image)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(binding.thirdProfile)
+                CustomGlide.drawImage(binding.thirdProfile, model.profile_image) { }
                 binding.thirdContribute.text = model.tokens.toString()
                 binding.thirdFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
-                    intent.putExtra("token", viewModel.currentState.token.token)
                     startActivity(intent)
                 }
                 binding.thirdRanker.visibility = View.VISIBLE
@@ -643,5 +624,24 @@ class AllRankingsFragment(private val rankingType: String) : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onUserRankingClick(userName: String) {
+        val intent = Intent(context, OthersProfileActivity::class.java)
+        intent.putExtra("userName", userName)
+        if (userName == this.userName) {
+            intent.putExtra("isUser", true)
+        }
+        startActivity(intent)
+    }
+
+    override fun onOrgInternalRankingClick(orgName: String) = Unit
+
+    override fun onOrgInternalRankingUserClick(userName: String) = Unit
+
+    override fun onOrgRankingClick(orgName: String) {
+        val intent = Intent(context, OrganizationInternalActivity::class.java)
+        intent.putExtra("organization", orgName)
+        startActivity(intent)
     }
 }

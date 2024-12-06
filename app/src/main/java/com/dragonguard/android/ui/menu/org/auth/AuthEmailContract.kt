@@ -10,11 +10,11 @@ import kotlinx.coroutines.Job
 class AuthEmailContract {
     sealed class AuthEmailEvent : UiEvent {
         data class RequestAuthEmail(val orgId: Long, val email: String) : AuthEmailEvent()
-        data class CheckEmailCode(val emailAuthId: Long, val code: String, val orgId: Long) :
+        data class CheckEmailCode(val code: String, val orgId: Long) :
             AuthEmailEvent()
 
-        data class DeleteLateEmailCode(val emailAuthId: Long) : AuthEmailEvent()
-        data object SendEmailAuth : AuthEmailEvent()
+        data object DeleteLateEmailCode : AuthEmailEvent()
+        data object ResendEmailAuth : AuthEmailEvent()
     }
 
     sealed class AuthEmailState {

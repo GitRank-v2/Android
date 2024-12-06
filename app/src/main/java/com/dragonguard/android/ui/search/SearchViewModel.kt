@@ -35,8 +35,8 @@ class SearchViewModel @Inject constructor(
                     repository.getUserNames(event.name, event.count, event.type).onSuccess {
                         setState {
                             copy(
-                                searchState = LoadState.USERSUCCESS,
-                                receivedUserNames = SearchContract.SearchState.UserNames(it.data as ArrayList)
+                                searchState = LoadState.USER_SUCCESS,
+                                receivedUserNames = SearchContract.SearchState.UserNames(it as ArrayList)
                             )
                         }
                     }.onFail {
@@ -51,11 +51,11 @@ class SearchViewModel @Inject constructor(
                 is SearchContract.SearchEvent.GetRepositoryNamesNoFilters -> {
                     setState { copy(searchState = LoadState.LOADING) }
                     repository.getRepositoryNames(event.name, event.count, event.type).onSuccess {
-                        Log.d("SearchViewModel", "handleEvent success: ${it.data}")
-                        currentState.receivedRepoNames.repoNames.addAll(it.data)
+                        Log.d("SearchViewModel", "handleEvent success: $it")
+                        currentState.receivedRepoNames.repoNames.addAll(it)
                         setState {
                             copy(
-                                searchState = LoadState.REPOSUCCESS,
+                                searchState = LoadState.REPO_SUCCESS,
                             )
                         }
                     }.onFail {
@@ -78,8 +78,8 @@ class SearchViewModel @Inject constructor(
                     ).onSuccess {
                         setState {
                             copy(
-                                searchState = LoadState.REPOSUCCESS,
-                                receivedRepoNames = SearchContract.SearchState.RepoNames(it.data as ArrayList)
+                                searchState = LoadState.REPO_SUCCESS,
+                                receivedRepoNames = SearchContract.SearchState.RepoNames(it as ArrayList)
                             )
                         }
                     }.onFail {

@@ -11,13 +11,18 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.UserInfoModel
+import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.GitHistoryActivity
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.ui.search.SearchActivity
+import com.dragonguard.android.util.CustomGlide
+import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,14 +31,13 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainFragment(
     private var info: UserInfoModel,
-    private val refresh: Boolean,
     private val viewModel: MainViewModel
 ) : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val userActivity = HashMap<String, Int>()
 
-    //    private var menuItem: MenuItem? = null
-    val handler = Handler(Looper.getMainLooper()) {
+    private val handler = Handler(Looper.getMainLooper()) {
         setPage()
         true
     }
@@ -41,20 +45,16 @@ class MainFragment(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         Log.d("mainCreate", "mainCreate")
         //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
         Log.d("token", info.toString())
-//        val main = activity as MainActivity
-//        main.setSupportActionBar(binding.toolbar)
-//        main.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        binding.toolbar.inflateMenu(R.menu.refresh)
         binding.githubProfile.clipToOutline = true
         initObserver()
         drawInfo()
@@ -70,7 +70,6 @@ class MainFragment(
 
         binding.tokenFrame.setOnClickListener {
             val intent = Intent(requireActivity(), GitHistoryActivity::class.java)
-            intent.putExtra("token", viewModel.currentState.newAccessToken.token)
             startActivity(intent)
         }
         binding.searchName.setOnClickListener {
@@ -80,15 +79,15 @@ class MainFragment(
         binding.userId.setOnClickListener {
             Log.d("userIcon", "userIcon")
             val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
-            intent.putExtra("token", "")
             intent.putExtra("userName", info.github_id)
+            intent.putExtra("isUser", true)
             startActivity(intent)
         }
         binding.githubProfile.setOnClickListener {
             Log.d("userIcon", "userIcon")
             val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
-            intent.putExtra("token", "")
             intent.putExtra("userName", info.github_id)
+            intent.putExtra("isUser", true)
             startActivity(intent)
         }
 
@@ -101,32 +100,6 @@ class MainFragment(
         binding.mainFrame.layoutParams = layoutParams
         info.github_id?.let {
             binding.userId.text = info.github_id
-        }
-        if (!requireActivity().isFinishing) {
-            Log.d("profile", "profile image ${info.profile_image}")
-            if (refresh) {
-                //프로필 사진 넣기
-                /*val coroutine = CoroutineScope(Dispatchers.Main)
-                coroutine.launch {
-                    val deferred = coroutine.async(Dispatchers.IO) {
-                        Glide.get(requireContext()).clearDiskCache()
-                    }
-                    val result = deferred.await()
-                    Glide.with(this@MainFragment).load(info.profile_image)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .signature(
-                            ObjectKey(
-                                System.currentTimeMillis().toString()
-                            )
-                        )
-                        .into(binding.githubProfile)
-                }*/
-            } else {
-                /*Glide.with(this).load(info.profile_image)
-                    .into(binding.githubProfile)*/
-
-            }
         }
 
         when (info.tier) {
@@ -151,25 +124,26 @@ class MainFragment(
             }
         }
 
-        if (info.token_amount != null) {
-            binding.tokenAmount.text = info.token_amount.toString()
-        }
-        val typeList = listOf("commits", "issues", "pullRequests", "review")
+        binding.tokenAmount.text =
+            String.format(
+                getString(R.string.activity_sum),
+                info.commits + info.issues + info.pull_requests + info.reviews
+            )
+        val typeList = listOf("COMMIT", "ISSUE", "PULL REQUEST", "REVIEW")
         if (info.organization != null) {
             binding.userOrgName.text = info.organization
         }
-        val userActivity = HashMap<String, Int>()
-        userActivity.put("commits", info.commits!!)
-        userActivity.put("issues", info.issues!!)
-        userActivity.put("pullRequests", info.pull_requests!!)
-        info.reviews?.let {
-            userActivity.put("review", it)
-        }
+        Log.d("info", "info: $info")
+
+        userActivity.put("COMMIT", info.commits)
+        userActivity.put("ISSUE", info.issues)
+        userActivity.put("PULL REQUEST", info.pull_requests)
+        userActivity.put("REVIEW", info.reviews)
         Log.d("map", "hashMap: $userActivity")
         binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList)
         binding.userUtil.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
-        if (info.organization == null) {
+        if (info.organization.isNullOrEmpty()) {
             binding.mainOrgFrame.visibility = View.GONE
         } else {
             when (info.organization_rank) {
@@ -288,41 +262,34 @@ class MainFragment(
                 }
             }
         }
+
+        if (!requireActivity().isFinishing) {
+            if (binding.mainFrame.visibility == View.INVISIBLE) {
+                Log.d("profile image", "profile image ${info.profile_image}")
+                CustomGlide.drawImage(binding.githubProfile, info.profile_image) {
+                    binding.mainFrame.visibility = View.VISIBLE
+                    viewModel.profileImageLoaded()
+                }
+            }
+
+        }
     }
 
     private fun initObserver() {
-
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.loadState == LoadState.REFRESH) {
+                        Log.d("refresh", "refresh main!!")
+                        state.refreshAmount.amount.forEach { activity ->
+                            userActivity[activity.contribute_type] = activity.amount.toInt()
+                        }
+                    }
+                }
+            }
+        }
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.refresh, binding.toolbar.menu)
-//        menuItem = menu.findItem(R.id.refresh_button)
-//        menuItem?.icon?.alpha = 64
-//        super.onCreateOptionsMenu(menu, inflater)
-//    }
-
-    //    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.refresh_button -> {
-//                if(refresh) {
-//                    refresh = false
-//                    val coroutine = CoroutineScope(Dispatchers.Main)
-//                    coroutine.launch {
-//                        if(this@MainFragment.isResumed) {
-//                            Log.d("refresh", "refresh main!!")
-//                            val resultRepoDeferred = coroutine.async(Dispatchers.IO) {
-//                                viewmodel.updateUserInfo(token)
-//                            }
-//                            val resultRepo = resultRepoDeferred.await()
-//                            info = resultRepo
-//                            drawInfo()
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
     fun clearView() {
         if (this@MainFragment.isAdded && !this@MainFragment.isDetached && this@MainFragment.isVisible && !this@MainFragment.isRemoving) {
             binding.githubProfile.setImageResource(0)
@@ -334,13 +301,7 @@ class MainFragment(
 
     }
 
-    override fun onDestroy() {
-        //viewModel.setRepeat(false)
-        super.onDestroy()
-    }
-
     private fun setPage() {
         binding.userUtil.setCurrentItem((binding.userUtil.currentItem + 1) % 4, false)
     }
-
 }
