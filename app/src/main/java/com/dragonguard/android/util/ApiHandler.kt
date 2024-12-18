@@ -2,7 +2,7 @@ package com.dragonguard.android.util
 
 import android.util.Log
 import com.dragonguard.android.GitRankApplication
-import com.dragonguard.android.data.model.ErrorModel
+import com.dragonguard.android.data.model.StandardError
 import retrofit2.Response
 import retrofit2.Retrofit
 
@@ -53,16 +53,16 @@ suspend fun <T : Any, R : Any> handleApi(
         } else {
             response.errorBody()?.let { it ->
                 Log.d("error", "exist")
-                val errorBody = retrofit.responseBodyConverter<ErrorModel>(
-                    ErrorModel::class.java,
-                    ErrorModel::class.java.annotations
+                val errorBody = retrofit.responseBodyConverter<StandardError>(
+                    StandardError::class.java,
+                    StandardError::class.java.annotations
                 ).convert(it)
                 Log.d("error", errorBody.toString())
                 errorBody?.let { error ->
-                    Log.d("error", error.data.error_id)
+                    Log.d("error", error.data.data.error_id)
                     Log.d("error", error.code.toString())
                     Log.d("error", error.message)
-                    DataResult.Fail(statusCode = error.code, message = error.data.error_id)
+                    DataResult.Fail(statusCode = error.code, message = error.data.message)
                 }
             } ?: run {
                 Log.d("error", response.message())
@@ -70,6 +70,7 @@ suspend fun <T : Any, R : Any> handleApi(
             }
         }
     } catch (e: Exception) {
+        Log.d("error", e.message.toString())
         DataResult.Error(e)
     }
 }

@@ -1,24 +1,27 @@
 package com.dragonguard.android.ui.login
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
+import com.dragonguard.android.data.repository.login.LoginRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
+import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
+import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() :
+class LoginViewModel @Inject constructor(private val repository: LoginRepository) :
     BaseViewModel<LoginContract.LoginEvent, LoginContract.LoginStates, LoginContract.LoginEffect>() {
     private lateinit var pref: IdPreference
     override fun createInitialState(): LoginContract.LoginStates {
         pref = getPref()
         return LoginContract.LoginStates(
-            LoginContract.LoginState.LoginStat(null),
-            LoginContract.LoginState.Token(pref.getJwtToken("")),
-            LoginContract.LoginState.RefreshToken(pref.getRefreshToken("")),
-            LoginContract.LoginState.Key("")
+            LoadState.INIT,
         )
     }
 
@@ -28,25 +31,33 @@ class LoginViewModel @Inject constructor() :
                 is LoginContract.LoginEvent.SetJwtToken -> {
                     pref.setJwtToken(event.token)
                     pref.setRefreshToken(event.refreshToken)
-                    setState {
-                        copy(
-                            token = LoginContract.LoginState.Token(event.token),
-                            refreshToken = LoginContract.LoginState.RefreshToken(event.refreshToken)
-                        )
+                }
+
+                is LoginContract.LoginEvent.RefreshToken -> {
+                    Log.d("Login", "${pref.getJwtToken("")} ${pref.getRefreshToken("")}")
+                    if (pref.getJwtToken("").isEmpty() || pref.getRefreshToken("").isEmpty()) {
+                        pref.setJwtToken("")
+                        pref.setRefreshToken("")
+                        setState { copy(loginState = LoadState.LOGIN_FAIL) }
+                    } else {
+                        //setState { copy(loginState = LoadState.SUCCESS) }
+                        repository.refreshToken(pref.getJwtToken(""), pref.getRefreshToken(""))
+                            .onSuccess {
+                                pref.setJwtToken(it.access_token)
+                                pref.setRefreshToken(it.refresh_token)
+                                setState { copy(loginState = LoadState.SUCCESS) }
+                            }.onError {
+                                Log.d("Login Error", it.message.toString())
+                            }.onFail {
+                                Log.d("Login Error", it.toString())
+                            }
                     }
                 }
 
-                is LoginContract.LoginEvent.GetJwtToken -> {
-                    setState {
-                        copy(
-                            token = LoginContract.LoginState.Token(pref.getJwtToken("")),
-                            refreshToken = LoginContract.LoginState.RefreshToken(
-                                pref.getRefreshToken(
-                                    ""
-                                )
-                            )
-                        )
-                    }
+                is LoginContract.LoginEvent.LogOut -> {
+                    pref.setJwtToken("")
+                    pref.setRefreshToken("")
+                    setState { copy(loginState = LoadState.LOGIN_FAIL) }
                 }
             }
         }
@@ -57,8 +68,12 @@ class LoginViewModel @Inject constructor() :
         setEvent(LoginContract.LoginEvent.SetJwtToken(token, refreshToken))
     }
 
-    fun getJwtToken() {
-        setEvent(LoginContract.LoginEvent.GetJwtToken)
+    fun refreshToken() {
+        setEvent(LoginContract.LoginEvent.RefreshToken)
+    }
+
+    fun logOut() {
+        setEvent(LoginContract.LoginEvent.LogOut)
     }
 
 }
