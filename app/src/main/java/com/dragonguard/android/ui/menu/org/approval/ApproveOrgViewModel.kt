@@ -1,14 +1,15 @@
 package com.dragonguard.android.ui.menu.org.approval
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.model.org.OrgApprovalModel
 import com.dragonguard.android.data.repository.menu.org.approval.ApproveOrgRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.RequestStatus
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,8 +26,8 @@ class ApproveOrgViewModel @Inject constructor(
         pref = getPref()
         return ApproveOrgContract.ApproveOrgStates(
             LoadState.INIT,
-            ApproveOrgContract.ApproveOrgState.RequestedOrg(ApproveRequestOrgModel()),
-            ApproveOrgContract.ApproveOrgState.RequestedOrg(ApproveRequestOrgModel()),
+            ApproveOrgContract.ApproveOrgState.RequestedOrg(emptyList()),
+            ApproveOrgContract.ApproveOrgState.RequestedOrg(emptyList()),
             ApproveOrgContract.ApproveOrgState.Token(pref.getJwtToken("")),
             ApproveOrgContract.ApproveOrgState.ApproveOrg(false),
             ApproveOrgContract.ApproveOrgState.RejectOrg(false),
@@ -40,6 +41,7 @@ class ApproveOrgViewModel @Inject constructor(
                 is ApproveOrgContract.ApproveOrgEvent.GetRequestedOrg -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.statusOrgList(RequestStatus.REQUESTED.status, event.page).onSuccess {
+                        Log.d("ApproveOrgViewModel", "GetRequestedOrg: $it")
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
@@ -48,6 +50,8 @@ class ApproveOrgViewModel @Inject constructor(
                         }
                     }.onFail {
 
+                    }.onError {
+                        Log.d("ApproveOrgViewModel", "GetRequestedOrg: ${it.message}")
                     }
 
                 }
@@ -105,20 +109,9 @@ class ApproveOrgViewModel @Inject constructor(
                 is ApproveOrgContract.ApproveOrgEvent.AddReceivedOrg -> {
                     setState {
                         copy(
+                            loadState = LoadState.REFRESH,
                             requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(
-                                ApproveRequestOrgModel(requestedOrg.org.data + receivedOrg.org.data)
-                            )
-                        )
-                    }
-                }
-
-                is ApproveOrgContract.ApproveOrgEvent.RemoveRequestedOrg -> {
-                    val list = uiState.value.requestedOrg.org.data.toMutableList()
-                    list.removeAt(event.position)
-                    setState {
-                        copy(
-                            requestedOrg = ApproveOrgContract.ApproveOrgState.RequestedOrg(
-                                ApproveRequestOrgModel(list)
+                                requestedOrg.org + receivedOrg.org
                             )
                         )
                     }
@@ -145,10 +138,5 @@ class ApproveOrgViewModel @Inject constructor(
 
     fun addReceivedOrg() {
         setEvent(ApproveOrgContract.ApproveOrgEvent.AddReceivedOrg)
-    }
-
-
-    fun removeRequestedOrg(position: Int) {
-        setEvent(ApproveOrgContract.ApproveOrgEvent.RemoveRequestedOrg(position))
     }
 }

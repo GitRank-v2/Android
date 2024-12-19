@@ -120,7 +120,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.bottom_profile -> {
                     Log.d("user name", "user name: ${realModel.github_id}")
                     realModel.github_id?.let {
-                        profileFrag = ClientProfileFragment(it)
+                        profileFrag = ClientProfileFragment(
+                            it,
+                            viewModel.currentState.userInfo.userInfo.profile_image!!
+                        )
                         val transaction = supportFragmentManager.beginTransaction()
                         transaction.replace(binding.contentFrame.id, profileFrag!!)
                             .commit()
@@ -139,10 +142,6 @@ class MainActivity : AppCompatActivity() {
                         Log.d("success UserInfo", "success")
                         viewModel.setFinish()
                         checkUserInfo(state.userInfo.userInfo)
-                    }
-
-                    if (state.loadState == LoadState.LOGIN_FAIL) {
-                        refreshToken()
                     }
 
                     if (state.loadState == LoadState.IMAGE_LOADED) {
@@ -218,10 +217,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun refreshToken() {
-        viewModel.getNewToken()
     }
 
 

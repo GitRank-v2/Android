@@ -46,6 +46,13 @@ class ApproveRequestOrgAdapter(
         holder.bind(getItem(position), position)
     }
 
+    fun removeItem(position: Int) {
+        getItem(position).let {
+            val list = currentList.toMutableList()
+            list.remove(it)
+            submitList(list)
+        }
+    }
 
     override fun getItemViewType(position: Int): Int {
         return position

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.Window
@@ -95,12 +96,11 @@ class MenuActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
+                    Log.d("MenuActivity", "initObserver: ${state.admin.isAdmin}")
                     if (state.admin.isAdmin) {
-                        binding.organizationAuth.visibility = View.VISIBLE
-                        binding.organizationApprove.visibility = View.VISIBLE
+                        binding.adminFun.visibility = View.VISIBLE
                     } else {
-                        binding.organizationAuth.visibility = View.GONE
-                        binding.organizationApprove.visibility = View.GONE
+                        binding.adminFun.visibility = View.GONE
                     }
 
                     if (state.withDraw.isSuccess) {

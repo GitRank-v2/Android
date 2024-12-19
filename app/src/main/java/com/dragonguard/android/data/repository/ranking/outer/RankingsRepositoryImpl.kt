@@ -1,7 +1,7 @@
 package com.dragonguard.android.data.repository.ranking.outer
 
-import com.dragonguard.android.data.model.rankings.OrganizationRankingModel
-import com.dragonguard.android.data.model.rankings.TotalUsersRankingModel
+import com.dragonguard.android.data.model.rankings.OrganizationRankingModelItem
+import com.dragonguard.android.data.model.rankings.TotalUsersRankingModelItem
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
 import com.dragonguard.android.util.handleApi
@@ -11,20 +11,18 @@ import javax.inject.Inject
 class RankingsRepositoryImpl @Inject constructor(
     private val service: GitRankService,
     private val retrofit: Retrofit
-) :
-    RankingsRepository {
+) : RankingsRepository {
     override suspend fun getTotalUsersRankings(
         page: Int,
         size: Int
-    ): DataResult<TotalUsersRankingModel> {
+    ): DataResult<List<TotalUsersRankingModelItem>> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "$page")
         queryMap.put("size", "$size")
-        queryMap.put("sort", "tokens,DESC")
         return handleApi({ service.getTotalUsersRanking(queryMap) }, retrofit) { it.data }
     }
 
-    override suspend fun allOrgRanking(page: Int): DataResult<OrganizationRankingModel> {
+    override suspend fun allOrgRanking(page: Int): DataResult<List<OrganizationRankingModelItem>> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", page.toString())
         queryMap.put("size", "20")
@@ -34,7 +32,7 @@ class RankingsRepositoryImpl @Inject constructor(
     override suspend fun typeOrgRanking(
         type: String,
         page: Int
-    ): DataResult<OrganizationRankingModel> {
+    ): DataResult<List<OrganizationRankingModelItem>> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("type", type)
         queryMap.put("page", page.toString())

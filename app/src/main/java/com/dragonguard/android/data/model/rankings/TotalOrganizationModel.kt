@@ -5,16 +5,14 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class TotalOrganizationModel(
-    @field:Json(name = "email_endpoint")
-    override val email_endpoint: String?,
     @field:Json(name = "id")
-    override val id: Long?,
+    val id: Long?,
     @field:Json(name = "name")
-    override val name: String?,
-    @field:Json(name = "organization_type")
-    override val organization_type: String?,
-    @field:Json(name = "token_sum")
-    override val token_sum: Long?,
+    val name: String?,
+    @field:Json(name = "contribution_amount")
+    val contribution_amount: Long?,
     @field:Json(name = "ranking")
-    var ranking: Int? = 0
-) : OrganizationRankingModelItem(email_endpoint, id, name, organization_type, token_sum)
+    var ranking: Int? = 0,
+    @field:Json(name = "type")
+    val type: String?
+)

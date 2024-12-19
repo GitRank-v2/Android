@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.menu
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.repository.menu.MenuRepository
@@ -31,7 +32,9 @@ class MenuViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is MenuContract.MenuEvent.CheckAdmin -> {
+                    Log.d("MenuViewModel", "handleEvent: CheckAdmin")
                     repository.checkAdmin().onSuccess {
+                        Log.d("MenuViewModel", it.toString())
                         setState { copy(admin = MenuContract.MenuState.AdminState(it)) }
                     }.onFail {
 

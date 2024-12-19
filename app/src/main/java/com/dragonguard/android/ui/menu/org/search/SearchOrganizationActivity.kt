@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -19,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.org.OrganizationNamesModel
+import com.dragonguard.android.data.model.org.OrganizationNamesModelItem
 import com.dragonguard.android.databinding.ActivitySearchOrganizationBinding
 import com.dragonguard.android.ui.menu.org.regist.RegistOrgActivity
 import com.dragonguard.android.util.LoadState
@@ -98,23 +98,18 @@ class SearchOrganizationActivity : AppCompatActivity() {
         }
         //        검색 아이콘 눌렀을때 검색 구현
         binding.searchIcon.setOnClickListener {
-            if (!binding.searchName.text.isNullOrEmpty()) {
-                if (lastSearch != binding.searchName.text.toString() || typeChanged) {
-                    orgNames.data = emptyList()
-                    binding.searchResult.visibility = View.GONE
-                    count = 0
-                    position = 0
-                    typeChanged = false
-                }
-                changable = true
-                lastSearch = binding.searchName.text.toString()
-                getOrganizationNames(binding.searchName.text.toString())
-                binding.searchResult.visibility = View.VISIBLE
-                binding.searchName.isFocusable = true
-            } else {
-                Toast.makeText(applicationContext, "검색어를 입력하세요!!", Toast.LENGTH_SHORT).show()
-                closeKeyboard()
+            if (lastSearch != binding.searchName.text.toString() || typeChanged) {
+                orgNames.data = emptyList()
+                binding.searchResult.visibility = View.GONE
+                count = 0
+                position = 0
+                typeChanged = false
             }
+            changable = true
+            lastSearch = binding.searchName.text.toString()
+            getOrganizationNames(binding.searchName.text.toString())
+            binding.searchResult.visibility = View.VISIBLE
+            binding.searchName.isFocusable = true
         }
 
         //        edittext에 엔터를 눌렀을때 검색되게 하는 리스너
@@ -125,29 +120,18 @@ class SearchOrganizationActivity : AppCompatActivity() {
                     val search = binding.searchName.text!!
                     binding.searchName.setText(search)
                     binding.searchName.setSelection(binding.searchName.length())
-                    if (search.isNotEmpty()) {
-                        closeKeyboard()
-                        if (lastSearch != binding.searchName.text.toString() || typeChanged) {
-                            orgNames.data = emptyList()
-                            binding.searchResult.visibility = View.GONE
-                            count = 0
-                            position = 0
-                            typeChanged = false
-                        }
-                        changable = true
-                        lastSearch = binding.searchName.text.toString()
-                        getOrganizationNames(binding.searchName.text.toString())
-                        binding.searchResult.visibility = View.VISIBLE
-                        binding.searchName.isFocusable = true
-                    } else {
-                        binding.searchName.setText("")
-                        Toast.makeText(
-                            applicationContext,
-                            "검색어를 입력하세요!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        closeKeyboard()
+                    if (lastSearch != binding.searchName.text.toString() || typeChanged) {
+                        orgNames.data = emptyList()
+                        binding.searchResult.visibility = View.GONE
+                        count = 0
+                        position = 0
+                        typeChanged = false
                     }
+                    changable = true
+                    lastSearch = binding.searchName.text.toString()
+                    getOrganizationNames(binding.searchName.text.toString())
+                    binding.searchResult.visibility = View.VISIBLE
+                    binding.searchName.isFocusable = true
 
                 }
             }
@@ -166,9 +150,13 @@ class SearchOrganizationActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     if (state.state == LoadState.SUCCESS) {
-                        if (checkSearchResult(state.orgNames.names)) {
-                            initRecycler()
+                        if (checkSearchResult(state.receivedOrgNames.names)) {
+                            viewModel.addReceivedOrgNames()
                         }
+                    }
+
+                    if (state.state == LoadState.REFRESH) {
+                        initRecycler()
                     }
                 }
             }
@@ -176,15 +164,20 @@ class SearchOrganizationActivity : AppCompatActivity() {
     }
 
     private fun getOrganizationNames(name: String) {
-        Log.d("org 검색", "이름 $name type $type  count $count")
         if (type.isBlank()) {
             type = "UNIVERSITY"
+        }
+        if (name.isBlank()) {
+            Log.d("org 검색", "이름 $name type $type  count $count")
+            viewModel.searchOrgNames(type, count)
+        } else {
+            Log.d("org 검색", "이름 $name type $type  count $count")
             viewModel.searchOrgNames(name, type, count)
         }
     }
 
-    private fun checkSearchResult(searchResult: OrganizationNamesModel): Boolean {
-        return when (searchResult.data.isNullOrEmpty()) {
+    private fun checkSearchResult(searchResult: List<OrganizationNamesModelItem>): Boolean {
+        return when (searchResult.isNullOrEmpty()) {
             true -> {
                 if (changable) {
                     changable = false
@@ -197,10 +190,10 @@ class SearchOrganizationActivity : AppCompatActivity() {
             false -> {
                 changable = false
                 Log.d("api 시도", "api 성공$searchResult")
-                for (i in 0 until searchResult.data.size) {
-                    val compare = orgNames.data.filter { it.name == searchResult.data[i].name }
+                for (i in 0 until searchResult.size) {
+                    val compare = orgNames.data.filter { it.name == searchResult[i].name }
                     if (compare.isEmpty()) {
-                        orgNames.data += searchResult.data[i]
+                        orgNames.data += searchResult[i]
                     }
                 }
                 true
@@ -210,7 +203,6 @@ class SearchOrganizationActivity : AppCompatActivity() {
     }
 
     private fun initRecycler() {
-        viewModel.addReceivedOrgNames()
         Log.d("count", "count: $count")
         if (count == 0) {
             binding.orgListTitle.text = "$type 목록"

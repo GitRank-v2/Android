@@ -41,7 +41,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is MainContract.MainEvent.GetUserInfo -> {
-                    Log.d("MainViewModel", pref.getJwtToken(""))
+                    Log.d("MainViewModel", pref.getJwtToken("") + " " + pref.getRefreshToken(""))
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getUserInfo().onSuccess {
                         Log.d("user success", it.toString())
@@ -54,9 +54,9 @@ class MainViewModel @Inject constructor(
                     }.onFail {
                         //setState { copy(loadState = LoadState.ERROR) }
                     }.onError {
-                        setState { copy(loadState = LoadState.LOGIN_FAIL) }
                         Log.d("MainViewModel", "Login Fail")
                         Log.d("MainViewModel", it.message.toString())
+                        setEffect { MainContract.MainActivityEffect.LoginError }
                     }
                 }
 
@@ -68,26 +68,6 @@ class MainViewModel @Inject constructor(
                             )
                         )
                     }
-                }
-
-                is MainContract.MainEvent.GetNewToken -> {
-                    repository.getNewAccessToken(pref.getJwtToken(""), pref.getRefreshToken(""))
-                        .onSuccess {
-                            pref.setJwtToken(it.access_token)
-                            pref.setRefreshToken(it.refresh_token)
-                            setState {
-                                copy(
-                                    newAccessToken = MainContract.MainState.NewAccessToken(it.access_token),
-                                    newRefreshToken = MainContract.MainState.NewRefreshToken(it.refresh_token)
-                                )
-                            }
-                        }.onError {
-                            Log.d("Login Error", it.message.toString())
-                            setEffect { MainContract.MainActivityEffect.LoginError }
-                        }.onFail {
-                            setEffect { MainContract.MainActivityEffect.LoginError }
-                        }
-
                 }
 
                 is MainContract.MainEvent.Logout -> {
@@ -144,10 +124,6 @@ class MainViewModel @Inject constructor(
 
     fun clickSearch() {
         setEvent(MainContract.MainEvent.ClickSearch)
-    }
-
-    fun getNewToken() {
-        setEvent(MainContract.MainEvent.GetNewToken)
     }
 
     fun logout() {

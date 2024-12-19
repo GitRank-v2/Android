@@ -40,19 +40,18 @@ class RankingsViewModel @Inject constructor(
                 is RankingsContract.RankingsEvent.GetTotalUserRanking -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.getTotalUsersRankings(event.page, event.size).onSuccess {
-                        Log.d("user ranking", "success")
+                        Log.d("user ranking", "success $it")
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.AllUsers.Ranking(
-                                    baseRanking = it.ranks.map {
+                                    baseRanking = it.map { info ->
                                         TotalUsersRankingsModel(
-                                            tokens = it.tokens,
-                                            github_id = it.github_id,
-                                            id = it.id,
-                                            name = it.name,
-                                            tier = it.tier,
-                                            profile_image = it.profile_image
+                                            contribution_amount = info.contribution_amount,
+                                            github_id = info.github_id,
+                                            id = info.id,
+                                            tier = info.tier,
+                                            profile_image = info.profile_image
                                         )
                                     } as ArrayList<TotalUsersRankingsModel>
                                 )
@@ -70,24 +69,24 @@ class RankingsViewModel @Inject constructor(
                 is RankingsContract.RankingsEvent.GetTotalOrganizationRanking -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.allOrgRanking(event.page).onSuccess {
+                        Log.d("org ranking", "success $it")
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.data.map {
+                                    baseRanking = it.map {
                                         TotalOrganizationModel(
-                                            email_endpoint = it.email_endpoint,
                                             id = it.id,
                                             name = it.name,
-                                            organization_type = it.organization_type,
-                                            token_sum = it.token_sum
+                                            contribution_amount = it.contribution_amount,
+                                            type = it.type
                                         )
                                     } as ArrayList<TotalOrganizationModel>
                                 )
                             )
                         }
-                    }.onFail {
-
+                    }.onError {
+                        Log.d("RankingsViewModel", "handleEvent: ${it}")
                     }
                 }
 
@@ -98,13 +97,12 @@ class RankingsViewModel @Inject constructor(
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.data.map {
+                                    baseRanking = it.map {
                                         TotalOrganizationModel(
-                                            email_endpoint = it.email_endpoint,
                                             id = it.id,
                                             name = it.name,
-                                            organization_type = it.organization_type,
-                                            token_sum = it.token_sum
+                                            contribution_amount = it.contribution_amount,
+                                            type = it.type
                                         )
                                     } as ArrayList<TotalOrganizationModel>
                                 )
@@ -122,13 +120,12 @@ class RankingsViewModel @Inject constructor(
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.data.map {
+                                    baseRanking = it.map { org ->
                                         TotalOrganizationModel(
-                                            email_endpoint = it.email_endpoint,
-                                            id = it.id,
-                                            name = it.name,
-                                            organization_type = it.organization_type,
-                                            token_sum = it.token_sum
+                                            id = org.id,
+                                            name = org.name,
+                                            contribution_amount = org.contribution_amount,
+                                            type = org.type
                                         )
                                     } as ArrayList<TotalOrganizationModel>
                                 )
@@ -146,13 +143,12 @@ class RankingsViewModel @Inject constructor(
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.data.map {
+                                    baseRanking = it.map { org ->
                                         TotalOrganizationModel(
-                                            email_endpoint = it.email_endpoint,
-                                            id = it.id,
-                                            name = it.name,
-                                            organization_type = it.organization_type,
-                                            token_sum = it.token_sum
+                                            id = org.id,
+                                            name = org.name,
+                                            contribution_amount = org.contribution_amount,
+                                            type = org.type
                                         )
                                     } as ArrayList<TotalOrganizationModel>
                                 )
@@ -170,13 +166,12 @@ class RankingsViewModel @Inject constructor(
                             copy(
                                 loadState = LoadState.SUCCESS,
                                 ranking = RankingsContract.RankingsState.Rankings.Organization.Ranking(
-                                    baseRanking = it.data.map {
+                                    baseRanking = it.map { org ->
                                         TotalOrganizationModel(
-                                            email_endpoint = it.email_endpoint,
-                                            id = it.id,
-                                            name = it.name,
-                                            organization_type = it.organization_type,
-                                            token_sum = it.token_sum
+                                            id = org.id,
+                                            name = org.name,
+                                            contribution_amount = org.contribution_amount,
+                                            type = org.type
                                         )
                                     } as ArrayList<TotalOrganizationModel>
                                 )

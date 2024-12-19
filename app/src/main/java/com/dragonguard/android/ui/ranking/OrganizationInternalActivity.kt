@@ -16,7 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
+import com.dragonguard.android.data.model.rankings.OrgInternalRankingModelItem
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
@@ -83,16 +83,16 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         viewModel.getOrgInternalRankings(id, page)
     }
 
-    private fun checkRankings(result: OrgInternalRankingModel) {
-        if (result.data.isNotEmpty()) {
-            Log.d("조직 내 랭킹", "결과 : ${result.data[0].github_id}")
-            result.data.forEach {
+    private fun checkRankings(result: List<OrgInternalRankingModelItem>) {
+        if (result.isNotEmpty()) {
+            Log.d("조직 내 랭킹", "결과 : ${result[0].github_id}")
+            result.forEach {
                 Log.d("조직 내 랭킹", "결과 : ${it.github_id}")
                 if (ranking != 0) {
-                    if (orgInternalRankings[ranking - 1].tokens == it.tokens) {
+                    if (orgInternalRankings[ranking - 1].tokens == it.contribution_amount) {
                         orgInternalRankings.add(
                             OrgInternalRankingsModel(
-                                it.github_id, it.id, it.name, it.tier, it.tokens,
+                                it.github_id, it.id, it.tier, it.contribution_amount,
                                 orgInternalRankings[ranking - 1].ranking,
                                 it.profile_image
                             )
@@ -102,9 +102,8 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
                             OrgInternalRankingsModel(
                                 it.github_id,
                                 it.id,
-                                it.name,
                                 it.tier,
-                                it.tokens,
+                                it.contribution_amount,
                                 ranking + 1,
                                 it.profile_image
                             )
@@ -115,9 +114,8 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
                         OrgInternalRankingsModel(
                             it.github_id,
                             it.id,
-                            it.name,
                             it.tier,
-                            it.tokens,
+                            it.contribution_amount,
                             1,
                             it.profile_image
                         )
@@ -146,7 +144,7 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =
-                RankingsAdapter(orgInternalRankings, this)
+                RankingsAdapter(orgInternalRankings, "", this)
             binding.orgInternalRanking.adapter = organizationInternalRankingAdapter
             binding.orgInternalRanking.layoutManager = LinearLayoutManager(this)
             binding.orgInternalRanking.visibility = View.VISIBLE

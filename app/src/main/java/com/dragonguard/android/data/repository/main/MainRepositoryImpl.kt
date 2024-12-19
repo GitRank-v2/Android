@@ -2,7 +2,6 @@ package com.dragonguard.android.data.repository.main
 
 import com.dragonguard.android.data.model.main.UserContributionsModel
 import com.dragonguard.android.data.model.main.UserInfoModel
-import com.dragonguard.android.data.model.token.RefreshTokenModel
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
 import com.dragonguard.android.util.handleApi
@@ -15,13 +14,6 @@ class MainRepositoryImpl @Inject constructor(
 ) : MainRepository {
     override suspend fun getUserInfo(): DataResult<UserInfoModel> {
         return handleApi({ service.getUserInfo() }, retrofit) { it.data }
-    }
-
-    override suspend fun getNewAccessToken(
-        access: String,
-        refresh: String
-    ): DataResult<RefreshTokenModel> {
-        return handleApi({ service.getNewAccessToken(access, refresh) }) { it.data }
     }
 
     override suspend fun updateGitContributions(): DataResult<List<UserContributionsModel>> {

@@ -9,12 +9,10 @@ data class OrgInternalRankingModelItem(
     val github_id: String?,
     @field:Json(name = "id")
     val id: String?,
-    @field:Json(name = "name")
-    val name: String?,
     @field:Json(name = "tier")
     val tier: String?,
-    @field:Json(name = "tokens")
-    val tokens: Int?,
+    @field:Json(name = "contribution_amount")
+    val contribution_amount: Int?,
     @field:Json(name = "profile_image")
     val profile_image: String
 )

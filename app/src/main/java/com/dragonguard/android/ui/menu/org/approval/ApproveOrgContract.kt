@@ -1,6 +1,6 @@
 package com.dragonguard.android.ui.menu.org.approval
 
-import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
+import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
@@ -13,11 +13,10 @@ class ApproveOrgContract {
         data class ClickReject(val orgId: Long, val position: Int) : ApproveOrgEvent()
         data object ResetClick : ApproveOrgEvent()
         data object AddReceivedOrg : ApproveOrgEvent()
-        data class RemoveRequestedOrg(val position: Int) : ApproveOrgEvent()
     }
 
     sealed class ApproveOrgState {
-        data class RequestedOrg(val org: ApproveRequestOrgModel) : ApproveOrgState()
+        data class RequestedOrg(val org: List<ApproveRequestOrgModelItem>) : ApproveOrgState()
         data class Token(val token: String) : ApproveOrgState()
 
         data class ApproveOrg(val status: Boolean) : ApproveOrgState()

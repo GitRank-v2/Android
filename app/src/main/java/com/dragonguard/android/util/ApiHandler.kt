@@ -85,18 +85,12 @@ suspend fun <T : Any> handleAdminApi(
 
     return try {
         val response = execute()
-        val body = response.body()
-        if (response.isSuccessful) {
-            body?.let {
-                DataResult.Success(true)
-            } ?: run {
-
-                throw NullPointerException(NETWORK_EXCEPTION_BODY_IS_NULL)
-            }
+        if (response.code() == 204) {
+            DataResult.Success(true)
         } else if (response.code() == 403) {
             DataResult.Success(false)
         } else {
-            getFailDataResult(body, response)
+            getFailDataResult(response.body(), response)
         }
     } catch (e: Exception) {
         DataResult.Error(e)

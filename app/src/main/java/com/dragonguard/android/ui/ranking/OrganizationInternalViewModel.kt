@@ -2,7 +2,6 @@ package com.dragonguard.android.ui.ranking
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
 import com.dragonguard.android.data.repository.ranking.OrganizationInternalRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
@@ -24,12 +23,8 @@ class OrganizationInternalViewModel @Inject constructor(
         return OrganizationInternalContract.OrganizationInternalStates(
             LoadState.INIT,
             OrganizationInternalContract.OrganizationInternalState.OrgId(-1L),
-            OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
-                OrgInternalRankingModel()
-            ),
-            OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
-                OrgInternalRankingModel()
-            ),
+            OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(emptyList()),
+            OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(emptyList()),
             OrganizationInternalContract.OrganizationInternalState.Token(pref.getJwtToken(""))
         )
     }
@@ -73,7 +68,7 @@ class OrganizationInternalViewModel @Inject constructor(
                     setState {
                         copy(
                             orgInternalRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
-                                OrgInternalRankingModel(orgInternalRankings.orgInternalRankings.data + receivedRankings.orgInternalRankings.data)
+                                orgInternalRankings.orgInternalRankings + receivedRankings.orgInternalRankings
                             )
                         )
                     }

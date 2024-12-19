@@ -2,12 +2,11 @@ package com.dragonguard.android.ui.profile.user
 
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
-import com.dragonguard.android.data.model.detail.ClientDetailModel
 import com.dragonguard.android.data.repository.profile.user.ClientProfileRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
-import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,8 +22,8 @@ class ClientProfileViewModel @Inject constructor(
         pref = getPref()
         return ClientProfileContract.ClientProfileStates(
             LoadState.INIT,
-            ClientProfileContract.ClientProfileState.ClientDetail(ClientDetailModel()),
-            ClientProfileContract.ClientProfileState.Token(pref.getJwtToken(""))
+            ClientProfileContract.ClientProfileState.ClientRepository(emptyList()),
+            ClientProfileContract.ClientProfileState.ClientOrg(emptyList())
         )
     }
 
@@ -33,16 +32,23 @@ class ClientProfileViewModel @Inject constructor(
             when (event) {
                 is ClientProfileContract.ClientProfileEvent.GetClientDetail -> {
                     setState { copy(loadState = LoadState.LOADING) }
-                    repository.getClientDetails().onSuccess {
-                        setState {
-                            copy(
-                                loadState = LoadState.SUCCESS,
-                                clientDetail = ClientProfileContract.ClientProfileState.ClientDetail(
-                                    it
+                    repository.getClientRepository().onSuccess { repo ->
+                        repository.getClientOrg().onSuccess { org ->
+                            setState {
+                                copy(
+                                    loadState = LoadState.SUCCESS,
+                                    clientRepository = ClientProfileContract.ClientProfileState.ClientRepository(
+                                        repo
+                                    ),
+                                    clientOrg = ClientProfileContract.ClientProfileState.ClientOrg(
+                                        org
+                                    )
                                 )
-                            )
+                            }
+                        }.onError {
+
                         }
-                    }.onFail {
+                    }.onError {
 
                     }
                 }

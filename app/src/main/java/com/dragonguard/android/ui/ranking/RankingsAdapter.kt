@@ -14,6 +14,7 @@ import com.dragonguard.android.util.CustomGlide
 
 class RankingsAdapter(
     private val rankings: List<*>,
+    private val type: String,
     private val listener: OnRankingClickListener
 ) : RecyclerView.Adapter<RankingsAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,7 +36,7 @@ class RankingsAdapter(
                     binding.eachRanking.text = data1.ranking.toString()
                     CustomGlide.drawImage(binding.eachProfile, data1.profile_image) {}
                     binding.rankingGithubId.text = data1.github_id
-                    binding.rankingContribute.text = data1.tokens.toString()
+                    binding.rankingContribute.text = data1.contribution_amount.toString()
                     when (data1.tier) {
                         "BRONZE" -> {
                             binding.rankerContent.setBackgroundResource(R.drawable.shadow_bronze)
@@ -80,7 +81,7 @@ class RankingsAdapter(
                     binding.rankingContribute.text = data1.tokens.toString()
                     binding.rankingItem.setOnClickListener {
                         if (data1.profile_image.isNullOrBlank()) {
-                            listener.onOrgInternalRankingClick(data1.name!!)
+                            listener.onOrgInternalRankingClick(data1.github_id!!)
                         } else {
                             listener.onOrgInternalRankingUserClick(data1.github_id!!)
                         }
@@ -116,7 +117,7 @@ class RankingsAdapter(
                     binding.profileLink.visibility = View.GONE
                     binding.eachRanking.text = data1.ranking.toString()
                     binding.rankingGithubId.text = data1.name
-                    when (data1.organization_type) {
+                    when (data1.type) {
                         "COMPANY" -> {
                             binding.eachProfile.setImageResource(R.drawable.company)
                         }
@@ -133,7 +134,7 @@ class RankingsAdapter(
 
                         }
                     }
-                    binding.rankingContribute.text = data1.token_sum.toString()
+                    binding.rankingContribute.text = data1.contribution_amount.toString()
                     binding.rankingItem.setOnClickListener {
                         listener.onOrgRankingClick(data1.name!!)
                     }
