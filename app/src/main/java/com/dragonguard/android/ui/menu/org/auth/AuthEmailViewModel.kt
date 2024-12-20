@@ -1,12 +1,14 @@
 package com.dragonguard.android.ui.menu.org.auth
 
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.repository.menu.org.auth.AuthEmailRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -77,10 +79,13 @@ class AuthEmailViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is AuthEmailContract.AuthEmailEvent.RequestAuthEmail -> {
+                    Log.d("AuthEmailViewModel", "request email: ${event.email} ${event.orgId}")
                     repository.addOrgMember(AddOrgMemberModel(event.email, event.orgId)).onSuccess {
+                        Log.d("AuthEmailViewModel", "request email: $it")
                         if (it != -1L) {
                             setState {
                                 copy(
+                                    state = LoadState.LOADING,
                                     emailAuthId = AuthEmailContract.AuthEmailState.EmailAuthId(it),
                                     countDownTimer = AuthEmailContract.AuthEmailState.CountDownTimer(
                                         setUpCountDownTimer()
@@ -96,21 +101,25 @@ class AuthEmailViewModel @Inject constructor(
                 }
 
                 is AuthEmailContract.AuthEmailEvent.CheckEmailCode -> {
+                    Log.d(
+                        "AuthEmailViewModel",
+                        "check email code: ${currentState.emailAuthId.emailAuthId} ${event.code} ${event.orgId}"
+                    )
                     repository.emailAuthResult(
                         currentState.emailAuthId.emailAuthId,
                         event.code,
                         event.orgId
-                    )
-                        .onSuccess {
-                            if (it) {
-                                setState { copy(state = LoadState.SUCCESS) }
-                            } else {
-                                setState { copy(state = LoadState.ERROR) }
-                            }
-                        }.onFail {
-
+                    ).onSuccess {
+                        if (it) {
+                            setState { copy(state = LoadState.SUCCESS) }
+                        } else {
+                            setState { copy(state = LoadState.ERROR) }
                         }
+                    }.onFail {
 
+                    }.onError {
+                        Log.d("AuthEmailViewModel", "handleEvent: ${it.message}")
+                    }
                 }
 
                 is AuthEmailContract.AuthEmailEvent.DeleteLateEmailCode -> {
@@ -135,6 +144,7 @@ class AuthEmailViewModel @Inject constructor(
                         if (it != -1L) {
                             setState {
                                 copy(
+                                    state = LoadState.LOADING,
                                     emailAuthId = AuthEmailContract.AuthEmailState.EmailAuthId(it),
                                     countDownTimer = AuthEmailContract.AuthEmailState.CountDownTimer(
                                         setUpCountDownTimer()

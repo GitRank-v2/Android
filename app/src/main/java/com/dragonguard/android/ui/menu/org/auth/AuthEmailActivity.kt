@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -74,6 +75,11 @@ class AuthEmailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
+                    if (state.state == LoadState.LOADING) {
+                        binding.remainTime.text = state.remainTime.remainTime
+                        binding.emailCode.isEnabled = state.timeOver.timeOver.not()
+                    }
+
                     if (state.state == LoadState.SUCCESS) {
                         Toast.makeText(applicationContext, "$orgName 인증되었습니다!!", Toast.LENGTH_SHORT)
                             .show()
@@ -87,15 +93,13 @@ class AuthEmailActivity : AppCompatActivity() {
                         binding.authStatus.text = "다시 입력해주세요!!"
                         binding.emailCode.setText("")
                     }
-
-                    binding.remainTime.text = state.remainTime.remainTime
-                    binding.emailCode.isEnabled = state.timeOver.timeOver
                 }
             }
         }
     }
 
     private fun authEmail() {
+        Log.d("AuthEmailActivity", "authEmail: ${binding.emailCode.text}")
         viewModel.checkEmailCode(binding.emailCode.text.toString(), orgId)
     }
 

@@ -149,10 +149,10 @@ interface GitRankService {
     @Headers("accept: application/json", "content-type: application/json")
     suspend fun postResendEmail(@Path("id") emailId: Long): Response<StandardResponse<RegistOrgResultModel>>
 
-    @GET("email/{id}/check")
+    @POST("email/{id}/check")
     suspend fun getEmailAuthResult(
-        @QueryMap query: Map<String, String>,
-        @Path("id") id: String
+        @Path("id") id: String,
+        @QueryMap query: Map<String, String>
     ): Response<StandardResponse<EmailAuthResultModel>>
 
     @DELETE("email/{id}")
