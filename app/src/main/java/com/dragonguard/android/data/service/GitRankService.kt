@@ -49,9 +49,6 @@ interface GitRankService {
     @GET("members/me")
     suspend fun getUserInfo(): Response<StandardResponse<UserInfoModel>>
 
-    //@POST("members/me/update")
-    //suspend fun userInfoUpdate(): Response<UserInfoModel>
-
     //    repoName에 해당하는 repo의 정보를 요청
     @GET("git-repos")
     suspend fun getRepoContributors(@Query("name") repoName: String): Response<StandardResponse<RepoContributorsModel>>
@@ -70,7 +67,7 @@ interface GitRankService {
     @GET("members/contributions")
     suspend fun updateGitContributions(): Response<StandardResponse<List<UserContributionsModel>>>
 
-    @GET("members/git-organizations/git-repos")
+    @GET("git-repos/git-organizations")
     suspend fun getOrgRepoList(@Query("name") orgName: String): Response<StandardResponse<GithubOrgReposModel>>
 
     @GET("members/me/git-details")
@@ -82,48 +79,16 @@ interface GitRankService {
     @GET("git-orgs/me")
     suspend fun getClientOrganization(): Response<StandardResponse<List<GitOrganization>>>
 
-
-    /*
-    @POST("prepare")
-    @Headers("accept: application/json", "content-type: application/json")
-    fun postWalletAuth(@Body auth: WalletAuthRequestModel): Response<WalletAuthResponseModel>
-
-    //    klip wallet address 정보제공동의 후 wallet address를 받아오는 함수
-    @GET("result")
-    fun getAuthResult(@Query("request_key") key: String): Response<WalletAuthResultModel>
-
-    //    사용자의 토큰부여 내역을 가져오기 위한 함수
-    @GET("blockchain")
-    fun getTokenHistory(): Response<TokenHistoryModel>
-
-    //    klip wallet address를 서버로 보내는 함수
-    @POST("members/wallet-address")
-    @Headers("accept: application/json", "content-type: application/json")
-    fun postWalletAddress(@Body walletAddress: WalletAddressModel): Response<Unit>
-    */
-
-    /*
-    @POST("blockchain/update")
-    fun updateToken(): Response<TokenHistoryModel>
-    */
-
     //    두 Repository의 구성원들의 정보를 받아오기 위한 함수
     @POST("git-repos/compare/git-repos-members")
     @Headers("accept: application/json", "content-type: application/json")
     suspend fun postCompareRepoMembers(@Body compare: CompareRepoRequestModel): Response<StandardResponse<CompareRepoMembersResponseModel>>
-
-    @POST("git-repos/compare/git-repos-members/update")
-    @Headers("accept: application/json", "content-type: application/json")
-    suspend fun postCompareRepoMembersUpdate(@Body compare: CompareRepoRequestModel): Response<StandardResponse<CompareRepoMembersResponseModel>>
 
     //    두 Repository의 정보를 받아오기 위한 함수
     @POST("git-repos/compare")
     @Headers("accept: application/json", "content-type: application/json")
     suspend fun postCompareRepo(@Body compare: CompareRepoRequestModel): Response<StandardResponse<CompareRepoResponseModel>>
 
-    @POST("git-repos/compare")
-    @Headers("accept: application/json", "content-type: application/json")
-    suspend fun postCompareRepoUpdate(@Body compare: CompareRepoRequestModel): Response<StandardResponse<CompareRepoResponseModel>>
 
     @GET("auth/refresh")
     suspend fun getNewAccessToken(

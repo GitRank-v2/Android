@@ -169,8 +169,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 //        검색 옵션 구현
 
         binding.searchName.setOnClickListener {
-            val intent = Intent(this, SearchFilterActivity::class.java)
-            activityResultLauncher.launch(intent)
+            activityResultLauncher.launch(Intent(this, SearchFilterActivity::class.java))
         }
     }
 
@@ -434,7 +433,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
     //    데이터 더 받아오는 함수 loadMorePosts() 구현
     private fun loadMorePosts() {
-        if (binding.loadingLottie.visibility == View.GONE && count != 0) {
+        if (binding.loadingLottie.visibility == View.GONE && (viewModel.currentState.repoNames.repoNames.size >= count * 10 || viewModel.currentState.userNames.userNames.size >= count * 10)) {
             val params = binding.loadingLottie.layoutParams as CoordinatorLayout.LayoutParams
             params.gravity = Gravity.BOTTOM
             params.bottomMargin = 100

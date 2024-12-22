@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.dragonguard.android.databinding.OthersReposListBinding
-import com.dragonguard.android.util.CustomGlide
 
 class OthersReposAdapter(
     private val img: String,
@@ -30,7 +30,7 @@ class OthersReposAdapter(
         fun bind(data: String) {
             binding.reposFrame.clipToOutline = true
             binding.repoName.text = data
-            CustomGlide.drawImage(binding.othersProfileImg, img) { }
+            Glide.with(binding.othersProfileImg).load(img).into(binding.othersProfileImg)
             binding.othersProfileImg.clipToOutline = true
             binding.userName.text = userName
             binding.repoContributeImg.setOnClickListener {

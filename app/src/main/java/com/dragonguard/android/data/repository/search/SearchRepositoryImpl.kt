@@ -6,9 +6,13 @@ import com.dragonguard.android.data.model.search.UserNameModelItem
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
 import com.dragonguard.android.util.handleApi
+import retrofit2.Retrofit
 import javax.inject.Inject
 
-class SearchRepositoryImpl @Inject constructor(private val service: GitRankService) :
+class SearchRepositoryImpl @Inject constructor(
+    private val service: GitRankService,
+    private val retrofit: Retrofit
+) :
     SearchRepository {
     override suspend fun getUserNames(
         name: String,
@@ -17,9 +21,9 @@ class SearchRepositoryImpl @Inject constructor(private val service: GitRankServi
     ): DataResult<List<UserNameModelItem>> {
         val queryMap = mutableMapOf<String, String>()
         queryMap.put("page", "${count + 1}")
-        queryMap.put("name", name)
+        queryMap.put("q", name)
         queryMap.put("type", type)
-        return handleApi({ service.getUserName(queryMap) }) { it.data }
+        return handleApi({ service.getUserName(queryMap) }, retrofit) { it.data }
     }
 
     override suspend fun getRepositoryNames(
@@ -32,7 +36,7 @@ class SearchRepositoryImpl @Inject constructor(private val service: GitRankServi
         queryMap.put("page", "${count + 1}")
         queryMap.put("q", name)
         queryMap.put("type", type)
-        return handleApi({ service.getRepoName(queryMap) }) { it.data }
+        return handleApi({ service.getRepoName(queryMap) }, retrofit) { it.data }
 
     }
 
@@ -49,6 +53,6 @@ class SearchRepositoryImpl @Inject constructor(private val service: GitRankServi
         queryMap.put("filters", filters)
         Log.d("api 호출", "이름: $name, type: $type filters: $filters")
         Log.d("api 호출", "$count 페이지 검색")
-        return handleApi({ service.getRepoName(queryMap) }) { it.data }
+        return handleApi({ service.getRepoName(queryMap) }, retrofit) { it.data }
     }
 }

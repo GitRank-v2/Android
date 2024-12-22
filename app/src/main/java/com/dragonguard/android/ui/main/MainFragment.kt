@@ -16,7 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.main.UserInfoModel
 import com.dragonguard.android.databinding.FragmentMainBinding
 import com.dragonguard.android.ui.history.GitHistoryActivity
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
@@ -30,7 +29,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainFragment(
-    private var info: UserInfoModel,
     private val viewModel: MainViewModel
 ) : Fragment() {
     private lateinit var binding: FragmentMainBinding
@@ -49,7 +47,6 @@ class MainFragment(
         Log.d("mainCreate", "mainCreate")
         //setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
-        Log.d("token", info.toString())
         return binding.root
     }
 
@@ -79,14 +76,14 @@ class MainFragment(
         binding.userId.setOnClickListener {
             Log.d("userIcon", "userIcon")
             val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
-            intent.putExtra("userName", info.github_id)
+            intent.putExtra("userName", viewModel.currentState.userInfo.userInfo.github_id)
             intent.putExtra("isUser", true)
             startActivity(intent)
         }
         binding.githubProfile.setOnClickListener {
             Log.d("userIcon", "userIcon")
             val intent = Intent(requireActivity(), OthersProfileActivity::class.java)
-            intent.putExtra("userName", info.github_id)
+            intent.putExtra("userName", viewModel.currentState.userInfo.userInfo.github_id)
             intent.putExtra("isUser", true)
             startActivity(intent)
         }
@@ -98,11 +95,12 @@ class MainFragment(
         val layoutParams = binding.mainFrame.layoutParams as FrameLayout.LayoutParams
         layoutParams.bottomMargin = main.getNavSize()
         binding.mainFrame.layoutParams = layoutParams
-        info.github_id?.let {
-            binding.userId.text = info.github_id
+        val infos = viewModel.currentState.userInfo.userInfo
+        infos.github_id.let {
+            binding.userId.text = infos.github_id
         }
 
-        when (info.tier) {
+        when (infos.tier) {
             "BRONZE" -> {
                 binding.tierImg.setBackgroundResource(R.drawable.bronze)
             }
@@ -127,30 +125,30 @@ class MainFragment(
         binding.tokenAmount.text =
             String.format(
                 getString(R.string.activity_sum),
-                info.commits + info.issues + info.pull_requests + info.reviews
+                infos.commits + infos.issues + infos.pull_requests + infos.reviews
             )
         val typeList = listOf("COMMIT", "ISSUE", "PULL REQUEST", "REVIEW")
-        if (info.organization != null) {
-            binding.userOrgName.text = info.organization
+        if (infos.organization != null) {
+            binding.userOrgName.text = infos.organization
         }
-        Log.d("info", "info: $info")
+        Log.d("info", "info: $infos")
 
-        userActivity.put("COMMIT", info.commits)
-        userActivity.put("ISSUE", info.issues)
-        userActivity.put("PULL REQUEST", info.pull_requests)
-        userActivity.put("REVIEW", info.reviews)
+        userActivity.put("COMMIT", infos.commits)
+        userActivity.put("ISSUE", infos.issues)
+        userActivity.put("PULL REQUEST", infos.pull_requests)
+        userActivity.put("REVIEW", infos.reviews)
         Log.d("map", "hashMap: $userActivity")
         binding.userUtil.adapter = UserActivityAdapter(userActivity, typeList)
         binding.userUtil.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
-        if (info.organization.isNullOrEmpty()) {
+        if (infos.organization.isNullOrEmpty()) {
             binding.mainOrgFrame.visibility = View.GONE
         } else {
-            when (info.organization_rank) {
+            when (infos.organization_rank) {
                 1 -> {
-                    when (info.member_github_ids?.size) {
+                    when (infos.member_github_ids?.size) {
                         1 -> {
-                            binding.user2Githubid.text = info.member_github_ids!![0]
+                            binding.user2Githubid.text = infos.member_github_ids!![0]
                             binding.user2Githubid.setTextAppearance(R.style.mainRanking)
                             binding.user2Ranking.text = "1"
                             binding.user2Ranking.setTextAppearance(R.style.mainRanking)
@@ -158,64 +156,65 @@ class MainFragment(
                         }
 
                         2 -> {
-                            binding.user2Githubid.text = info.member_github_ids!![0]
+                            binding.user2Githubid.text = infos.member_github_ids!![0]
                             binding.user2Githubid.setTextAppearance(R.style.mainRanking)
                             binding.user2Ranking.text = "1"
                             binding.user2Ranking.setTextAppearance(R.style.mainRanking)
-                            binding.user3Githubid.text = info.member_github_ids!![1]
+                            binding.user3Githubid.text = infos.member_github_ids!![1]
                             binding.user3Ranking.text = "2"
                         }
 
                         3 -> {
-                            binding.user2Githubid.text = info.member_github_ids!![0]
+                            binding.user2Githubid.text = infos.member_github_ids!![0]
                             binding.user2Githubid.setTextAppearance(R.style.mainRanking)
-                            binding.user2Ranking.text = info.organization_rank!!.minus(1).toString()
+                            binding.user2Ranking.text =
+                                infos.organization_rank!!.minus(1).toString()
                             binding.user2Ranking.setTextAppearance(R.style.mainRanking)
 
-                            binding.user3Githubid.text = info.member_github_ids!![1]
+                            binding.user3Githubid.text = infos.member_github_ids!![1]
                             binding.user3Ranking.text = "2"
                         }
                     }
                 }
 
                 else -> {
-                    when (info.member_github_ids?.size) {
+                    when (infos.member_github_ids?.size) {
                         0 -> {
-                            binding.user2Githubid.text = info.github_id
+                            binding.user2Githubid.text = infos.github_id
                             binding.user2Githubid.setTextAppearance(R.style.mainRanking)
-                            binding.user2Ranking.text = info.organization_rank.toString()
+                            binding.user2Ranking.text = "1"
                             binding.user2Ranking.setTextAppearance(R.style.mainRanking)
                         }
 
                         1 -> {
-                            binding.user2Githubid.text = info.member_github_ids!![1]
+                            binding.user2Githubid.text = infos.member_github_ids!![1]
                             binding.user2Githubid.setTextAppearance(R.style.mainRanking)
-                            binding.user2Ranking.text = info.organization_rank.toString()
+                            binding.user2Ranking.text = infos.organization_rank.toString()
                             binding.user2Ranking.setTextAppearance(R.style.mainRanking)
                         }
 
                         2 -> {
-                            when (info.is_last) {
+                            when (infos.is_last) {
                                 true -> {
-                                    binding.user1Githubid.text = info.member_github_ids!![0]
+                                    binding.user1Githubid.text = infos.member_github_ids!![0]
                                     binding.user1Ranking.text =
-                                        info.organization_rank!!.minus(1).toString()
+                                        infos.organization_rank!!.minus(1).toString()
 
-                                    binding.user2Githubid.text = info.member_github_ids!![1]
+                                    binding.user2Githubid.text = infos.member_github_ids!![1]
                                     binding.user2Githubid.setTextAppearance(R.style.mainRanking)
-                                    binding.user2Ranking.text = info.organization_rank.toString()
+                                    binding.user2Ranking.text = infos.organization_rank.toString()
                                     binding.user2Ranking.setTextAppearance(R.style.mainRanking)
                                 }
 
                                 false -> {
-                                    binding.user2Githubid.text = info.member_github_ids!![1]
-                                    binding.user2Ranking.text = info.organization_rank!!.toString()
+                                    binding.user2Githubid.text = infos.member_github_ids!![1]
+                                    binding.user2Ranking.text = infos.organization_rank!!.toString()
                                     binding.user2Githubid.setTextAppearance(R.style.mainRanking)
                                     binding.user2Ranking.setTextAppearance(R.style.mainRanking)
 
-                                    binding.user3Githubid.text = info.member_github_ids!![1]
+                                    binding.user3Githubid.text = infos.member_github_ids!![1]
                                     binding.user3Ranking.text =
-                                        info.organization_rank!!.plus(1).toString()
+                                        infos.organization_rank!!.plus(1).toString()
 
                                 }
 
@@ -226,31 +225,31 @@ class MainFragment(
                         }
 
                         3 -> {
-                            when (info.is_last) {
+                            when (infos.is_last) {
                                 true -> {
-                                    binding.user1Githubid.text = info.member_github_ids!![1]
+                                    binding.user1Githubid.text = infos.member_github_ids!![1]
                                     binding.user1Ranking.text =
-                                        info.organization_rank!!.minus(1).toString()
+                                        infos.organization_rank!!.minus(1).toString()
 
-                                    binding.user2Githubid.text = info.member_github_ids!![2]
+                                    binding.user2Githubid.text = infos.member_github_ids!![2]
                                     binding.user2Githubid.setTextAppearance(R.style.mainRanking)
-                                    binding.user2Ranking.text = info.organization_rank!!.toString()
+                                    binding.user2Ranking.text = infos.organization_rank!!.toString()
                                     binding.user2Ranking.setTextAppearance(R.style.mainRanking)
                                 }
 
                                 false -> {
-                                    binding.user1Githubid.text = info.member_github_ids!![0]
+                                    binding.user1Githubid.text = infos.member_github_ids!![0]
                                     binding.user1Ranking.text =
-                                        info.organization_rank!!.minus(1).toString()
+                                        infos.organization_rank!!.minus(1).toString()
 
-                                    binding.user2Githubid.text = info.member_github_ids!![1]
+                                    binding.user2Githubid.text = infos.member_github_ids!![1]
                                     binding.user2Githubid.setTextAppearance(R.style.mainRanking)
-                                    binding.user2Ranking.text = info.organization_rank.toString()
+                                    binding.user2Ranking.text = infos.organization_rank.toString()
                                     binding.user2Ranking.setTextAppearance(R.style.mainRanking)
 
-                                    binding.user3Githubid.text = info.member_github_ids!![2]
+                                    binding.user3Githubid.text = infos.member_github_ids!![2]
                                     binding.user3Ranking.text =
-                                        info.organization_rank!!.plus(1).toString()
+                                        infos.organization_rank!!.plus(1).toString()
                                 }
 
                                 null -> {
@@ -265,8 +264,8 @@ class MainFragment(
 
         if (!requireActivity().isFinishing) {
             if (binding.mainFrame.visibility == View.INVISIBLE) {
-                Log.d("profile image", "profile image ${info.profile_image}")
-                CustomGlide.drawImage(binding.githubProfile, info.profile_image) {
+                Log.d("profile image", "profile image ${infos.profile_image}")
+                CustomGlide.drawImage(binding.githubProfile, infos.profile_image) {
                     binding.mainFrame.visibility = View.VISIBLE
                     viewModel.profileImageLoaded()
                 }
@@ -279,10 +278,16 @@ class MainFragment(
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
+                    if (state.loadState == LoadState.SUCCESS) {
+                        Log.d("success UserInfo", "success")
+                        viewModel.setFinish()
+                        drawInfo()
+                    }
                     if (state.loadState == LoadState.REFRESH) {
                         Log.d("refresh", "refresh main!!")
                         state.refreshAmount.amount.forEach { activity ->
                             userActivity[activity.contribute_type] = activity.amount.toInt()
+                            if (activity.contribute_type == "CODE_REVIEW") viewModel.getUserInfo()
                         }
                     }
                 }
