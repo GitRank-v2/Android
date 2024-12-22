@@ -213,7 +213,6 @@ class MainActivity : AppCompatActivity() {
     override fun onRestart() {
         super.onRestart()
         if (binding.mainNav.selectedItemId == R.id.bottom_main) {
-            viewModel.setRepeat(false)
             finish = false
             viewModel.refreshAmount()
         }
