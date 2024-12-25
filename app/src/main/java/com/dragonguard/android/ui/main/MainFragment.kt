@@ -1,5 +1,8 @@
 package com.dragonguard.android.ui.main
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -8,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -125,7 +129,7 @@ class MainFragment(
         binding.tokenAmount.text =
             String.format(
                 getString(R.string.activity_sum),
-                infos.commits + infos.issues + infos.pull_requests + infos.reviews
+                infos.contribution_amount
             )
         val typeList = listOf("COMMIT", "ISSUE", "PULL REQUEST", "REVIEW")
         if (infos.organization != null) {
@@ -306,7 +310,55 @@ class MainFragment(
 
     }
 
+    private fun ViewPager2.setCurrentWithDuration(item: Int, duration: Long) {
+        val pxTopDrag = if (orientation == ViewPager2.ORIENTATION_HORIZONTAL) {  // 가로 방향인 경우
+            width * (item - currentItem)
+        } else {  // 세로 방향인 경우
+            height * (item - currentItem)
+        }
+        val animator = ValueAnimator.ofInt(0, pxTopDrag)
+
+        animator.addUpdateListener(object : ValueAnimator.AnimatorUpdateListener {
+            var previousValue = 0
+            override fun onAnimationUpdate(valueAnimator: ValueAnimator) {
+                val currentValue = valueAnimator.animatedValue as Int
+                val currentPxToDrag = (currentValue - previousValue).toFloat()
+                fakeDragBy(-currentPxToDrag)
+                previousValue = currentValue
+            }
+        })
+
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator) {
+                super.onAnimationStart(animation)
+                beginFakeDrag()
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                super.onAnimationEnd(animation)
+                endFakeDrag()
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+                super.onAnimationCancel(animation)
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+                super.onAnimationRepeat(animation)
+            }
+        })
+
+        animator.interpolator = LinearInterpolator()
+        animator.duration = duration
+        animator.start()
+    }
+
     private fun setPage() {
-        binding.userUtil.setCurrentItem((binding.userUtil.currentItem + 1) % 4, false)
+        if ((binding.userUtil.currentItem + 1) % 4 == 0) binding.userUtil.setCurrentWithDuration(
+            (binding.userUtil.currentItem + 1) % 4,
+            500
+        )
+        else binding.userUtil.setCurrentWithDuration((binding.userUtil.currentItem + 1) % 4, 250)
+
     }
 }
