@@ -1,5 +1,6 @@
 package com.dragonguard.android.ui.search.repo
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
@@ -7,6 +8,7 @@ import com.dragonguard.android.data.repository.search.repo.RepoContributorsRepos
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,6 +46,9 @@ class RepoContributorsViewModel @Inject constructor(
                         }
                     }.onFail {
 
+                    }.onError {
+                        Log.d("RepoContributorsViewModel", "handleEvent: ${it.message}")
+                        setEffect { RepoContributorsContract.RepoContributorsEffect.ShowToast }
                     }
 
                 }

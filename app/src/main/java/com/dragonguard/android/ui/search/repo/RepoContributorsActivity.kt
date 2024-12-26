@@ -110,18 +110,10 @@ class RepoContributorsActivity : AppCompatActivity(),
     fun checkContributors(result: RepoContributorsModel?) {
         Log.d("repo", "결과 $result")
         if (result != null) {
-            if (!result.git_repo_members.isNullOrEmpty()) {
-                if (result.git_repo_members[0].additions == null) {
-                    //재시도
-                } else {
-                    result.spark_line?.let {
-                        sparkLines = it.toMutableList()
-                    }
-                    initRecycler()
-                }
-            } else {
-                //재시도
+            result.spark_line?.let {
+                sparkLines = it.toMutableList()
             }
+            initRecycler()
         } else {
             binding.loadingLottie.pauseAnimation()
             binding.loadingLottie.visibility = View.GONE
