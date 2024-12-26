@@ -191,9 +191,9 @@ class MainFragment(
                         }
 
                         1 -> {
-                            binding.user2Githubid.text = infos.member_github_ids!![1]
+                            binding.user2Githubid.text = infos.member_github_ids!![0]
                             binding.user2Githubid.setTextAppearance(R.style.mainRanking)
-                            binding.user2Ranking.text = infos.organization_rank.toString()
+                            binding.user2Ranking.text = "1"
                             binding.user2Ranking.setTextAppearance(R.style.mainRanking)
                         }
 
@@ -354,10 +354,7 @@ class MainFragment(
     }
 
     private fun setPage() {
-        if ((binding.userUtil.currentItem + 1) % 4 == 0) binding.userUtil.setCurrentWithDuration(
-            (binding.userUtil.currentItem + 1) % 4,
-            500
-        )
+        if ((binding.userUtil.currentItem + 1) % 4 == 0) binding.userUtil.setCurrentItem(0, false)
         else binding.userUtil.setCurrentWithDuration((binding.userUtil.currentItem + 1) % 4, 250)
 
     }
