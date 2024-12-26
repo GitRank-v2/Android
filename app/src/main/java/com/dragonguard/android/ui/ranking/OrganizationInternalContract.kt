@@ -11,13 +11,9 @@ class OrganizationInternalContract {
         data class SearchOrgId(val orgName: String) : OrganizationInternalEvent()
         data class GetOrgInternalRankings(val orgId: Long, val page: Int) :
             OrganizationInternalEvent()
-
-        data object AddRanking : OrganizationInternalEvent()
     }
 
     sealed class OrganizationInternalState {
-
-
         data class OrgId(val orgId: Long) : OrganizationInternalState()
         data class OrgInternalRankings(val orgInternalRankings: List<OrgInternalRankingModelItem>) :
             OrganizationInternalState()
@@ -28,7 +24,6 @@ class OrganizationInternalContract {
     data class OrganizationInternalStates(
         val loadState: LoadState,
         val orgId: OrganizationInternalState.OrgId,
-        val orgInternalRankings: OrganizationInternalState.OrgInternalRankings,
         val receivedRankings: OrganizationInternalState.OrgInternalRankings,
         val token: OrganizationInternalState.Token
     ) : UiState

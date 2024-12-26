@@ -86,7 +86,7 @@ class RankingsViewModel @Inject constructor(
                             )
                         }
                     }.onError {
-                        Log.d("RankingsViewModel", "handleEvent: ${it}")
+                        Log.d("RankingsViewModel", "total org: ${it}")
                     }
                 }
 
@@ -108,8 +108,8 @@ class RankingsViewModel @Inject constructor(
                                 )
                             )
                         }
-                    }.onFail {
-
+                    }.onError {
+                        Log.d("RankingsViewModel", "company: ${it}")
                     }
                 }
 
@@ -131,8 +131,8 @@ class RankingsViewModel @Inject constructor(
                                 )
                             )
                         }
-                    }.onFail {
-
+                    }.onError {
+                        Log.d("RankingsViewModel", "university: ${it}")
                     }
                 }
 
@@ -154,8 +154,8 @@ class RankingsViewModel @Inject constructor(
                                 )
                             )
                         }
-                    }.onFail {
-
+                    }.onError {
+                        Log.d("RankingsViewModel", "high: ${it}")
                     }
                 }
 
@@ -177,8 +177,8 @@ class RankingsViewModel @Inject constructor(
                                 )
                             )
                         }
-                    }.onFail {
-
+                    }.onError {
+                        Log.d("RankingsViewModel", "etc: ${it}")
                     }
                 }
 

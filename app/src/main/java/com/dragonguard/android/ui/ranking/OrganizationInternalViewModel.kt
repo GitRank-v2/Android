@@ -1,12 +1,13 @@
 package com.dragonguard.android.ui.ranking
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.repository.ranking.OrganizationInternalRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
-import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,7 +25,6 @@ class OrganizationInternalViewModel @Inject constructor(
             LoadState.INIT,
             OrganizationInternalContract.OrganizationInternalState.OrgId(-1L),
             OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(emptyList()),
-            OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(emptyList()),
             OrganizationInternalContract.OrganizationInternalState.Token(pref.getJwtToken(""))
         )
     }
@@ -34,15 +34,17 @@ class OrganizationInternalViewModel @Inject constructor(
             when (event) {
                 is OrganizationInternalContract.OrganizationInternalEvent.SearchOrgId -> {
                     repository.searchOrgId(event.orgName).onSuccess {
+                        Log.d("OrganizationInternalViewModel", "orgId: $it")
                         setState {
                             copy(
+                                loadState = LoadState.SUCCESS,
                                 orgId = OrganizationInternalContract.OrganizationInternalState.OrgId(
                                     it
                                 )
                             )
                         }
-                    }.onFail {
-
+                    }.onError {
+                        Log.d("OrganizationInternalViewModel", "error: $it")
                     }
 
                 }
@@ -50,28 +52,19 @@ class OrganizationInternalViewModel @Inject constructor(
                 is OrganizationInternalContract.OrganizationInternalEvent.GetOrgInternalRankings -> {
                     setState { copy(loadState = LoadState.LOADING) }
                     repository.orgInternalRankings(event.orgId, event.page).onSuccess {
+                        Log.d("OrganizationInternalViewModel", "orgInternalRankings: $it")
                         setState {
                             copy(
-                                loadState = LoadState.SUCCESS,
+                                loadState = LoadState.REFRESH,
                                 receivedRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
                                     it
                                 )
                             )
                         }
-                    }.onFail {
-
+                    }.onError {
+                        Log.d("OrganizationInternalViewModel", "error : $it")
                     }
 
-                }
-
-                is OrganizationInternalContract.OrganizationInternalEvent.AddRanking -> {
-                    setState {
-                        copy(
-                            orgInternalRankings = OrganizationInternalContract.OrganizationInternalState.OrgInternalRankings(
-                                orgInternalRankings.orgInternalRankings + receivedRankings.orgInternalRankings
-                            )
-                        )
-                    }
                 }
             }
         }
@@ -88,9 +81,5 @@ class OrganizationInternalViewModel @Inject constructor(
                 page
             )
         )
-    }
-
-    fun addRanking() {
-        setEvent(OrganizationInternalContract.OrganizationInternalEvent.AddRanking)
     }
 }

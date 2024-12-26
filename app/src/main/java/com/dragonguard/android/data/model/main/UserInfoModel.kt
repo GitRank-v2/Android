@@ -27,8 +27,6 @@ data class UserInfoModel(
     var organization: String? = "",
     @field:Json(name = "organization_rank")
     var organization_rank: Int? = 0,
-    @field:Json(name = "blockchain_url")
-    var blockchain_url: String? = "",
     @field:Json(name = "issues")
     var issues: Int = 0,
     @field:Json(name = "pull_requests")
@@ -38,7 +36,9 @@ data class UserInfoModel(
     @field:Json(name = "is_last")
     var is_last: Boolean? = false,
     @field:Json(name = "member_github_ids")
-    var member_github_ids: List<String>? = listOf()
+    var member_github_ids: List<String>? = listOf(),
+    @field:Json(name = "contribution_amount")
+    var contribution_amount: Long = 0
 ) {
     constructor() : this(
         auth_step = "",
@@ -50,11 +50,11 @@ data class UserInfoModel(
         rank = 0,
         organization = "",
         organization_rank = 0,
-        blockchain_url = "",
         issues = 0,
         pull_requests = 0,
         reviews = 0,
         is_last = false,
-        member_github_ids = listOf()
+        member_github_ids = listOf(),
+        contribution_amount = 0
     )
 }

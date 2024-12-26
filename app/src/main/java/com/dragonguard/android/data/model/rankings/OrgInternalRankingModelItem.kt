@@ -8,7 +8,7 @@ data class OrgInternalRankingModelItem(
     @field:Json(name = "github_id")
     val github_id: String?,
     @field:Json(name = "id")
-    val id: String?,
+    val id: Long?,
     @field:Json(name = "tier")
     val tier: String?,
     @field:Json(name = "contribution_amount")
