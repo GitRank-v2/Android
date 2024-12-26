@@ -8,19 +8,16 @@ interface SearchRepository {
     suspend fun getUserNames(
         name: String,
         count: Int,
-        type: String
     ): DataResult<List<UserNameModelItem>>
 
     suspend fun getRepositoryNames(
         name: String,
         count: Int,
-        type: String,
     ): DataResult<List<RepoSearchResultModel>>
 
     suspend fun getRepositoryNamesWithFilters(
         name: String,
         count: Int,
         filters: String,
-        type: String,
     ): DataResult<List<RepoSearchResultModel>>
 }

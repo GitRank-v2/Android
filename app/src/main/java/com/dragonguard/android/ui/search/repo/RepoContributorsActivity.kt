@@ -129,6 +129,7 @@ class RepoContributorsActivity : AppCompatActivity(),
         contributorsAdapter = ContributorsAdapter(colorSets, this)
         binding.repoContributors.adapter = contributorsAdapter
         binding.repoContributors.layoutManager = LinearLayoutManager(this)
+        contributorsAdapter.submitList(viewModel.currentState.repoState.repoState.git_repo_members)
         binding.repoTitle.text = repoName
         binding.repoContributors.visibility = View.VISIBLE
         binding.loadingLottie.pauseAnimation()
@@ -156,6 +157,7 @@ class RepoContributorsActivity : AppCompatActivity(),
         }
 
         val set = BarDataSet(entries, "DataSet")
+        Log.d("colors", "colorSets = $colorSets")
         set.colors = colorSets
         set.apply {
             formSize = 15f

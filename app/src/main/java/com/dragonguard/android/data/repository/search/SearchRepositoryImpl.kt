@@ -17,25 +17,23 @@ class SearchRepositoryImpl @Inject constructor(
     override suspend fun getUserNames(
         name: String,
         count: Int,
-        type: String
     ): DataResult<List<UserNameModelItem>> {
         val queryMap = mutableMapOf<String, String>()
-        queryMap.put("page", "${count + 1}")
+        queryMap.put("page", "$count")
         queryMap.put("q", name)
-        queryMap.put("type", type)
+        queryMap.put("type", "MEMBER")
         return handleApi({ service.getUserName(queryMap) }, retrofit) { it.data }
     }
 
     override suspend fun getRepositoryNames(
         name: String,
         count: Int,
-        type: String,
     ): DataResult<List<RepoSearchResultModel>> {
 
         val queryMap = mutableMapOf<String, String>()
-        queryMap.put("page", "${count + 1}")
+        queryMap.put("page", "$count")
         queryMap.put("q", name)
-        queryMap.put("type", type)
+        queryMap.put("type", "GIT_REPO")
         return handleApi({ service.getRepoName(queryMap) }, retrofit) { it.data }
 
     }
@@ -44,14 +42,13 @@ class SearchRepositoryImpl @Inject constructor(
         name: String,
         count: Int,
         filters: String,
-        type: String,
     ): DataResult<List<RepoSearchResultModel>> {
         val queryMap = mutableMapOf<String, String>()
-        queryMap.put("page", "${count + 1}")
+        queryMap.put("page", "$count")
         queryMap.put("q", name)
-        queryMap.put("type", type)
+        queryMap.put("type", "GIT_REPO")
         queryMap.put("filters", filters)
-        Log.d("api 호출", "이름: $name, type: $type filters: $filters")
+        Log.d("api 호출", "이름: $name, type: GIT_REPO filters: $filters")
         Log.d("api 호출", "$count 페이지 검색")
         return handleApi({ service.getRepoName(queryMap) }, retrofit) { it.data }
     }
