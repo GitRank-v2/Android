@@ -23,9 +23,11 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 //선택한 두 Repository의 member들을 비교하기 위한 fragment
+@AndroidEntryPoint
 class CompareUserFragment(
     private val repoName1: String,
     private val repoName2: String,

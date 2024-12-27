@@ -3,7 +3,6 @@ package com.dragonguard.android.data.service
 import com.dragonguard.android.data.model.AuthStateModel
 import com.dragonguard.android.data.model.StandardResponse
 import com.dragonguard.android.data.model.compare.CompareRepoMembersResponseModel
-import com.dragonguard.android.data.model.compare.CompareRepoRequestModel
 import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.contributors.RepoContributorsModel
 import com.dragonguard.android.data.model.detail.ClientDetailModel
@@ -80,14 +79,14 @@ interface GitRankService {
     suspend fun getClientOrganization(): Response<StandardResponse<List<GitOrganization>>>
 
     //    두 Repository의 구성원들의 정보를 받아오기 위한 함수
-    @POST("git-repos/compare/git-repos-members")
+    @GET("git-repos/compare/git-repos-members")
     @Headers("accept: application/json", "content-type: application/json")
-    suspend fun postCompareRepoMembers(@Body compare: CompareRepoRequestModel): Response<StandardResponse<CompareRepoMembersResponseModel>>
+    suspend fun postCompareRepoMembers(@QueryMap query: Map<String, String>): Response<StandardResponse<CompareRepoMembersResponseModel>>
 
     //    두 Repository의 정보를 받아오기 위한 함수
-    @POST("git-repos/compare")
+    @GET("git-repos/compare")
     @Headers("accept: application/json", "content-type: application/json")
-    suspend fun postCompareRepo(@Body compare: CompareRepoRequestModel): Response<StandardResponse<CompareRepoResponseModel>>
+    suspend fun postCompareRepo(@QueryMap query: Map<String, String>): Response<StandardResponse<CompareRepoResponseModel>>
 
 
     @GET("auth/refresh")
