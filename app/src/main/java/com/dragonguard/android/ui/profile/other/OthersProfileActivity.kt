@@ -98,8 +98,9 @@ class OthersProfileActivity : AppCompatActivity(), OthersReposAdapter.OnRepoClic
     }
 
     override fun onRepoClick(repoName: String) {
-        Intent(this, RepoContributorsActivity::class.java).apply {
-            putExtra("repoName", data)
-        }.run { startActivity(this) }
+        Log.d("repoName", repoName)
+        val intent = Intent(this, RepoContributorsActivity::class.java)
+        intent.putExtra("repoName", repoName)
+        startActivity(intent)
     }
 }

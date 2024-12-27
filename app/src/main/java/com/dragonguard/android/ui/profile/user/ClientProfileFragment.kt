@@ -86,9 +86,10 @@ class ClientProfileFragment(
     }
 
     override fun onRepoClick(repoName: String) {
-        Intent(requireContext(), RepoContributorsActivity::class.java).apply {
-            putExtra("repoName", repoName)
-        }.run { startActivity(this) }
+        Log.d("repoName", repoName)
+        val intent = Intent(requireContext(), RepoContributorsActivity::class.java)
+        intent.putExtra("repoName", repoName)
+        startActivity(intent)
     }
 
     override fun onOrganizationClick(organization: GitOrganization) {

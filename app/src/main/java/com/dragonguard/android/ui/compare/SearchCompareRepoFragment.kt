@@ -13,7 +13,9 @@ import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentCompareSearchBinding
 import com.dragonguard.android.ui.compare.compare.RepoCompareActivity
 import com.dragonguard.android.ui.compare.search.CompareSearchActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchCompareRepoFragment : Fragment() {
     private lateinit var binding: FragmentCompareSearchBinding
 
@@ -24,6 +26,18 @@ class SearchCompareRepoFragment : Fragment() {
         // Inflate the layout for this fragment
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_compare_search, container, false)
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                when (result.resultCode) {
+                    1 -> {
+                        binding.repoCompare1.text = result.data?.getStringExtra("repoName")
+                    }
+
+                    2 -> {
+                        binding.repoCompare2.text = result.data?.getStringExtra("repoName")
+                    }
+                }
+            }
         return binding.root
     }
 
@@ -65,7 +79,7 @@ class SearchCompareRepoFragment : Fragment() {
         }
     }
 
-    private val resultLauncher =
+    private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when (result.resultCode) {
                 1 -> {
