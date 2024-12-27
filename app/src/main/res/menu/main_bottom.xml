@@ -22,7 +22,7 @@
     </item>
     <item
         android:id="@+id/bottom_profile"
-        android:icon="@drawable/more"
+        android:icon="@drawable/ic_profile_24"
         android:title="프로필"
         app:showAsAction="ifRoom">
     </item>
