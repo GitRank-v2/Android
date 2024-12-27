@@ -59,7 +59,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getTotalUserRanking(page, size)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                    "",
                     this
                 )
             }
@@ -69,7 +68,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getTotalOrganizationRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    rankingType,
                     this
                 )
             }
@@ -79,7 +77,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getCompanyRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    "COMPANY",
                     this
                 )
             }
@@ -89,7 +86,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getUniversityRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    "UNIVERSITY",
                     this
                 )
             }
@@ -99,7 +95,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getHighSchoolRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    "HIGH_SCHOOL",
                     this
                 )
             }
@@ -109,7 +104,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.getEtcRanking(page)
                 RankingsAdapter(
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    "ETC",
                     this
                 )
             }
@@ -269,13 +263,12 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                         3
                     )
 
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                            "",
                             this
                         )
                         binding.eachRankings.adapter = rankingsAdapter
@@ -351,16 +344,15 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                         3
                     )
 
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
 
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         when (rankingType) {
                             "회사" -> {
                                 rankingsAdapter = RankingsAdapter(
                                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    "COMPANY",
                                     this
                                 )
                             }
@@ -368,7 +360,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                             "대학교" -> {
                                 rankingsAdapter = RankingsAdapter(
                                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    "UNIVERSITY",
                                     this
                                 )
                             }
@@ -376,7 +367,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                             "고등학교" -> {
                                 rankingsAdapter = RankingsAdapter(
                                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    "HIGH_SCHOOL",
                                     this
                                 )
                             }
@@ -384,7 +374,6 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                             "ETC" -> {
                                 rankingsAdapter = RankingsAdapter(
                                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    "ETC",
                                     this
                                 )
                             }

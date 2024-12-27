@@ -427,6 +427,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
     private fun loadMorePosts() {
         Log.d("더 가져오기", viewModel.currentState.repoNames.repoNames.size.toString())
         Log.d("더 가져오기", viewModel.currentState.userNames.userNames.size.toString())
+        Log.d("더 가져오기", count.toString())
         if (binding.loadingLottie.visibility == View.GONE &&
             (viewModel.currentState.repoNames.repoNames.size >= (count - 1) * 10
                     || viewModel.currentState.userNames.userNames.size >= (count - 1) * 10)

@@ -64,7 +64,10 @@ class OrganizationInternalViewModel @Inject constructor(
                     }.onError {
                         Log.d("OrganizationInternalViewModel", "error : $it")
                     }
+                }
 
+                is OrganizationInternalContract.OrganizationInternalEvent.ResetLoadState -> {
+                    setState { copy(loadState = LoadState.INIT) }
                 }
             }
         }
@@ -81,5 +84,9 @@ class OrganizationInternalViewModel @Inject constructor(
                 page
             )
         )
+    }
+
+    fun resetState() {
+        setEvent(OrganizationInternalContract.OrganizationInternalEvent.ResetLoadState)
     }
 }

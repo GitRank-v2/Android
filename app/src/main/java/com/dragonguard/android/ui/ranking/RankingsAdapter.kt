@@ -14,7 +14,6 @@ import com.dragonguard.android.util.CustomGlide
 
 class RankingsAdapter(
     private val rankings: List<*>,
-    private val type: String,
     private val listener: OnRankingClickListener
 ) : RecyclerView.Adapter<RankingsAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

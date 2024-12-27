@@ -32,7 +32,6 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
     private var orgName = ""
     private var page = 0
     private var position = 0
-    private var id = 0L
     private var changed = true
     private var ranking = 0
     private var orgInternalRankings =
@@ -122,7 +121,9 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
                 ranking++
             }
             Log.d("뷰 보이기 전", "initrecycler 전")
+
             initRecycler()
+
         }
     }
 
@@ -131,7 +132,7 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =
-                RankingsAdapter(orgInternalRankings, "", this)
+                RankingsAdapter(orgInternalRankings, this)
             binding.orgInternalRanking.adapter = organizationInternalRankingAdapter
             binding.orgInternalRanking.layoutManager = LinearLayoutManager(this)
             binding.orgInternalRanking.visibility = View.VISIBLE
@@ -141,6 +142,7 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         Log.d("api 횟수", "$page 페이지 검색")
         binding.progressBar.visibility = View.GONE
         initScrollListener()
+        viewModel.resetState()
     }
 
     private fun loadMorePosts() {
