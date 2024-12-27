@@ -2,6 +2,7 @@ package com.dragonguard.android.ui.profile.user
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -78,8 +79,9 @@ class ClientReposActivity : AppCompatActivity(), OthersReposAdapter.OnRepoClickL
     }
 
     override fun onRepoClick(repoName: String) {
-        Intent(this, RepoContributorsActivity::class.java).apply {
-            putExtra("repoName", data)
-        }.run { startActivity(this) }
+        Log.d("repoName", repoName)
+        val intent = Intent(this, RepoContributorsActivity::class.java)
+        intent.putExtra("repoName", repoName)
+        startActivity(intent)
     }
 }

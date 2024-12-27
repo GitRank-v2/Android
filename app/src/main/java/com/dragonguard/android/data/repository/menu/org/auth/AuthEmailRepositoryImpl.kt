@@ -4,9 +4,13 @@ import com.dragonguard.android.data.model.org.AddOrgMemberModel
 import com.dragonguard.android.data.service.GitRankService
 import com.dragonguard.android.util.DataResult
 import com.dragonguard.android.util.handleApi
+import retrofit2.Retrofit
 import javax.inject.Inject
 
-class AuthEmailRepositoryImpl @Inject constructor(private val service: GitRankService) :
+class AuthEmailRepositoryImpl @Inject constructor(
+    private val service: GitRankService,
+    private val retrofit: Retrofit
+) :
     AuthEmailRepository {
     override suspend fun addOrgMember(body: AddOrgMemberModel): DataResult<Long> {
         return handleApi({ service.postAddOrgMember(body) }) { it.data.id }
@@ -17,12 +21,10 @@ class AuthEmailRepositoryImpl @Inject constructor(private val service: GitRankSe
 
         queryMap.put("code", code)
         queryMap.put("organizationId", orgId.toString())
-        return handleApi({
-            service.getEmailAuthResult(
-                queryMap,
-                id.toString()
-            )
-        }) { it.data.is_valid_code }
+        return handleApi(
+            { service.getEmailAuthResult(id.toString(), queryMap) },
+            retrofit
+        ) { it.data.is_valid_code }
     }
 
     override suspend fun deleteEmailCode(id: Long): DataResult<Unit> {

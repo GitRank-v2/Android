@@ -21,8 +21,6 @@ class SearchViewModel @Inject constructor(
         return SearchContract.SearchStates(
             LoadState.INIT,
             SearchContract.SearchState.UserNames(arrayListOf()),
-            SearchContract.SearchState.UserNames(arrayListOf()),
-            SearchContract.SearchState.RepoNames(arrayListOf()),
             SearchContract.SearchState.RepoNames(arrayListOf())
         )
     }
@@ -32,13 +30,11 @@ class SearchViewModel @Inject constructor(
             when (event) {
                 is SearchContract.SearchEvent.GetUserNames -> {
                     setState { copy(searchState = LoadState.LOADING) }
-                    repository.getUserNames(event.name, event.count, event.type).onSuccess {
-                        setState {
-                            copy(
-                                searchState = LoadState.USER_SUCCESS,
-                                receivedUserNames = SearchContract.SearchState.UserNames(it as ArrayList)
-                            )
-                        }
+                    Log.d("SearchViewModel", "handleEvent: ${event.name}, ${event.count}")
+                    repository.getUserNames(event.name, event.count).onSuccess {
+                        Log.d("SearchViewModel", "handleEvent success: $it")
+                        currentState.userNames.userNames.addAll(it)
+                        setState { copy(searchState = LoadState.USER_SUCCESS) }
                     }.onFail {
                         Log.d("SearchViewModel", "handleEvent fail: $it")
                     }.onError {
@@ -50,14 +46,10 @@ class SearchViewModel @Inject constructor(
 
                 is SearchContract.SearchEvent.GetRepositoryNamesNoFilters -> {
                     setState { copy(searchState = LoadState.LOADING) }
-                    repository.getRepositoryNames(event.name, event.count, event.type).onSuccess {
+                    repository.getRepositoryNames(event.name, event.count).onSuccess {
                         Log.d("SearchViewModel", "handleEvent success: $it")
-                        currentState.receivedRepoNames.repoNames.addAll(it)
-                        setState {
-                            copy(
-                                searchState = LoadState.REPO_SUCCESS,
-                            )
-                        }
+                        currentState.repoNames.repoNames.addAll(it)
+                        setState { copy(searchState = LoadState.REPO_SUCCESS) }
                     }.onFail {
                         Log.d("SearchViewModel", "handleEvent fail: $it")
                     }.onError {
@@ -74,14 +66,9 @@ class SearchViewModel @Inject constructor(
                         event.name,
                         event.count,
                         event.filters,
-                        event.type,
                     ).onSuccess {
-                        setState {
-                            copy(
-                                searchState = LoadState.REPO_SUCCESS,
-                                receivedRepoNames = SearchContract.SearchState.RepoNames(it as ArrayList)
-                            )
-                        }
+                        currentState.repoNames.repoNames.addAll(it)
+                        setState { copy(searchState = LoadState.REPO_SUCCESS) }
                     }.onFail {
                         Log.d("SearchViewModel", "handleEvent fail: $it")
                     }.onError {
@@ -108,47 +95,20 @@ class SearchViewModel @Inject constructor(
                         )
                     }
                 }
-
-                is SearchContract.SearchEvent.AddReceivedUserNames -> {
-                    setState {
-                        copy(
-                            userNames = SearchContract.SearchState.UserNames(
-                                (userNames.userNames + receivedUserNames.userNames) as ArrayList
-                            ),
-                            receivedUserNames = SearchContract.SearchState.UserNames(arrayListOf())
-                        )
-                    }
-                }
-
-                is SearchContract.SearchEvent.AddReceivedRepoNames -> {
-                    currentState.repoNames.repoNames.addAll(currentState.receivedRepoNames.repoNames)
-                    setState {
-                        copy(
-                            receivedRepoNames = SearchContract.SearchState.RepoNames(arrayListOf())
-                        )
-                    }
-                }
             }
         }
     }
 
-    fun searchUserNames(name: String, count: Int, type: String) {
-        setEvent(SearchContract.SearchEvent.GetUserNames(name, count, type))
+    fun searchUserNames(name: String, count: Int) {
+        setEvent(SearchContract.SearchEvent.GetUserNames(name, count))
     }
 
-    fun searchRepositoryNamesNoFilters(name: String, count: Int, type: String) {
-        setEvent(SearchContract.SearchEvent.GetRepositoryNamesNoFilters(name, count, type))
+    fun searchRepositoryNamesNoFilters(name: String, count: Int) {
+        setEvent(SearchContract.SearchEvent.GetRepositoryNamesNoFilters(name, count))
     }
 
-    fun searchRepositoryNamesWithFilters(name: String, count: Int, filters: String, type: String) {
-        setEvent(
-            SearchContract.SearchEvent.GetRepositoryNamesWithFilters(
-                name,
-                count,
-                filters,
-                type
-            )
-        )
+    fun searchRepositoryNamesWithFilters(name: String, count: Int, filters: String) {
+        setEvent(SearchContract.SearchEvent.GetRepositoryNamesWithFilters(name, count, filters))
     }
 
     fun clearRepoNames() {
@@ -157,13 +117,5 @@ class SearchViewModel @Inject constructor(
 
     fun clearUserNames() {
         setEvent(SearchContract.SearchEvent.ClearUserNames)
-    }
-
-    fun addReceivedUserNames() {
-        setEvent(SearchContract.SearchEvent.AddReceivedUserNames)
-    }
-
-    fun addReceivedRepoNames() {
-        setEvent(SearchContract.SearchEvent.AddReceivedRepoNames)
     }
 }

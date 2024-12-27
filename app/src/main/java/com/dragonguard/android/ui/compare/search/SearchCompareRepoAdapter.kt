@@ -28,12 +28,12 @@ class SearchCompareRepoAdapter(count: Int, private val listener: OnItemClickList
         RecyclerView.ViewHolder(binding.root) {
         //클릭리스너 구현
         fun bind(data: RepoSearchResultModel, count: Int) {
-            binding.repoName.text = data.name
+            binding.repoName.text = data.full_name
             //binding.repoLanguage.text = data.language
-            Log.d("name", "$data.name")
-            Log.d("count", "$repoCount")
+            Log.d("name", data.full_name)
+            //Log.d("count", "$repoCount")
             itemView.setOnClickListener {
-                listener.onItemClick(count, data.name)
+                listener.onItemClick(count, data.full_name)
             }
         }
     }
@@ -56,7 +56,9 @@ class SearchCompareRepoAdapter(count: Int, private val listener: OnItemClickList
             override fun areItemsTheSame(
                 oldItem: RepoSearchResultModel,
                 newItem: RepoSearchResultModel
-            ) = oldItem.name == newItem.name
+            ): Boolean {
+                return oldItem.full_name == newItem.full_name && oldItem.description == newItem.description
+            }
 
             override fun areContentsTheSame(
                 oldItem: RepoSearchResultModel,

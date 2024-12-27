@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ClientProfileFragment(
-    private val userName: String
+    private val userName: String,
+    private val profile: String
 ) : Fragment(), OthersReposAdapter.OnRepoClickListener,
     ClientGitOrgAdapter.OnOrganizationClickListener {
     private lateinit var binding: FragmentClientProfileBinding
@@ -64,30 +65,31 @@ class ClientProfileFragment(
     private fun initRecycler() {
         Log.d(
             "결과",
-            "사용자 org: ${viewModel.currentState.clientDetail.clientDetail.git_organizations}"
+            "사용자 org: ${viewModel.currentState.clientRepository.clientRepository}"
         )
-        Log.d("결과", "사용자 repos: ${viewModel.currentState.clientDetail.clientDetail.git_repos}")
+        Log.d("결과", "사용자 repos: ${viewModel.currentState.clientOrg.clientOrg}")
         if (!this@ClientProfileFragment.isDetached && this@ClientProfileFragment.isAdded) {
             orgAdapter = ClientGitOrgAdapter(this)
             binding.memberOrganizaitonList.adapter = orgAdapter
             binding.memberOrganizaitonList.layoutManager = LinearLayoutManager(requireContext())
-            orgAdapter.notifyDataSetChanged()
+            orgAdapter.submitList(viewModel.currentState.clientOrg.clientOrg)
 
             repoAdapter = OthersReposAdapter(
-                viewModel.currentState.clientDetail.clientDetail.member_profile_image,
+                profile,
                 userName,
                 this
             )
             binding.memberRepositoryList.adapter = repoAdapter
             binding.memberRepositoryList.layoutManager = LinearLayoutManager(requireContext())
-            repoAdapter.submitList(viewModel.currentState.clientDetail.clientDetail.git_repos)
+            repoAdapter.submitList(viewModel.currentState.clientRepository.clientRepository)
         }
     }
 
     override fun onRepoClick(repoName: String) {
-        Intent(requireContext(), RepoContributorsActivity::class.java).apply {
-            putExtra("repoName", repoName)
-        }.run { startActivity(this) }
+        Log.d("repoName", repoName)
+        val intent = Intent(requireContext(), RepoContributorsActivity::class.java)
+        intent.putExtra("repoName", repoName)
+        startActivity(intent)
     }
 
     override fun onOrganizationClick(organization: GitOrganization) {

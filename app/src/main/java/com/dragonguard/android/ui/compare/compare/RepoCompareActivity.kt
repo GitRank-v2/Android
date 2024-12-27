@@ -51,7 +51,7 @@ class RepoCompareActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     if (state.loadState == LoadState.SUCCESS) {
-                        if (state.repoMembers.repoMembers.first_result != null && state.repoMembers.repoMembers.second_result != null) {
+                        if (state.repoMembers.repoMembers.first != null && state.repoMembers.repoMembers.second != null) {
                             startFragment()
                         }
                     }
@@ -69,8 +69,8 @@ class RepoCompareActivity : AppCompatActivity() {
         compareUserFragment = CompareUserFragment(
             repo1,
             repo2,
-            viewModel.currentState.repoMembers.repoMembers.first_result!!,
-            viewModel.currentState.repoMembers.repoMembers.second_result!!
+            viewModel.currentState.repoMembers.repoMembers.first!!,
+            viewModel.currentState.repoMembers.repoMembers.second!!
         )
         adapter = CompareAdapter(this, viewModel.currentState.token.token)
 

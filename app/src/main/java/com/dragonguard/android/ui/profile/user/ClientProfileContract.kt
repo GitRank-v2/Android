@@ -1,6 +1,6 @@
 package com.dragonguard.android.ui.profile.user
 
-import com.dragonguard.android.data.model.detail.ClientDetailModel
+import com.dragonguard.android.data.model.detail.GitOrganization
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
@@ -12,14 +12,16 @@ class ClientProfileContract {
     }
 
     sealed class ClientProfileState {
-        data class ClientDetail(val clientDetail: ClientDetailModel) : ClientProfileState()
-        data class Token(val token: String) : ClientProfileState()
+        data class ClientRepository(val clientRepository: List<String>) :
+            ClientProfileState()
+
+        data class ClientOrg(val clientOrg: List<GitOrganization>) : ClientProfileState()
     }
 
     data class ClientProfileStates(
         val loadState: LoadState,
-        val clientDetail: ClientProfileState.ClientDetail,
-        val token: ClientProfileState.Token
+        val clientRepository: ClientProfileState.ClientRepository,
+        val clientOrg: ClientProfileState.ClientOrg
     ) : UiState
 
     sealed class ClientProfileEffect : UiEffect {

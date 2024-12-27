@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
     private var compareFrag: SearchCompareRepoFragment? = null
     private var profileFrag: ClientProfileFragment? = null
     private var imgRefresh = true
-    private var realModel = UserInfoModel()
     private var finish = false
 
     override fun onNewIntent(intent: Intent) {
@@ -72,8 +71,7 @@ class MainActivity : AppCompatActivity() {
                     profileFrag = null
                     rankingFrag = null
                     Log.d("로그인 필요", "로그인 필요")
-                    val intent = Intent(applicationContext, LoginActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(applicationContext, LoginActivity::class.java))
                 }
             }
 
@@ -103,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.bottom_rankings -> {
-                    rankingFrag =
+                    if (rankingFrag == null) rankingFrag =
                         RankingFragment(viewModel.currentState.userInfo.userInfo.github_id!!)
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, rankingFrag!!)
@@ -111,20 +109,19 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.bottom_compare -> {
-                    compareFrag = SearchCompareRepoFragment()
+                    if (compareFrag == null) compareFrag = SearchCompareRepoFragment()
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(binding.contentFrame.id, compareFrag!!)
                         .commit()
                 }
 
                 R.id.bottom_profile -> {
-                    Log.d("user name", "user name: ${realModel.github_id}")
-                    realModel.github_id?.let {
-                        profileFrag = ClientProfileFragment(it)
-                        val transaction = supportFragmentManager.beginTransaction()
-                        transaction.replace(binding.contentFrame.id, profileFrag!!)
-                            .commit()
-                    }
+                    if (profileFrag == null) profileFrag = ClientProfileFragment(
+                        viewModel.currentState.userInfo.userInfo.github_id,
+                        viewModel.currentState.userInfo.userInfo.profile_image!!
+                    )
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(binding.contentFrame.id, profileFrag!!).commit()
                 }
             }
             true
@@ -139,10 +136,6 @@ class MainActivity : AppCompatActivity() {
                         Log.d("success UserInfo", "success")
                         viewModel.setFinish()
                         checkUserInfo(state.userInfo.userInfo)
-                    }
-
-                    if (state.loadState == LoadState.LOGIN_FAIL) {
-                        refreshToken()
                     }
 
                     if (state.loadState == LoadState.IMAGE_LOADED) {
@@ -202,36 +195,26 @@ class MainActivity : AppCompatActivity() {
                 return
             }
             CoroutineScope(Dispatchers.IO).launch {
-                delay(1000)
+                delay(500)
                 finish = true
                 withContext(Dispatchers.Main) {
-                    if (mainFrag == null) {
-                        mainFrag =
-                            MainFragment(
-                                viewModel.currentState.userInfo.userInfo,
-                                viewModel
-                            )
+                    if (mainFrag == null) mainFrag = MainFragment(viewModel)
+                    if (binding.mainNav.selectedItemId == R.id.bottom_main) {
+                        val transaction = supportFragmentManager.beginTransaction()
+                        transaction.replace(binding.contentFrame.id, mainFrag!!)
+                            .commit()
                     }
-                    val transaction = supportFragmentManager.beginTransaction()
-                    transaction.replace(binding.contentFrame.id, mainFrag!!)
-                        .commit()
                 }
             }
         }
-    }
-
-    private fun refreshToken() {
-        viewModel.getNewToken()
     }
 
 
     override fun onRestart() {
         super.onRestart()
         if (binding.mainNav.selectedItemId == R.id.bottom_main) {
-            viewModel.setRepeat(false)
             finish = false
             viewModel.refreshAmount()
-            viewModel.getUserInfo()
         }
     }
 

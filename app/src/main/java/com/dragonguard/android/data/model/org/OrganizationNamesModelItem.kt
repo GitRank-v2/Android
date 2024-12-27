@@ -13,6 +13,6 @@ data class OrganizationNamesModelItem(
     val name: String?,
     @field:Json(name = "organization_type")
     val organization_type: String?,
-    @field:Json(name = "token_sum")
-    val token_sum: Int?
+    @field:Json(name = "contribution_amount")
+    val contribution_amount: Int?
 )

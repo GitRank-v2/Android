@@ -36,9 +36,9 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositoryClickListener {
     private lateinit var binding: ActivitySearchBinding
-    lateinit var repositoryProfileAdapter: RepositoryProfileAdapter
+    private lateinit var repositoryProfileAdapter: RepositoryProfileAdapter
     private var position = 0
-    private var count = 0
+    private var count = 1
     private var changed = true
     private var lastSearch = ""
     private var popularLanguages = ArrayList<String>()
@@ -164,13 +164,9 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
         for (i in 0 until popularLanguages.size) {
             languagesCheckBox.add(false)
         }
-//        Toast.makeText(applicationContext, "크기 : ${popularLanguages.size}", Toast.LENGTH_SHORT).show()
-//        Toast.makeText(applicationContext, "checkbox : ${languagesCheckBox.size}", Toast.LENGTH_SHORT).show()
-//        검색 옵션 구현
 
         binding.searchName.setOnClickListener {
-            val intent = Intent(this, SearchFilterActivity::class.java)
-            activityResultLauncher.launch(intent)
+            activityResultLauncher.launch(Intent(this, SearchFilterActivity::class.java))
         }
     }
 
@@ -189,8 +185,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
     }
 
     private fun checkUserNames() {
-        if (viewModel.currentState.receivedUserNames.userNames.isNotEmpty()) {
-            viewModel.addReceivedUserNames()
+        if (viewModel.currentState.userNames.userNames.isNotEmpty()) {
             initRecycler()
         } else {
             binding.loadingLottie.pauseAnimation()
@@ -200,8 +195,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
     }
 
     private fun checkRepoNames() {
-        if (viewModel.currentState.receivedRepoNames.repoNames.isNotEmpty()) {
-            viewModel.addReceivedRepoNames()
+        if (viewModel.currentState.repoNames.repoNames.isNotEmpty()) {
             initRecycler()
         } else {
             binding.loadingLottie.pauseAnimation()
@@ -219,7 +213,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
         forks: String?,
         name: String?
     ) {
-        count = 0
+        count = 1
         binding.searchOption.removeAllViews()
         filterResult = StringBuilder()
         filterLanguage = StringBuilder()
@@ -354,25 +348,23 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
         if (!this@SearchActivity.isFinishing) {
             if (type.isNotBlank()) {
                 if (type == "MEMBER") {
-                    viewModel.searchUserNames(name, count, type)
-                    count++
+                    viewModel.searchUserNames(name, count)
                 } else {
                     if (filterResult.toString().isBlank()) {
                         Log.d("필터 없음", "필터 없음")
-                        viewModel.searchRepositoryNamesNoFilters(name, count, type)
+                        viewModel.searchRepositoryNamesNoFilters(name, count)
                     } else {
                         Log.d("필터 있음", "필터 있음")
                         viewModel.searchRepositoryNamesWithFilters(
                             name,
                             count,
-                            filterResult.toString(),
-                            type
+                            filterResult.toString()
                         )
                     }
                 }
             } else {
                 Log.d("필터 없음", "필터 없음")
-                viewModel.searchRepositoryNamesNoFilters(name, count, "GIT_REPO")
+                viewModel.searchRepositoryNamesNoFilters(name, count)
             }
         }
     }
@@ -381,24 +373,24 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()
     private fun initRecycler() {
         Log.d("count", "count: $count")
-        Log.d("results", viewModel.currentState.userNames.userNames.toString())
-        Log.d("results", viewModel.currentState.repoNames.repoNames.toString())
+        Log.d("names", viewModel.currentState.userNames.userNames.toString())
+        Log.d("repos", viewModel.currentState.repoNames.repoNames.toString())
         if (type == "MEMBER") {
-            if (count == 0) {
-                repositoryProfileAdapter =
-                    RepositoryProfileAdapter(
-                        viewModel.currentState.userNames.userNames,
-                        imgList,
-                        repoCount,
-                        this@SearchActivity
-                    )
+            if (count == 1) {
+                repositoryProfileAdapter = RepositoryProfileAdapter(
+                    viewModel.currentState.userNames.userNames,
+                    imgList,
+                    repoCount,
+                    this@SearchActivity
+                )
                 binding.searchResult.adapter = repositoryProfileAdapter
                 binding.searchResult.layoutManager = LinearLayoutManager(this)
-                binding.searchResult.visibility = View.VISIBLE
             }
+            binding.searchResult.visibility = View.VISIBLE
             repositoryProfileAdapter.notifyDataSetChanged()
+            Log.d("member", viewModel.currentState.userNames.userNames.toString())
         } else {
-            if (count == 0) {
+            if (count == 1) {
                 repositoryProfileAdapter = if (type.isBlank()) {
                     RepositoryProfileAdapter(
                         viewModel.currentState.repoNames.repoNames,
@@ -416,25 +408,30 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
                 }
                 binding.searchResult.adapter = repositoryProfileAdapter
                 binding.searchResult.layoutManager = LinearLayoutManager(this)
-                repositoryProfileAdapter.notifyDataSetChanged()
-                binding.searchResult.visibility = View.VISIBLE
-            } else {
-                repositoryProfileAdapter.notifyDataSetChanged()
-            }
-        }
 
-        count++
+            }
+            Log.d("repository", viewModel.currentState.repoNames.repoNames.toString())
+            repositoryProfileAdapter.notifyDataSetChanged()
+            binding.searchResult.visibility = View.VISIBLE
+        }
         Log.d("api 횟수", "$count 페이지 검색")
+        count++
+
         binding.loadingLottie.pauseAnimation()
         binding.loadingLottie.visibility = View.GONE
         initScrollListener()
-        type = "GIT_REPO"
     }
 
 
     //    데이터 더 받아오는 함수 loadMorePosts() 구현
     private fun loadMorePosts() {
-        if (binding.loadingLottie.visibility == View.GONE && count != 0) {
+        Log.d("더 가져오기", viewModel.currentState.repoNames.repoNames.size.toString())
+        Log.d("더 가져오기", viewModel.currentState.userNames.userNames.size.toString())
+        Log.d("더 가져오기", count.toString())
+        if (binding.loadingLottie.visibility == View.GONE &&
+            (viewModel.currentState.repoNames.repoNames.size >= (count - 1) * 10
+                    || viewModel.currentState.userNames.userNames.size >= (count - 1) * 10)
+        ) {
             val params = binding.loadingLottie.layoutParams as CoordinatorLayout.LayoutParams
             params.gravity = Gravity.BOTTOM
             params.bottomMargin = 100

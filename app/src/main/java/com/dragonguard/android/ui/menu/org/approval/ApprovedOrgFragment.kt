@@ -46,6 +46,10 @@ class ApprovedOrgFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     if (state.state == LoadState.SUCCESS) {
+                        viewModel.addReceivedOrg()
+                    }
+
+                    if (state.state == LoadState.REFRESH) {
                         initRecycler()
                     }
                 }
@@ -60,22 +64,21 @@ class ApprovedOrgFragment : Fragment() {
 
 
     private fun initRecycler() {
-        viewModel.addReceivedOrg()
         Log.d("count", "count: $count")
         if (page == 0) {
 
             binding.acceptedOrgList.adapter = adapter
             binding.acceptedOrgList.layoutManager = LinearLayoutManager(requireContext())
         }
-        Log.d("list", "결과 : ${viewModel.currentState.approvedOrg.approvedOrg.data}")
+        Log.d("list", "결과 : ${viewModel.currentState.approvedOrg.approvedOrg}")
         page++
-        adapter.submitList(viewModel.currentState.approvedOrg.approvedOrg.data)
+        adapter.submitList(viewModel.currentState.approvedOrg.approvedOrg)
         binding.acceptedOrgList.visibility = View.VISIBLE
         initScrollListener()
     }
 
     private fun loadMorePosts() {
-        if (page != 0) {
+        if (adapter.itemCount >= page * 10) {
             viewModel.getApprovedOrg(page)
         }
     }

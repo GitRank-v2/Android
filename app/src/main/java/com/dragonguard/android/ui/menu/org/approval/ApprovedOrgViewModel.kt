@@ -1,11 +1,12 @@
 package com.dragonguard.android.ui.menu.org.approval
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
 import com.dragonguard.android.data.repository.menu.org.approval.ApprovedOrgRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.LoadState
 import com.dragonguard.android.util.RequestStatus
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onFail
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +21,8 @@ class ApprovedOrgViewModel @Inject constructor(
 
         return ApprovedOrgContract.ApprovedOrgStates(
             state = LoadState.INIT,
-            approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(ApproveRequestOrgModel()),
-            receivedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(ApproveRequestOrgModel()),
+            approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(emptyList()),
+            receivedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(emptyList()),
             token = ApprovedOrgContract.ApprovedOrgState.Token("")
         )
     }
@@ -32,6 +33,7 @@ class ApprovedOrgViewModel @Inject constructor(
                 is ApprovedOrgContract.ApprovedOrgEvent.GetApprovedOrg -> {
                     setState { copy(state = LoadState.LOADING) }
                     repository.statusOrgList(RequestStatus.ACCEPTED.status, event.page).onSuccess {
+                        Log.d("ApprovedOrgViewModel", it.toString())
                         setState {
                             copy(
                                 state = LoadState.SUCCESS,
@@ -40,6 +42,8 @@ class ApprovedOrgViewModel @Inject constructor(
                         }
                     }.onFail {
 
+                    }.onError {
+                        Log.d("ApprovedOrgViewModel", it.message.toString())
                     }
 
                 }
@@ -47,8 +51,9 @@ class ApprovedOrgViewModel @Inject constructor(
                 is ApprovedOrgContract.ApprovedOrgEvent.AddReceivedOrg -> {
                     setState {
                         copy(
+                            state = LoadState.REFRESH,
                             approvedOrg = ApprovedOrgContract.ApprovedOrgState.ApprovedOrg(
-                                ApproveRequestOrgModel(approvedOrg.approvedOrg.data + receivedOrg.approvedOrg.data)
+                                approvedOrg.approvedOrg + receivedOrg.approvedOrg
                             )
                         )
                     }

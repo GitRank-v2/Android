@@ -34,8 +34,8 @@ class RepositoryProfileAdapter(
         fun bind(data: Any?) {
             when (data) {
                 is RepoSearchResultModel -> {
-                    binding.repoName.text = data.name
-                    Log.d("name", "${data.name}")
+                    binding.repoName.text = data.full_name
+                    Log.d("name", "${data.full_name}")
                     val img = imgList[data.language]
                     if (img != null) {
                         binding.langImg.setBackgroundResource(img)
@@ -53,11 +53,11 @@ class RepositoryProfileAdapter(
                         Log.d("몇번", "현재 repoCount : $repoCount")
                         when (repoCount) {
                             0 -> {
-                                listener.onSearchRepositoryClick(data.name)
+                                listener.onSearchRepositoryClick(data.full_name)
                             }
 
                             else -> {
-                                listener.onCompareSearchResultRepositoryClick(data.name)
+                                listener.onCompareSearchResultRepositoryClick(data.full_name)
 
                             }
                         }

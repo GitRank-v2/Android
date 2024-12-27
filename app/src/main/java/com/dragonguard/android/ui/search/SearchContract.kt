@@ -9,22 +9,17 @@ import com.dragonguard.android.util.LoadState
 
 class SearchContract {
     sealed class SearchEvent : UiEvent {
-        data class GetUserNames(val name: String, val count: Int, val type: String) : SearchEvent()
-        data class GetRepositoryNamesNoFilters(val name: String, val count: Int, val type: String) :
-            SearchEvent()
+        data class GetUserNames(val name: String, val count: Int) : SearchEvent()
+        data class GetRepositoryNamesNoFilters(val name: String, val count: Int) : SearchEvent()
 
         data class GetRepositoryNamesWithFilters(
             val name: String,
             val count: Int,
             val filters: String,
-            val type: String
         ) : SearchEvent()
 
         data object ClearUserNames : SearchEvent()
         data object ClearRepoNames : SearchEvent()
-
-        data object AddReceivedUserNames : SearchEvent()
-        data object AddReceivedRepoNames : SearchEvent()
     }
 
     sealed class SearchState {
@@ -35,9 +30,7 @@ class SearchContract {
     data class SearchStates(
         val searchState: LoadState,
         val userNames: SearchState.UserNames,
-        val receivedUserNames: SearchState.UserNames,
         val repoNames: SearchState.RepoNames,
-        val receivedRepoNames: SearchState.RepoNames
     ) : UiState
 
     sealed class SearchEffect : UiEffect {

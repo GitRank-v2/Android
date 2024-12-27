@@ -31,7 +31,7 @@ class CompareSearchActivity : AppCompatActivity(), SearchCompareRepoAdapter.OnIt
     private val viewModel by viewModels<CompareSearchViewModel>()
     private var position = 0
     private var repoNames = ArrayList<RepoSearchResultModel>()
-    private var count = 0
+    private var count = 1
     private var changed = true
     private var lastSearch = ""
     private var repoCount = 0
@@ -75,10 +75,11 @@ class CompareSearchActivity : AppCompatActivity(), SearchCompareRepoAdapter.OnIt
                     binding.searchName.setSelection(search.length)
                     if (search.isNotEmpty()) {
                         if (lastSearch != search) {
+                            Log.d("search", "search: replace")
                             lastSearch = search
                             repoNames.clear()
                             binding.searchResult.visibility = View.GONE
-                            count = 0
+                            count = 1
                             position = 0
                         }
                         changed = true
@@ -112,8 +113,7 @@ class CompareSearchActivity : AppCompatActivity(), SearchCompareRepoAdapter.OnIt
                         binding.loadingLottie.visibility = View.VISIBLE
                     } else if (state.loadState == LoadState.SUCCESS) {
                         binding.loadingLottie.visibility = View.GONE
-                        viewModel.addReceivedRepo()
-                        initRecycler()
+                        initRecycler(state.searchResults.searchResults)
                     } else if (state.loadState == LoadState.ERROR) {
                         binding.loadingLottie.visibility = View.GONE
                     }
@@ -129,19 +129,26 @@ class CompareSearchActivity : AppCompatActivity(), SearchCompareRepoAdapter.OnIt
     }
 
     //    받아온 데이터를 리사이클러뷰에 추가하는 함수 initRecycler()
-    private fun initRecycler() {
+    private fun initRecycler(result: List<RepoSearchResultModel>) {
         Log.d("count", "count: $count")
-        if (count == 0) {
+        if (count == 1) {
+            Log.d("initRecycler", "init adapter")
             compareRepositoryAdapter = SearchCompareRepoAdapter(repoCount, this)
             binding.searchResult.adapter = compareRepositoryAdapter
             binding.searchResult.layoutManager = LinearLayoutManager(this)
             binding.searchResult.visibility = View.VISIBLE
         }
-        compareRepositoryAdapter.submitList(viewModel.currentState.searchResults.searchResults)
+        val updatedList = ArrayList(compareRepositoryAdapter.currentList) // 기존 데이터
+        updatedList.addAll(result) // 새로운 데이터 추가
+
+        compareRepositoryAdapter.submitList(updatedList) {
+            Log.d("submitList", "List updated successfully")
+        }
         count++
-        Log.d("api 횟수", "$count 페이지 검색")
+        //Log.d("api 횟수", "$count 페이지 검색")
         binding.loadingLottie.visibility = View.GONE
-        if (viewModel.currentState.searchResults.searchResults.size == 10 * (count + 1)) {
+        Log.d("item count", binding.searchResult.adapter!!.itemCount.toString())
+        if (binding.searchResult.adapter!!.itemCount >= 10 * (count - 1)) {
             initScrollListener()
         }
 
@@ -171,8 +178,8 @@ class CompareSearchActivity : AppCompatActivity(), SearchCompareRepoAdapter.OnIt
                 position = recyclerView.adapter!!.itemCount - 1
                 // 마지막으로 보여진 아이템 position 이
                 // 전체 아이템 개수보다 1개 모자란 경우, 데이터를 loadMore 한다
-                if (viewModel.currentState.searchResults.searchResults.size == 10 * (count + 1)) {
-                    if (!binding.searchResult.canScrollVertically(1) && lastVisibleItem == itemTotalCount) {
+                if (binding.searchResult.adapter!!.itemCount >= 10 * (count - 1)) {
+                    if (lastVisibleItem == itemTotalCount) {
                         loadMorePosts()
                     }
                 }

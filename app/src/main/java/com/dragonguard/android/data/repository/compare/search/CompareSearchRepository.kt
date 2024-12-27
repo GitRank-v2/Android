@@ -6,7 +6,6 @@ import com.dragonguard.android.util.DataResult
 interface CompareSearchRepository {
     suspend fun getRepositoryNames(
         name: String,
-        count: Int,
-        type: String,
+        count: Int
     ): DataResult<List<RepoSearchResultModel>>
 }

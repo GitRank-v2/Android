@@ -2,8 +2,6 @@ package com.dragonguard.android.ui.ranking
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -16,14 +14,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
-import com.dragonguard.android.data.model.rankings.OrgInternalRankingModel
+import com.dragonguard.android.data.model.rankings.OrgInternalRankingModelItem
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
 import com.dragonguard.android.databinding.ActivityOrganizationInternalRankingBinding
 import com.dragonguard.android.ui.profile.other.OthersProfileActivity
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /*
@@ -36,7 +32,6 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
     private var orgName = ""
     private var page = 0
     private var position = 0
-    private var id = 0L
     private var changed = true
     private var ranking = 0
     private var orgInternalRankings =
@@ -54,6 +49,7 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         supportActionBar?.setHomeAsUpIndicator(R.drawable.back)
 
         orgName = intent.getStringExtra("organization")!!
+        Log.d("name", orgName)
         searchOrgId()
     }
 
@@ -61,12 +57,12 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.orgId.orgId != -1L) {
+                    if (state.loadState == LoadState.SUCCESS) {
                         orgInternalRankings(state.orgId.orgId)
                     }
 
-                    if (state.loadState == LoadState.SUCCESS) {
-                        checkRankings(state.orgInternalRankings.orgInternalRankings)
+                    if (state.loadState == LoadState.REFRESH) {
+                        checkRankings(state.receivedRankings.orgInternalRankings)
                     }
                 }
             }
@@ -83,16 +79,16 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         viewModel.getOrgInternalRankings(id, page)
     }
 
-    private fun checkRankings(result: OrgInternalRankingModel) {
-        if (result.data.isNotEmpty()) {
-            Log.d("조직 내 랭킹", "결과 : ${result.data[0].github_id}")
-            result.data.forEach {
-                Log.d("조직 내 랭킹", "결과 : ${it.github_id}")
+    private fun checkRankings(result: List<OrgInternalRankingModelItem>) {
+        if (result.isNotEmpty()) {
+            Log.d("조직내부랭킹", "결과 : $result")
+            result.forEach {
+                Log.d("조직내부랭킹", "결과 : ${it.github_id}")
                 if (ranking != 0) {
-                    if (orgInternalRankings[ranking - 1].tokens == it.tokens) {
+                    if (orgInternalRankings[ranking - 1].tokens == it.contribution_amount) {
                         orgInternalRankings.add(
                             OrgInternalRankingsModel(
-                                it.github_id, it.id, it.name, it.tier, it.tokens,
+                                it.github_id, it.id, it.tier, it.contribution_amount,
                                 orgInternalRankings[ranking - 1].ranking,
                                 it.profile_image
                             )
@@ -102,9 +98,8 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
                             OrgInternalRankingsModel(
                                 it.github_id,
                                 it.id,
-                                it.name,
                                 it.tier,
-                                it.tokens,
+                                it.contribution_amount,
                                 ranking + 1,
                                 it.profile_image
                             )
@@ -115,9 +110,8 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
                         OrgInternalRankingsModel(
                             it.github_id,
                             it.id,
-                            it.name,
                             it.tier,
-                            it.tokens,
+                            it.contribution_amount,
                             1,
                             it.profile_image
                         )
@@ -127,22 +121,14 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
                 ranking++
             }
             Log.d("뷰 보이기 전", "initrecycler 전")
+
             initRecycler()
 
-        } else {
-            if (changed) {
-                changed = false
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({ orgInternalRankings(id) }, 4000)
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
         }
     }
 
     private fun initRecycler() {
         Log.d("recycler", "initrecycler()")
-        viewModel.addRanking()
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =
@@ -151,21 +137,19 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
             binding.orgInternalRanking.layoutManager = LinearLayoutManager(this)
             binding.orgInternalRanking.visibility = View.VISIBLE
         }
-        binding.orgInternalRanking.adapter?.notifyDataSetChanged()
+        organizationInternalRankingAdapter.notifyDataSetChanged()
         page++
         Log.d("api 횟수", "$page 페이지 검색")
         binding.progressBar.visibility = View.GONE
         initScrollListener()
+        viewModel.resetState()
     }
 
     private fun loadMorePosts() {
-        if (binding.progressBar.visibility == View.GONE) {
+        if (binding.progressBar.visibility == View.GONE && orgInternalRankings.size >= 10 * page) {
             binding.progressBar.visibility = View.VISIBLE
             changed = true
-            CoroutineScope(Dispatchers.Main).launch {
-                Log.d("api 시도", "getTotalUsersRanking 실행  load more")
-                orgInternalRankings(id)
-            }
+            orgInternalRankings(viewModel.currentState.orgId.orgId)
         }
     }
 

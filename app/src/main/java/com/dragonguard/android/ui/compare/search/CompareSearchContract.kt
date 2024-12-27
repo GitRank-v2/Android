@@ -9,15 +9,11 @@ import com.dragonguard.android.util.LoadState
 class CompareSearchContract {
     sealed class CompareSearchEvent : UiEvent {
         data class SearchRepo(val name: String, val count: Int) : CompareSearchEvent()
-        data object AddReceivedRepo : CompareSearchEvent()
     }
 
     sealed class CompareSearchState {
         data class Token(val token: String) : CompareSearchState()
-        data class SearchResults(val searchResults: ArrayList<RepoSearchResultModel>) :
-            CompareSearchState()
-
-        data class ReceivedSearchResult(val receivedSearchResult: List<RepoSearchResultModel>) :
+        data class SearchResults(val searchResults: List<RepoSearchResultModel>) :
             CompareSearchState()
     }
 
@@ -25,7 +21,6 @@ class CompareSearchContract {
         val loadState: LoadState,
         val token: CompareSearchState.Token,
         val searchResults: CompareSearchState.SearchResults,
-        val receivedSearchResult: CompareSearchState.ReceivedSearchResult
     ) : UiState
 
     sealed class CompareSearchEffect : UiEffect {

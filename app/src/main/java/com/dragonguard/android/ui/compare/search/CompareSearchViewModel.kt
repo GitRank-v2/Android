@@ -1,12 +1,13 @@
 package com.dragonguard.android.ui.compare.search
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dragonguard.android.GitRankApplication.Companion.getPref
 import com.dragonguard.android.data.repository.compare.search.CompareSearchRepository
 import com.dragonguard.android.ui.base.BaseViewModel
 import com.dragonguard.android.util.IdPreference
 import com.dragonguard.android.util.LoadState
-import com.dragonguard.android.util.onFail
+import com.dragonguard.android.util.onError
 import com.dragonguard.android.util.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,7 +25,6 @@ class CompareSearchViewModel @Inject constructor(
             LoadState.INIT,
             CompareSearchContract.CompareSearchState.Token(pref.getJwtToken("")),
             CompareSearchContract.CompareSearchState.SearchResults(arrayListOf()),
-            CompareSearchContract.CompareSearchState.ReceivedSearchResult(emptyList())
         )
     }
 
@@ -33,33 +33,21 @@ class CompareSearchViewModel @Inject constructor(
             when (event) {
                 is CompareSearchContract.CompareSearchEvent.SearchRepo -> {
                     setState { copy(loadState = LoadState.LOADING) }
-                    repository.getRepositoryNames(event.name, event.count, REPOSITORIES).onSuccess {
+                    repository.getRepositoryNames(event.name, event.count).onSuccess {
+                        Log.d("search", "$it")
                         setState {
                             copy(
                                 loadState = LoadState.SUCCESS,
-                                receivedSearchResult = CompareSearchContract.CompareSearchState.ReceivedSearchResult(
+                                searchResults = CompareSearchContract.CompareSearchState.SearchResults(
                                     it
                                 )
                             )
                         }
-                    }.onFail {
+                    }.onError {
 
-                    }
-                }
-
-                is CompareSearchContract.CompareSearchEvent.AddReceivedRepo -> {
-                    currentState.searchResults.searchResults.addAll(currentState.receivedSearchResult.receivedSearchResult)
-                    setState {
-                        copy(
-                            searchResults = CompareSearchContract.CompareSearchState.SearchResults(
-                                currentState.searchResults.searchResults
-                            )
-                        )
                     }
                 }
             }
-
-
         }
     }
 
@@ -67,11 +55,5 @@ class CompareSearchViewModel @Inject constructor(
         setEvent(CompareSearchContract.CompareSearchEvent.SearchRepo(name, count))
     }
 
-    fun addReceivedRepo() {
-        setEvent(CompareSearchContract.CompareSearchEvent.AddReceivedRepo)
-    }
 
-    companion object {
-        private const val REPOSITORIES = "REPOSITORIES"
-    }
 }

@@ -12,7 +12,6 @@ class MainContract {
         data object GetUserInfo : MainEvent()
         data object ClickSearch : MainEvent()
         data object ClickUserIcon : MainEvent()
-        data object GetNewToken : MainEvent()
         data object Logout : MainEvent()
         data class SetRepeat(val repeat: Boolean) : MainEvent()
         data object SetFinish : MainEvent()

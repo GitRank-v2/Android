@@ -8,21 +8,14 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class TotalUsersRankingModelItem(
-    @field:Json(name = "tokens")
-    var tokens: Long?,
-
+    @field:Json(name = "contribution_amount")
+    var contribution_amount: Long?,
     @field:Json(name = "github_id")
     var github_id: String?,
-
     @field:Json(name = "id")
-    var id: String?,
-
-    @field:Json(name = "name")
-    var name: String?,
-
+    var id: Long?,
     @field:Json(name = "tier")
     var tier: String?,
-
     @field:Json(name = "profile_image")
     var profile_image: String?
 )

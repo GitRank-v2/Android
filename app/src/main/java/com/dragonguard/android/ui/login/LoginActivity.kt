@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.webkit.CookieManager
-import android.webkit.ValueCallback
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -25,6 +24,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityLoginBinding
 import com.dragonguard.android.ui.main.MainActivity
+import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -58,37 +58,17 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
-        Log.d("시작 token", viewModel.currentState.token.token)
-
-        if (viewModel.currentState.token.token.isNotBlank() && viewModel.currentState.refreshToken.refreshToken.isNotBlank()) {
-            val intentF = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intentF)
-            finish()
-        }
         val logout = intent.getBooleanExtra("logout", false)
-        if (viewModel.currentState.token.token.isNotBlank() && viewModel.currentState.refreshToken.refreshToken.isNotBlank()) {
-            //Toast.makeText(applicationContext, "jwt token : $token", Toast.LENGTH_SHORT).show()
-            val intentF = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intentF)
-            finish()
-        } else {
-            binding.githubAuth.isEnabled = true
-//            binding.walletFinish.isEnabled = false
-        }
         if (logout) {
-            viewModel.setJwtToken("", "")
-            binding.oauthWebView.apply {
-                clearHistory()
-                clearCache(true)
-            }
-            val cookieManager = CookieManager.getInstance()
+            viewModel.logOut()
+            /*val cookieManager = CookieManager.getInstance()
             cookieManager.removeSessionCookies { aBoolean ->
             }
             cookieManager.removeAllCookies(ValueCallback<Boolean?> { value ->
             })
-            cookieManager.flush()
+            cookieManager.flush()*/
         }
-
+        viewModel.refreshToken()
         /*val address = intent.getStringExtra("wallet_address")
         address?.let {
             walletAddress = address
@@ -254,10 +234,22 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    if (state.loginState.login == true) {
+                    if (state.loginState == LoadState.SUCCESS) {
+                        Log.d("로그인", "로그인 성공")
+                        binding.oauthWebView.apply {
+                            clearHistory()
+                            clearCache(true)
+                        }
                         val intentF = Intent(applicationContext, MainActivity::class.java)
                         startActivity(intentF)
                         finish()
+                    }
+
+                    if (state.loginState == LoadState.LOGIN_FAIL) {
+                        binding.oauthWebView.apply {
+                            clearHistory()
+                            clearCache(true)
+                        }
                     }
                 }
             }
@@ -348,14 +340,6 @@ class LoginActivity : AppCompatActivity() {
         } else {
 
         }
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onDestroy() {

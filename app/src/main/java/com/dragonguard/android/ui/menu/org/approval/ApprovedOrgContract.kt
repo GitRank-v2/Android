@@ -1,6 +1,6 @@
 package com.dragonguard.android.ui.menu.org.approval
 
-import com.dragonguard.android.data.model.org.ApproveRequestOrgModel
+import com.dragonguard.android.data.model.org.ApproveRequestOrgModelItem
 import com.dragonguard.android.ui.base.UiEffect
 import com.dragonguard.android.ui.base.UiEvent
 import com.dragonguard.android.ui.base.UiState
@@ -13,7 +13,9 @@ class ApprovedOrgContract {
     }
 
     sealed class ApprovedOrgState {
-        data class ApprovedOrg(val approvedOrg: ApproveRequestOrgModel) : ApprovedOrgState()
+        data class ApprovedOrg(val approvedOrg: List<ApproveRequestOrgModelItem>) :
+            ApprovedOrgState()
+
         data class Token(val token: String) : ApprovedOrgState()
     }
 

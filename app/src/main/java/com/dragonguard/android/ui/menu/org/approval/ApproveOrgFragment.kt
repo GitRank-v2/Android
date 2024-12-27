@@ -40,6 +40,7 @@ class ApproveOrgFragment : Fragment(), ItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initObserver()
+        viewModel.getRequestedOrg(page)
     }
 
     private fun initObserver() {
@@ -47,20 +48,22 @@ class ApproveOrgFragment : Fragment(), ItemClickListener {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     if (state.loadState == LoadState.SUCCESS) {
+                        viewModel.addReceivedOrg()
+                    }
+
+                    if (state.loadState == LoadState.REFRESH) {
                         initRecycler()
                     }
 
                     if (state.approveOrg.status) {
                         Toast.makeText(requireContext(), "승인됨", Toast.LENGTH_SHORT).show()
-                        viewModel.removeRequestedOrg(position)
-                        binding.waitingOrgList.adapter?.notifyDataSetChanged()
+                        adapter.removeItem(position)
                         viewModel.resetClick()
                     }
 
                     if (state.rejectOrg.status) {
                         Toast.makeText(requireContext(), "반려됨", Toast.LENGTH_SHORT).show()
-                        viewModel.removeRequestedOrg(position)
-                        binding.waitingOrgList.adapter?.notifyDataSetChanged()
+                        adapter.removeItem(position)
                         viewModel.resetClick()
                     }
                 }
@@ -72,26 +75,24 @@ class ApproveOrgFragment : Fragment(), ItemClickListener {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getRequestedOrg(page)
     }
 
 
     private fun initRecycler() {
-        viewModel.addReceivedOrg()
         Log.d("count", "count: $count")
         if (page == 0) {
             binding.waitingOrgList.adapter = adapter
             binding.waitingOrgList.layoutManager = LinearLayoutManager(requireContext())
             binding.waitingOrgList.visibility = View.VISIBLE
         }
-        adapter.submitList(viewModel.currentState.requestedOrg.org.data)
+        adapter.submitList(viewModel.currentState.receivedOrg.org)
         page++
         count = 0
         initScrollListener()
     }
 
     private fun loadMorePosts() {
-        if (page != 0) {
+        if (adapter.itemCount >= page * 10) {
             viewModel.getRequestedOrg(page)
         }
     }

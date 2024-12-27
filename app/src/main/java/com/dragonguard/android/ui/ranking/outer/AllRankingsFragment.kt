@@ -142,22 +142,20 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 if (ranking != 0) {
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
                         TotalUsersRankingsModel(
-                            it.tokens,
+                            it.contribution_amount,
                             it.github_id,
                             it.id,
-                            it.name,
                             it.tier,
-                            ranking + 1,
+                            ranking + 1L,
                             it.profile_image
                         )
                     )
                 } else {
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.add(
                         TotalUsersRankingsModel(
-                            it.tokens,
+                            it.contribution_amount,
                             it.github_id,
                             it.id,
-                            it.name,
                             it.tier,
                             1,
                             it.profile_image
@@ -182,23 +180,21 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 if (ranking != 0) {
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
                         TotalOrganizationModel(
-                            email_endpoint = it.email_endpoint,
                             id = it.id,
                             name = it.name,
-                            organization_type = it.organization_type,
-                            token_sum = it.token_sum,
-                            ranking = ranking + 1
+                            contribution_amount = it.contribution_amount,
+                            ranking = ranking + 1,
+                            type = it.type
                         )
                     )
                 } else {
                     (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).rankings.add(
                         TotalOrganizationModel(
-                            email_endpoint = it.email_endpoint,
                             id = it.id,
                             name = it.name,
-                            organization_type = it.organization_type,
-                            token_sum = it.token_sum,
-                            ranking = 1
+                            contribution_amount = it.contribution_amount,
+                            ranking = 1,
+                            type = it.type
                         )
                     )
                 }
@@ -267,9 +263,9 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                         3
                     )
 
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         rankingsAdapter = RankingsAdapter(
                             (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
@@ -348,15 +344,40 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                         3
                     )
 
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
-                    viewModel.currentState.rankings.ranking.removeFirst()
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
+                    viewModel.currentState.rankings.ranking.removeAt(0)
 
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
-                        rankingsAdapter = RankingsAdapter(
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                            this
-                        )
+                        when (rankingType) {
+                            "회사" -> {
+                                rankingsAdapter = RankingsAdapter(
+                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                                    this
+                                )
+                            }
+
+                            "대학교" -> {
+                                rankingsAdapter = RankingsAdapter(
+                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                                    this
+                                )
+                            }
+
+                            "고등학교" -> {
+                                rankingsAdapter = RankingsAdapter(
+                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                                    this
+                                )
+                            }
+
+                            "ETC" -> {
+                                rankingsAdapter = RankingsAdapter(
+                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
+                                    this
+                                )
+                            }
+                        }
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
                         layoutmanager.initialPrefetchItemCount = 10
@@ -415,7 +436,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 binding.firstId.text = model.github_id
                 CustomGlide.drawImage(binding.firstProfile, model.profile_image) { }
 
-                binding.firstContribute.text = model.tokens.toString()
+                binding.firstContribute.text = model.contribution_amount.toString()
                 binding.firstFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
@@ -454,7 +475,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 }
                 binding.secondId.text = model.github_id
                 CustomGlide.drawImage(binding.secondProfile, model.profile_image) { }
-                binding.secondContribute.text = model.tokens.toString()
+                binding.secondContribute.text = model.contribution_amount.toString()
                 binding.secondFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
@@ -493,7 +514,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 }
                 binding.thirdId.text = model.github_id
                 CustomGlide.drawImage(binding.thirdProfile, model.profile_image) { }
-                binding.thirdContribute.text = model.tokens.toString()
+                binding.thirdContribute.text = model.contribution_amount.toString()
                 binding.thirdFrame.setOnClickListener {
                     val intent = Intent(requireContext(), OthersProfileActivity::class.java)
                     intent.putExtra("userName", model.github_id)
@@ -511,7 +532,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 //Glide.with(binding.firstProfile).load()
                 //.into(binding.firstProfile)
                 binding.firstId.text = model.name
-                binding.firstContribute.text = model.token_sum.toString()
+                binding.firstContribute.text = model.contribution_amount.toString()
                 binding.firstRanker.visibility = View.VISIBLE
                 binding.firstProfile.setImageResource(R.drawable.company)
                 binding.firstFrame.setOnClickListener {
@@ -523,7 +544,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
 
             2 -> {
                 binding.secondId.text = model.name
-                binding.secondContribute.text = model.token_sum.toString()
+                binding.secondContribute.text = model.contribution_amount.toString()
                 binding.secondRanker.visibility = View.VISIBLE
                 binding.secondProfile.setImageResource(R.drawable.company)
                 binding.secondFrame.setOnClickListener {
@@ -535,7 +556,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
 
             3 -> {
                 binding.thirdId.text = model.name
-                binding.thirdContribute.text = model.token_sum.toString()
+                binding.thirdContribute.text = model.contribution_amount.toString()
                 binding.thirdRanker.visibility = View.VISIBLE
                 binding.thirdProfile.setImageResource(R.drawable.company)
                 binding.thirdFrame.setOnClickListener {

@@ -4,6 +4,8 @@ import com.dragonguard.android.data.repository.compare.compare.RepoCompareReposi
 import com.dragonguard.android.data.repository.compare.compare.RepoCompareRepositoryImpl
 import com.dragonguard.android.data.repository.compare.search.CompareSearchRepository
 import com.dragonguard.android.data.repository.compare.search.CompareSearchRepositoryImpl
+import com.dragonguard.android.data.repository.login.LoginRepository
+import com.dragonguard.android.data.repository.login.LoginRepositoryImpl
 import com.dragonguard.android.data.repository.main.MainRepository
 import com.dragonguard.android.data.repository.main.MainRepositoryImpl
 import com.dragonguard.android.data.repository.menu.MenuRepository
@@ -63,7 +65,7 @@ abstract class RepositoryModule {
 
     @Singleton
     @Binds
-    abstract fun funbindRegistOrgRepository(registOrgRepository: RegistOrgRepositoryImpl): RegistOrgRepository
+    abstract fun bindRegistOrgRepository(registOrgRepository: RegistOrgRepositoryImpl): RegistOrgRepository
 
     @Singleton
     @Binds
@@ -103,5 +105,9 @@ abstract class RepositoryModule {
 
     @Singleton
     @Binds
-    abstract fun repoContributorsRepository(repoContributorsRepository: RepoContributorsRepositoryImpl): RepoContributorsRepository
+    abstract fun bindRepoContributorsRepository(repoContributorsRepository: RepoContributorsRepositoryImpl): RepoContributorsRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindLoginRepository(loginRepository: LoginRepositoryImpl): LoginRepository
 }
