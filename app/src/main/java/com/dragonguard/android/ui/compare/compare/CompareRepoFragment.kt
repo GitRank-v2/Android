@@ -252,7 +252,6 @@ class CompareRepoFragment(
         binding.repo1Language.setEntryLabelColor(Color.BLACK)
         binding.repo1Language.legend.isEnabled = false
         binding.repo1Language.invalidate()
-        binding.repo1Language.visibility = View.GONE
         binding.repo1Language.visibility = View.VISIBLE
 
         data2.languages!!.forEach {
@@ -313,7 +312,6 @@ class CompareRepoFragment(
         binding.repo2Language.setDrawEntryLabels(true)
         binding.repo2Language.setEntryLabelColor(Color.BLACK)
         binding.repo2Language.invalidate()
-        binding.repo2Language.visibility = View.GONE
         binding.repo2Language.visibility = View.VISIBLE
         initProfiles()
     }
