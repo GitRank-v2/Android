@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -48,7 +47,6 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
     private var filterOptions = StringBuilder()
     private var filterResult = StringBuilder()
     private var type = "GIT_REPO"
-    private var token = ""
     private val imgList = HashMap<String, Int>()
     private var repoCount = 0
     private val activityResultLauncher: ActivityResultLauncher<Intent> =
@@ -104,7 +102,8 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         this.onBackPressedDispatcher.addCallback(this, callback)
         binding.searchName.isFocusable = false
@@ -352,7 +351,6 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
 
     //    repo 검색 api 호출 및 결과 출력
-    // API 완성시 주석 제거
     private fun callSearchApi(name: String) {
         binding.loadingLottie.visibility = View.VISIBLE
         binding.loadingLottie.playAnimation()

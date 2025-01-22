@@ -1,212 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="3.4"
+    tools:context=".ui.menu.MenuActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        android:background="@android:color/transparent" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3.1"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:weightSum="3.4"
-        tools:context=".ui.menu.MenuActivity">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.3"
-            android:background="@android:color/transparent" />
-
+        android:weightSum="12">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3.1"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:weightSum="12">
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1">
+                android:layout_weight="0.1" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/logout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/roundc"
-                    android:text="로그아웃"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:fontFamily="@font/ibm_semibold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/logout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/faq"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/roundc"
-                    android:text="FAQ"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:fontFamily="@font/ibm_semibold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/token_criterion"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/roundc"
-                    android:text="토큰부여기준"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:fontFamily="@font/ibm_semibold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/version"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/roundc"
-                    android:text="버전 정보"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:fontFamily="@font/ibm_semibold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/organization_auth"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/roundc"
-                    android:text="조직 검색 및 인증"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:fontFamily="@font/ibm_semibold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/admin_fun"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/organization_approve"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/roundc"
-                    android:text="조직 승인"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:fontFamily="@font/ibm_semibold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/withdraw_frame"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/withdraw_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/roundc"
-                    android:text="회원 탈퇴"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:fontFamily="@font/ibm_semibold" />
-            </LinearLayout>
+                android:layout_weight="0.8"
+                android:background="@drawable/roundc"
+                android:fontFamily="@font/ibm_semibold"
+                android:text="로그아웃"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/faq"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:background="@drawable/roundc"
+                android:fontFamily="@font/ibm_semibold"
+                android:text="FAQ"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/token_criterion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:background="@drawable/roundc"
+                android:fontFamily="@font/ibm_semibold"
+                android:text="토큰부여기준"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/version"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:background="@drawable/roundc"
+                android:fontFamily="@font/ibm_semibold"
+                android:text="버전 정보"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/organization_auth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:background="@drawable/roundc"
+                android:fontFamily="@font/ibm_semibold"
+                android:text="조직 검색 및 인증"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/admin_fun"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/organization_approve"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:background="@drawable/roundc"
+                android:fontFamily="@font/ibm_semibold"
+                android:text="조직 승인"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/withdraw_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/withdraw_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:background="@drawable/roundc"
+                android:fontFamily="@font/ibm_semibold"
+                android:text="회원 탈퇴"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
 
     </LinearLayout>
-</layout>
+
+
+</LinearLayout>

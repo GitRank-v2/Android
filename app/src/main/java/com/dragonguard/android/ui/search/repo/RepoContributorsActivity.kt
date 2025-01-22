@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -54,7 +53,8 @@ class RepoContributorsActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //viewModel = RepoContributorsViewModel()
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_contributors)
+        binding = ActivityRepoContributorsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initObserver()
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용

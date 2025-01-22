@@ -1,282 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:visibility="invisible"
+    android:weightSum="3.4"
+    tools:context=".ui.main.MainFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" />
+
+
+        <EditText
+            android:id="@+id/search_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_weight="0.6"
+            android:background="@drawable/shadow"
+            android:drawableStart="@drawable/search_icon"
+            android:drawablePadding="10dp"
+            android:focusable="false"
+            android:fontFamily="@font/ibm_regular"
+            android:gravity="center_vertical"
+            android:hint="Repositoy or User"
+            android:maxLines="1"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.4"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" />
+
+        <ImageView
+            android:id="@+id/github_profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.25"
+            android:adjustViewBounds="true"
+            android:background="@drawable/round_title"
+            android:src="@drawable/user" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" />
+
+        <TextView
+            android:id="@+id/user_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:fontFamily="@font/ibm_semibold"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2.5"
         android:orientation="vertical"
-        android:id="@+id/main_frame"
-        android:visibility="invisible"
-        android:weightSum="3.4"
-        tools:context=".ui.main.MainFragment">
+        android:weightSum="2.2">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.3"
-            android:gravity="center">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal" />
-
-
-            <EditText
-                android:id="@+id/search_name"
-                android:layout_width="0dp"
-                android:padding="5dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.6"
-                android:background="@drawable/shadow"
-                android:focusable="false"
-                android:drawableStart="@drawable/search_icon"
-                android:drawablePadding="10dp"
-                android:layout_marginTop="5dp"
-                android:maxLines="1"
-                android:fontFamily="@font/ibm_regular"
-                android:gravity="center_vertical"
-                android:hint="Repositoy or User"
-                android:textColor="@color/black"
-                android:textSize="25sp" />
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.1" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.4"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.7"
+            android:gravity="center_horizontal"
             android:orientation="horizontal"
             android:weightSum="5">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal" />
-
-            <ImageView
-                android:id="@+id/github_profile"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.25"
-                android:adjustViewBounds="true"
-                android:src="@drawable/user"
-                android:background="@drawable/round_title" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal" />
-
-            <TextView
-                android:id="@+id/user_id"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="2"
-                android:fontFamily="@font/ibm_semibold"
-                android:textColor="@color/black"
-                android:textSize="25sp" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.1" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2.5"
-            android:orientation="vertical"
-            android:weightSum="2.2">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="0.7"
-                android:orientation="horizontal"
-                android:gravity="center_horizontal"
-                android:weightSum="5">
-
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2"
-                    android:layout_gravity="center_vertical"
-
-                    android:orientation="vertical">
-
-
-                    <LinearLayout
-                        android:id="@+id/tier_frame"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginHorizontal="10dp"
-                        android:background="@drawable/shadow_dark"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent">
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/tier_img"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="10dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginBottom="5dp"
-                            android:adjustViewBounds="true" />
-
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/user_tier"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="-15dp"
-                        android:background="#ffffff"
-                        android:fontFamily="@font/ibm_semibold"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
-                        android:text="Tier"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tier_frame" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.2" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
-                    android:orientation="vertical">
-
-
-                    <LinearLayout
-                        android:id="@+id/token_frame"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/shadow_dark"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginHorizontal="10dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent">
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/token_img"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="25dp"
-                            android:layout_marginTop="15dp"
-                            android:adjustViewBounds="true"
-                            android:src="@drawable/branch" />
-
-                        <TextView
-                            android:id="@+id/token_amount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
-                            android:fontFamily="@font/ibm_semibold"
-                            android:gravity="top|center_horizontal"
-                            android:textColor="@color/black"
-                            android:textSize="15sp" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/user_token"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="-15dp"
-                        android:background="#ffffff"
-                        android:fontFamily="@font/ibm_semibold"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
-                        android:text="Activities"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/token_frame" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.15" />
-
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2"
+
                 android:orientation="vertical">
 
 
                 <LinearLayout
-                    android:id="@+id/contribute_frame"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/shadow"
+                    android:id="@+id/tier_frame"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/shadow_dark"
                     android:orientation="vertical"
-                    android:layout_marginTop="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintStart_toStartOf="parent">
 
-                    <androidx.viewpager2.widget.ViewPager2
-                        android:id="@+id/user_util"
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/tier_img"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp" />
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
+                        android:adjustViewBounds="true" />
+
 
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/user_tier"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -285,196 +163,315 @@
                     android:fontFamily="@font/ibm_semibold"
                     android:gravity="center"
                     android:includeFontPadding="false"
-                    android:text="기여도"
+                    android:text="Tier"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/contribute_frame" />
+                    app:layout_constraintTop_toTopOf="@+id/tier_frame" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.1" />
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2" />
 
-            <LinearLayout
-                android:id="@+id/main_org_frame"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginHorizontal="20dp"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingVertical="5dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2"
+                android:orientation="vertical">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+
+                <LinearLayout
+                    android:id="@+id/token_frame"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1.75"
-                    android:orientation="vertical">
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/shadow_dark"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
 
-
-                    <LinearLayout
-                        android:id="@+id/org_rank_frame"
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/token_img"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="25dp"
                         android:layout_marginTop="15dp"
-                        android:background="@drawable/shadow"
-                        android:orientation="vertical"
-                        android:weightSum="5"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="0.6"
-                            android:orientation="horizontal" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1.3"
-                            android:gravity="center_vertical"
-                            android:weightSum="5"
-                            android:orientation="horizontal">
-
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="0.5" />
-
-                            <TextView
-                                android:id="@+id/user1_ranking"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:alpha="0.5"
-                                android:gravity="center"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/user1_githubid"
-                                android:layout_width="0dp"
-                                android:alpha="0.5"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/black"
-                                android:layout_weight="3.2"
-                                android:textSize="20sp"
-                                android:gravity="center" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="0.2" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1.3"
-                            android:weightSum="5"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="0.5" />
-
-                            <TextView
-                                android:id="@+id/user2_ranking"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textSize="20sp"
-                                android:gravity="center" />
-
-                            <TextView
-                                android:id="@+id/user2_githubid"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="3.2"
-                                android:textSize="20sp"
-                                android:gravity="center" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="0.2" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:weightSum="5"
-                            android:layout_weight="1.3"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <View
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="0.5" />
-
-                            <TextView
-                                android:id="@+id/user3_ranking"
-                                android:layout_width="0dp"
-                                android:alpha="0.5"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/black"
-                                android:layout_weight="1"
-                                android:textSize="20sp"
-                                android:gravity="center" />
-
-                            <TextView
-                                android:id="@+id/user3_githubid"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/black"
-                                android:alpha="0.5"
-                                android:layout_weight="3.2"
-                                android:textSize="20sp"
-                                android:gravity="center" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/branch" />
 
                     <TextView
-                        android:id="@+id/user_org_name"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/token_amount"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="-15dp"
-                        android:background="#ffffff"
+                        android:layout_gravity="bottom"
                         android:fontFamily="@font/ibm_semibold"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
+                        android:gravity="top|center_horizontal"
                         android:textColor="@color/black"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/org_rank_frame" />
+                        android:textSize="15sp" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/user_token"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="-15dp"
+                    android:background="#ffffff"
+                    android:fontFamily="@font/ibm_semibold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="Activities"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/token_frame" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.05"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:id="@+id/contribute_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shadow"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/user_util"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="-15dp"
+                android:background="#ffffff"
+                android:fontFamily="@font/ibm_semibold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="기여도"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/contribute_frame" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <LinearLayout
+            android:id="@+id/main_org_frame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="20dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingVertical="5dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.75"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/org_rank_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/shadow"
+                    android:orientation="vertical"
+                    android:weightSum="5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.6"
+                        android:orientation="horizontal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.3"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:weightSum="5">
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <TextView
+                            android:id="@+id/user1_ranking"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:alpha="0.5"
+                            android:gravity="center"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/user1_githubid"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3.2"
+                            android:alpha="0.5"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.2" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.3"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:weightSum="5">
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <TextView
+                            android:id="@+id/user2_ranking"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/user2_githubid"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3.2"
+                            android:gravity="center"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.2" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.3"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:weightSum="5">
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <TextView
+                            android:id="@+id/user3_ranking"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:alpha="0.5"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/user3_githubid"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3.2"
+                            android:alpha="0.5"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/user_org_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="-15dp"
+                    android:background="#ffffff"
+                    android:fontFamily="@font/ibm_semibold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/org_rank_frame" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.05"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" />
+
     </LinearLayout>
-</layout>
+
+</LinearLayout>

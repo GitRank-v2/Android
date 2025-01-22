@@ -8,7 +8,6 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -32,7 +31,8 @@ class RepoCompareActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_repo_compare)
+        binding = ActivityRepoCompareBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initObserver()
         this.onBackPressedDispatcher.addCallback(this, callback)
         repo1 = intent.getStringExtra("repo1")!!

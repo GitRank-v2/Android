@@ -11,13 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dragonguard.android.R
 import com.dragonguard.android.data.model.compare.CompareRepoResponseModel
 import com.dragonguard.android.data.model.compare.RepoStats
 import com.dragonguard.android.databinding.FragmentCompareRepoBinding
@@ -76,8 +74,7 @@ class CompareRepoFragment(
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_compare_repo, container, false)
+        binding = FragmentCompareRepoBinding.inflate(inflater, container, false)
         return binding.root
     }
 

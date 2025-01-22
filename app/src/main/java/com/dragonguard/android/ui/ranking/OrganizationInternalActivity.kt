@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -39,8 +38,8 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
     private lateinit var organizationInternalRankingAdapter: RankingsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding =
-            DataBindingUtil.setContentView(this, R.layout.activity_organization_internal_ranking)
+        binding = ActivityOrganizationInternalRankingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initObserver()
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
