@@ -63,11 +63,11 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
             binding.forkFilters.removeAllViews()
             binding.filterContent.visibility = View.INVISIBLE
             map.clear()
-            map.put("type", "MEMBER")
+            map["type"] = "MEMBER"
         }
 
         binding.filterRepository.setOnClickListener {
-            map.put("type", "GIT_REPO")
+            map["type"] = "GIT_REPO"
             binding.filterContent.visibility = View.VISIBLE
         }
 
@@ -82,12 +82,12 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
         }
 
         binding.forkFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(extras, "stars", this)
+            val bottomSheetFragment = FilterSheetFragment(extras, "forks", this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.topicFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(topics, "stars", this)
+            val bottomSheetFragment = FilterSheetFragment(topics, "topics", this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 

@@ -56,31 +56,43 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
             if (it.resultCode == 0) {
                 val filterIntent = it.data
                 try {
-                    val language = filterIntent?.getStringExtra("language")
                     val type = filterIntent?.getStringExtra("type")
-                    val topics = filterIntent?.getStringExtra("topics")
-                    val stars = filterIntent?.getStringExtra("stars")
-                    val forks = filterIntent?.getStringExtra("forks")
-                    val name = filterIntent?.getStringExtra("name")
-                    Log.d("results", "type: $type ")
-                    Log.d("results", "language: $language ")
-                    Log.d("results", "topics: $topics ")
-                    Log.d("results", "stars: $stars ")
-                    Log.d("results", "forks: $forks ")
-                    Log.d("results", "name: $name ")
+                    val name =
+                        filterIntent?.getStringExtra("name") ?: return@registerForActivityResult
                     if (name != lastSearch) {
                         viewModel.clearRepoNames()
                         viewModel.clearUserNames()
                         binding.searchResult.visibility = View.GONE
                     }
-                    checkLanguage(
-                        languages = language,
-                        type = type,
-                        topics = topics,
-                        stars = stars,
-                        forks = forks,
-                        name = name
-                    )
+                    if (type == "MEMBER") {
+                        if (type != this.type) {
+                            viewModel.clearUserNames()
+                            viewModel.clearRepoNames()
+                            binding.searchResult.visibility = View.GONE
+                        }
+                        callSearchApi(name)
+                    } else {
+                        val language = filterIntent.getStringExtra("language")
+                        val topics = filterIntent.getStringExtra("topics")
+                        val stars = filterIntent.getStringExtra("stars")
+                        val forks = filterIntent.getStringExtra("forks")
+
+                        Log.d("results", "type: $type ")
+                        Log.d("results", "language: $language ")
+                        Log.d("results", "topics: $topics ")
+                        Log.d("results", "stars: $stars ")
+                        Log.d("results", "forks: $forks ")
+                        Log.d("results", "name: $name ")
+                        checkLanguage(
+                            languages = language,
+                            type = type,
+                            topics = topics,
+                            stars = stars,
+                            forks = forks,
+                            name = name
+                        )
+                    }
+
                 } catch (e: Exception) {
 
                 }
