@@ -12,7 +12,6 @@ import android.view.Window
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -36,7 +35,8 @@ class MenuActivity : AppCompatActivity() {
     private lateinit var versionDialog: Dialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_menu)
+        binding = ActivityMenuBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initObserver()
 
         viewModel.checkAdmin()

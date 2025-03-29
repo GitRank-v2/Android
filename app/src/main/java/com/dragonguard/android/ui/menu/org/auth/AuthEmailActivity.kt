@@ -11,7 +11,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -31,7 +30,8 @@ class AuthEmailActivity : AppCompatActivity() {
     private var orgId: Long = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_auth_email)
+        binding = ActivityAuthEmailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initObserver()
         orgId = intent.getLongExtra("orgId", -1)
         email = intent.getStringExtra("email")!!

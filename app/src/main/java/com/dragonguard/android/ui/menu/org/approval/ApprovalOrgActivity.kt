@@ -3,7 +3,6 @@ package com.dragonguard.android.ui.menu.org.approval
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityApprovalOrgBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -14,7 +13,8 @@ class ApprovalOrgActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_approval_org)
+        binding = ActivityApprovalOrgBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용

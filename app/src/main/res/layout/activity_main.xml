@@ -1,47 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.main.MainActivity">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".ui.main.MainActivity">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/content_frame"
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/main_loading"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:lottie_rawRes="@raw/splash_screen" />
 
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/main_loading"
-                    android:layout_gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:lottie_rawRes="@raw/splash_screen" />
+        </FrameLayout>
+    </LinearLayout>
 
-            </FrameLayout>
-        </LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/main_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/main_nav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+        app:itemIconTint="@drawable/compare_menu_selector"
+        app:itemTextColor="@drawable/compare_menu_selector"
+        app:labelVisibilityMode="unlabeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/main_bottom" />
 
-            app:itemIconTint="@drawable/compare_menu_selector"
-            app:itemTextColor="@drawable/compare_menu_selector"
-            app:labelVisibilityMode="unlabeled"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:menu="@menu/main_bottom" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>

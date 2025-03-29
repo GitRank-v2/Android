@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -41,14 +40,12 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
     private var count = 1
     private var changed = true
     private var lastSearch = ""
-    private var popularLanguages = ArrayList<String>()
     private lateinit var languagesCheckBox: ArrayList<Boolean>
     private val viewModel by viewModels<SearchViewModel>()
     private var filterLanguage = StringBuilder()
     private var filterOptions = StringBuilder()
     private var filterResult = StringBuilder()
-    private var type = "GIT_REPO"
-    private var token = ""
+    private var type = getString(R.string.repo)
     private val imgList = HashMap<String, Int>()
     private var repoCount = 0
     private val activityResultLauncher: ActivityResultLauncher<Intent> =
@@ -56,31 +53,37 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
             if (it.resultCode == 0) {
                 val filterIntent = it.data
                 try {
-                    val language = filterIntent?.getStringExtra("language")
-                    val type = filterIntent?.getStringExtra("type")
-                    val topics = filterIntent?.getStringExtra("topics")
-                    val stars = filterIntent?.getStringExtra("stars")
-                    val forks = filterIntent?.getStringExtra("forks")
-                    val name = filterIntent?.getStringExtra("name")
-                    Log.d("results", "type: $type ")
-                    Log.d("results", "language: $language ")
-                    Log.d("results", "topics: $topics ")
-                    Log.d("results", "stars: $stars ")
-                    Log.d("results", "forks: $forks ")
-                    Log.d("results", "name: $name ")
+                    val type = filterIntent?.getStringExtra(getString(R.string.type))
+                    val name =
+                        filterIntent?.getStringExtra(getString(R.string.name))
+                            ?: return@registerForActivityResult
                     if (name != lastSearch) {
                         viewModel.clearRepoNames()
                         viewModel.clearUserNames()
                         binding.searchResult.visibility = View.GONE
                     }
-                    checkLanguage(
-                        languages = language,
-                        type = type,
-                        topics = topics,
-                        stars = stars,
-                        forks = forks,
-                        name = name
-                    )
+                    if (type == getString(R.string.member)) {
+                        if (type != this.type) {
+                            viewModel.clearUserNames()
+                            viewModel.clearRepoNames()
+                            binding.searchResult.visibility = View.GONE
+                        }
+                        callSearchApi(name)
+                    } else {
+                        val language = filterIntent.getStringExtra(getString(R.string.language))
+                        val topics = filterIntent.getStringExtra(getString(R.string.topics))
+                        val stars = filterIntent.getStringExtra(getString(R.string.star))
+                        val forks = filterIntent.getStringExtra(getString(R.string.fork))
+                        checkFilters(
+                            languages = language,
+                            type = type,
+                            topics = topics,
+                            stars = stars,
+                            forks = forks,
+                            name = name
+                        )
+                    }
+
                 } catch (e: Exception) {
 
                 }
@@ -92,7 +95,8 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         this.onBackPressedDispatcher.addCallback(this, callback)
         binding.searchName.isFocusable = false
@@ -107,33 +111,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
         val intent = intent
         repoCount = intent.getIntExtra("count", 0)
-        popularLanguages = arrayListOf(
-            "C",
-            "C#",
-            "C++",
-            "CoffeeScript ",
-            "CSS",
-            "Dart",
-            "DM",
-            "Elixir",
-            "Go",
-            "Groovy",
-            "HTML",
-            "Java",
-            "JavaScript",
-            "Kotlin",
-            "Objective-C",
-            "Perl",
-            "PHP",
-            "PowerShell",
-            "Python",
-            "Ruby",
-            "Rust",
-            "Scala",
-            "Shell",
-            "Swift",
-            "TypeScript"
-        )
+
         imgList.apply {
             put("C", R.drawable.c)
             put("C#", R.drawable.c_sharp)
@@ -205,7 +183,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
     }
 
 
-    private fun checkLanguage(
+    private fun checkFilters(
         languages: String?,
         type: String?,
         topics: String?,
@@ -232,71 +210,71 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
         if (topics != null) {
             when (topics) {
-                "0개" -> {
-                    filterOptions.append("topics:0,")
+                ZERO_TOPIC -> {
+                    filterOptions.append(ZERO_TOPIC_FILTER)
                 }
 
-                "1개" -> {
-                    filterOptions.append("topics:1,")
+                ONE_TOPIC -> {
+                    filterOptions.append(ONE_TOPIC_FILTER)
                 }
 
-                "2개" -> {
-                    filterOptions.append("topics:2,")
+                TWO_TOPIC -> {
+                    filterOptions.append(TWO_TOPIC_FILTER)
                 }
 
-                "3개" -> {
-                    filterOptions.append("topics:3,")
+                THREE_TOPIC -> {
+                    filterOptions.append(THREE_TOPIC_FILTER)
                 }
 
-                "4개 이상" -> {
-                    filterOptions.append("topics:>=4,")
+                FOUR_OR_MORE_TOPIC -> {
+                    filterOptions.append(FOUR_OR_MORE_TOPIC_FILTER)
                 }
             }
         }
         if (stars != null) {
             when (stars) {
-                "10개 미만" -> {
-                    filterOptions.append("stars:0..9,")
+                LESS_THAN_10 -> {
+                    filterOptions.append(LESS_THAN_10_STARS_FILTER)
                 }
 
-                "50개 미만" -> {
-                    filterOptions.append("stars:10..49,")
+                LESS_THAN_50 -> {
+                    filterOptions.append(LESS_THAN_50_STARS_FILTER)
                 }
 
-                "100개 미만" -> {
-                    filterOptions.append("stars:50..99,")
+                LESS_THAN_100 -> {
+                    filterOptions.append(LESS_THAN_100_STARS_FILTER)
                 }
 
-                "500개 미만" -> {
-                    filterOptions.append("stars:100..499,")
+                LESS_THAN_500 -> {
+                    filterOptions.append(LESS_THAN_500_STARS_FILTER)
                 }
 
-                "500개 이상" -> {
-                    filterOptions.append("stars:>500,")
+                MORE_THAN_500 -> {
+                    filterOptions.append(MORE_THAN_500_STARS_FILTER)
                 }
             }
 
         }
         if (forks != null) {
             when (forks) {
-                "10개 미만" -> {
-                    filterOptions.append("forks:0..9")
+                LESS_THAN_10 -> {
+                    filterOptions.append(LESS_THAN_10_FORKS_FILTER)
                 }
 
-                "50개 미만" -> {
-                    filterOptions.append("forks:10..49")
+                LESS_THAN_50 -> {
+                    filterOptions.append(LESS_THAN_50_FORKS_FILTER)
                 }
 
-                "100개 미만" -> {
-                    filterOptions.append("forks:50..99")
+                LESS_THAN_100 -> {
+                    filterOptions.append(LESS_THAN_100_FORKS_FILTER)
                 }
 
-                "500개 미만" -> {
-                    filterOptions.append("forks:100..499")
+                LESS_THAN_500 -> {
+                    filterOptions.append(LESS_THAN_500_FORKS_FILTER)
                 }
 
-                "500개 이상" -> {
-                    filterOptions.append("forks:>500")
+                MORE_THAN_500 -> {
+                    filterOptions.append(MORE_THAN_500_FORKS_FILTER)
                 }
             }
         }
@@ -340,14 +318,13 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
 
     //    repo 검색 api 호출 및 결과 출력
-    // API 완성시 주석 제거
     private fun callSearchApi(name: String) {
         binding.loadingLottie.visibility = View.VISIBLE
         binding.loadingLottie.playAnimation()
         Log.d("필터", "total filters: ${filterResult.toString()}")
         if (!this@SearchActivity.isFinishing) {
             if (type.isNotBlank()) {
-                if (type == "MEMBER") {
+                if (type == getString(R.string.member)) {
                     viewModel.searchUserNames(name, count)
                 } else {
                     if (filterResult.toString().isBlank()) {
@@ -375,7 +352,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
         Log.d("count", "count: $count")
         Log.d("names", viewModel.currentState.userNames.userNames.toString())
         Log.d("repos", viewModel.currentState.repoNames.repoNames.toString())
-        if (type == "MEMBER") {
+        if (type == getString(R.string.member)) {
             if (count == 1) {
                 repositoryProfileAdapter = RepositoryProfileAdapter(
                     viewModel.currentState.userNames.userNames,
@@ -388,7 +365,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
             }
             binding.searchResult.visibility = View.VISIBLE
             repositoryProfileAdapter.notifyDataSetChanged()
-            Log.d("member", viewModel.currentState.userNames.userNames.toString())
+            Log.d(getString(R.string.member), viewModel.currentState.userNames.userNames.toString())
         } else {
             if (count == 1) {
                 repositoryProfileAdapter = if (type.isBlank()) {
@@ -425,9 +402,9 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
     //    데이터 더 받아오는 함수 loadMorePosts() 구현
     private fun loadMorePosts() {
-        Log.d("더 가져오기", viewModel.currentState.repoNames.repoNames.size.toString())
-        Log.d("더 가져오기", viewModel.currentState.userNames.userNames.size.toString())
-        Log.d("더 가져오기", count.toString())
+        //Log.d("더 가져오기", viewModel.currentState.repoNames.repoNames.size.toString())
+        //Log.d("더 가져오기", viewModel.currentState.userNames.userNames.size.toString())
+        //Log.d("더 가져오기", count.toString())
         if (binding.loadingLottie.visibility == View.GONE &&
             (viewModel.currentState.repoNames.repoNames.size >= (count - 1) * 10
                     || viewModel.currentState.userNames.userNames.size >= (count - 1) * 10)
@@ -509,5 +486,63 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
             "$userName 은(는) 회원이 아닙니다.",
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    companion object {
+        private val popularLanguages = arrayListOf(
+            "C",
+            "C#",
+            "C++",
+            "CoffeeScript",
+            "CSS",
+            "Dart",
+            "Elixir",
+            "Go",
+            "Groovy",
+            "HTML",
+            "Java",
+            "JavaScript",
+            "Kotlin",
+            "Objective-C",
+            "Perl",
+            "PHP",
+            "PowerShell",
+            "Python",
+            "Ruby",
+            "Rust",
+            "Scala",
+            "Shell",
+            "Swift",
+            "TypeScript"
+        )
+
+        private const val ZERO_TOPIC = "0개"
+        private const val ONE_TOPIC = "1개"
+        private const val TWO_TOPIC = "2개"
+        private const val THREE_TOPIC = "3개"
+        private const val FOUR_OR_MORE_TOPIC = "4개 이상"
+        private const val LESS_THAN_10 = "10개 미만"
+        private const val LESS_THAN_50 = "50개 미만"
+        private const val LESS_THAN_100 = "100개 미만"
+        private const val LESS_THAN_500 = "500개 미만"
+        private const val MORE_THAN_500 = "500개 이상"
+
+        private const val ZERO_TOPIC_FILTER = "topics:0,"
+        private const val ONE_TOPIC_FILTER = "topics:1,"
+        private const val TWO_TOPIC_FILTER = "topics:2,"
+        private const val THREE_TOPIC_FILTER = "topics:3,"
+        private const val FOUR_OR_MORE_TOPIC_FILTER = "topics:>=4,"
+
+        private const val LESS_THAN_10_STARS_FILTER = "stars:0..9,"
+        private const val LESS_THAN_50_STARS_FILTER = "stars:10..49,"
+        private const val LESS_THAN_100_STARS_FILTER = "stars:50..99,"
+        private const val LESS_THAN_500_STARS_FILTER = "stars:100..499,"
+        private const val MORE_THAN_500_STARS_FILTER = "stars:>500,"
+
+        private const val LESS_THAN_10_FORKS_FILTER = "forks:0..9"
+        private const val LESS_THAN_50_FORKS_FILTER = "forks:10..49"
+        private const val LESS_THAN_100_FORKS_FILTER = "forks:50..99"
+        private const val LESS_THAN_500_FORKS_FILTER = "forks:100..499"
+        private const val MORE_THAN_500_FORKS_FILTER = "forks:>500"
     }
 }

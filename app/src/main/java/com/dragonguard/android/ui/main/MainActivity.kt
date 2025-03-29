@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -42,12 +41,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<MainViewModel>()
     private var backPressed: Long = 0
-    private var refreshState = true
     private var mainFrag: MainFragment? = null
     private var rankingFrag: RankingFragment? = null
     private var compareFrag: SearchCompareRepoFragment? = null
     private var profileFrag: ClientProfileFragment? = null
-    private var imgRefresh = true
     private var finish = false
 
     override fun onNewIntent(intent: Intent) {
@@ -82,7 +79,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Log.d("mainCreate", "main create")
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initObserver()
         //로그아웃시
         this.onBackPressedDispatcher.addCallback(this, callback)

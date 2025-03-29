@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityAuthOrgBinding
 import com.dragonguard.android.ui.menu.org.search.SearchOrganizationActivity
@@ -49,7 +48,8 @@ class AuthOrgActivity : AppCompatActivity() {
     private var emailEndPoint = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_auth_org)
+        binding = ActivityAuthOrgBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)

@@ -14,4 +14,12 @@
     <string name="git_history">개발 활동 내역</string>
     <string name="finish_app">Back 버튼을 한번 더 누르면 종료합니다.</string>
     <string name="activity_sum">"%d"</string>
+    <string name="type">TYPE</string>
+    <string name="language">LANGUAGE</string>
+    <string name="star">STARS</string>
+    <string name="fork">FORKS</string>
+    <string name="topics">TOPICS</string>
+    <string name="name">NAME</string>
+    <string name="member">MEMBER</string>
+    <string name="repo">GIT_REPO</string>
 </resources>

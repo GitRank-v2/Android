@@ -2,7 +2,6 @@ package com.dragonguard.android.ui.search.filter
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
@@ -22,35 +21,6 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
         super.onCreate(savedInstanceState)
         binding = ActivitySearchFilterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val languages = mutableListOf(
-            "C",
-            "C#",
-            "C++",
-            "CoffeeScript ",
-            "CSS",
-            "Dart",
-            "DM",
-            "Elixir",
-            "Go",
-            "Groovy",
-            "HTML",
-            "Java",
-            "JavaScript",
-            "Kotlin",
-            "Objective-C",
-            "Perl",
-            "PHP",
-            "PowerShell",
-            "Python",
-            "Ruby",
-            "Rust",
-            "Scala",
-            "Shell",
-            "Swift",
-            "TypeScript"
-        )
-        val extras = mutableListOf("10개 미만", "50개 미만", "100개 미만", "500개 미만", "500개 이상")
-        val topics = mutableListOf("0개", "1개", "2개", "3개", "4개 이상")
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -63,44 +33,45 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
             binding.forkFilters.removeAllViews()
             binding.filterContent.visibility = View.INVISIBLE
             map.clear()
-            map.put("type", "MEMBER")
+            map[getString(R.string.type)] = getString(R.string.member)
         }
 
         binding.filterRepository.setOnClickListener {
-            map.put("type", "GIT_REPO")
+            map[getString(R.string.type)] = getString(R.string.repo)
             binding.filterContent.visibility = View.VISIBLE
         }
 
         binding.languageFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(languages, "language", this)
+            val bottomSheetFragment =
+                FilterSheetFragment(languages, getString(R.string.language), this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.starFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(extras, "stars", this)
+            val bottomSheetFragment = FilterSheetFragment(extras, getString(R.string.star), this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.forkFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(extras, "stars", this)
+            val bottomSheetFragment = FilterSheetFragment(extras, getString(R.string.fork), this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.topicFilter.setOnClickListener {
-            val bottomSheetFragment = FilterSheetFragment(topics, "stars", this)
+            val bottomSheetFragment = FilterSheetFragment(topics, getString(R.string.topics), this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
         binding.searchName.setOnEditorActionListener { textView, i, keyEvent ->
             if (i == EditorInfo.IME_ACTION_SEARCH) {
-                map.put("name", binding.searchName.text.toString())
+                map[getString(R.string.name)] = binding.searchName.text.toString()
                 val intent = Intent(this@SearchFilterActivity, SearchActivity::class.java)
-                intent.putExtra("type", map["type"])
-                intent.putExtra("language", map["language"])
-                intent.putExtra("stars", map["stars"])
-                intent.putExtra("forks", map["forks"])
-                intent.putExtra("topics", map["topics"])
-                intent.putExtra("name", map["name"])
+                intent.putExtra(getString(R.string.type), map[getString(R.string.type)])
+                intent.putExtra(getString(R.string.language), map[getString(R.string.language)])
+                intent.putExtra(getString(R.string.star), map[getString(R.string.star)])
+                intent.putExtra(getString(R.string.fork), map[getString(R.string.fork)])
+                intent.putExtra(getString(R.string.topics), map[getString(R.string.topics)])
+                intent.putExtra(getString(R.string.name), map[getString(R.string.name)])
                 setResult(0, intent)
                 finish()
             }
@@ -115,7 +86,7 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
     }
 
     //    edittext의 키보드 제거
-    fun closeKeyboard() {
+    private fun closeKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
     }
@@ -155,7 +126,7 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
     override fun onOffStarClick(type: String, prev: String) {
         for (i in 0 until binding.starFilters.childCount) {
             val chipL: Chip = binding.starFilters.getChildAt(i) as Chip
-            Log.d("child", chipL.text.toString())
+            //Log.d("child", chipL.text.toString())
             if (chipL.text.toString() == prev) {
                 map[type] = ""
                 binding.starFilters.removeView(chipL)
@@ -192,9 +163,9 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
     override fun onOnLanguageClick(chip: Chip, type: String, prev: String) {
         val before = map[type]
         if (!before.isNullOrBlank()) {
-            map.put(type, "$before, $prev")
+            map[type] = "$before, $prev"
         } else {
-            map.put(type, prev)
+            map[type] = prev
         }
         chip.setOnClickListener {
             val language = map[type]!!.split(",").toMutableList()
@@ -235,5 +206,37 @@ class SearchFilterActivity : AppCompatActivity(), LanguagesAdapter.OnChipClickLi
             binding.topicFilters.removeView(it)
         }
         binding.topicFilters.addView(chip)
+    }
+
+    companion object {
+        private val languages = mutableListOf(
+            "C",
+            "C#",
+            "C++",
+            "CoffeeScript ",
+            "CSS",
+            "Dart",
+            "DM",
+            "Elixir",
+            "Go",
+            "Groovy",
+            "HTML",
+            "Java",
+            "JavaScript",
+            "Kotlin",
+            "Objective-C",
+            "Perl",
+            "PHP",
+            "PowerShell",
+            "Python",
+            "Ruby",
+            "Rust",
+            "Scala",
+            "Shell",
+            "Swift",
+            "TypeScript"
+        )
+        private val extras = mutableListOf("10개 미만", "50개 미만", "100개 미만", "500개 미만", "500개 이상")
+        private val topics = mutableListOf("0개", "1개", "2개", "3개", "4개 이상")
     }
 }

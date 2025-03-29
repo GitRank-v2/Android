@@ -1,9 +1,8 @@
 package com.dragonguard.android.ui.menu.criterion
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.databinding.DataBindingUtil
+import androidx.appcompat.app.AppCompatActivity
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.ActivityCriterionBinding
 
@@ -14,7 +13,8 @@ class CriterionActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCriterionBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_criterion)
+        binding = ActivityCriterionBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(true)
@@ -29,8 +29,8 @@ class CriterionActivity : AppCompatActivity() {
 //    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
 

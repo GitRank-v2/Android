@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -13,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentApprovedOrgBinding
 import com.dragonguard.android.util.LoadState
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,8 +29,7 @@ class ApprovedOrgFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_approved_org, container, false)
+        binding = FragmentApprovedOrgBinding.inflate(inflater, container, false)
         return binding.root
     }
 

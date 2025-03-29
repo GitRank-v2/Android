@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.dragonguard.android.R
 import com.dragonguard.android.databinding.FragmentCompareSearchBinding
@@ -24,8 +23,7 @@ class SearchCompareRepoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_compare_search, container, false)
+        binding = FragmentCompareSearchBinding.inflate(inflater, container, false)
         resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 when (result.resultCode) {

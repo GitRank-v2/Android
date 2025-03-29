@@ -1,274 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.menu.criterion.CriterionActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="3.4"
         tools:context=".ui.menu.criterion.CriterionActivity">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.3"
+            android:background="@android:color/transparent"
+            android:textSize="25sp" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3.1"
             android:orientation="vertical"
-            android:weightSum="3.4"
-            tools:context=".ui.menu.criterion.CriterionActivity">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.3"
-                android:background="@android:color/transparent"
-                android:textSize="25sp" />
-
+            android:weightSum="5">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="3.1"
+                android:layout_weight="0.4"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:layout_weight="4.5"
+                    android:fontFamily="@font/ibm_semibold"
+                    android:gravity="center_vertical"
+                    android:text="commit :          1"
+                    android:textColor="@color/black"
+                    android:textSize="25sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.4"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:layout_weight="4.5"
+                    android:fontFamily="@font/ibm_semibold"
+                    android:gravity="center_vertical"
+                    android:text="issue :               1"
+                    android:textColor="@color/black"
+                    android:textSize="25sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.4"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:layout_weight="4.5"
+                    android:fontFamily="@font/ibm_semibold"
+                    android:gravity="center_vertical"
+                    android:text="pull request :  1"
+                    android:textColor="@color/black"
+                    android:textSize="25sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3.7"
                 android:orientation="vertical"
                 android:weightSum="5">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="0.4"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
                     android:orientation="horizontal"
+                    android:padding="5sp"
                     android:weightSum="5">
 
-                    <View
+                    <ImageView
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.5" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/bronze" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="left"
-                        android:layout_weight="4.5"
+                        android:layout_marginLeft="5sp"
+                        android:layout_weight="3"
                         android:fontFamily="@font/ibm_semibold"
                         android:gravity="center_vertical"
-                        android:text="commit :          1"
+                        android:text="Bronze \n기여도: 50 ~ 199"
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="20sp" />
+
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="0.4"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
                     android:orientation="horizontal"
+                    android:padding="5sp"
                     android:weightSum="5">
 
-                    <View
+                    <ImageView
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.5" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/silver" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="left"
-                        android:layout_weight="4.5"
+                        android:layout_marginLeft="5sp"
+                        android:layout_weight="3"
                         android:fontFamily="@font/ibm_semibold"
                         android:gravity="center_vertical"
-                        android:text="issue :               1"
+                        android:text="Silver \n기여도: 200 ~ 499"
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="20sp" />
+
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="0.4"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
                     android:orientation="horizontal"
+                    android:padding="5sp"
                     android:weightSum="5">
 
-                    <View
+                    <ImageView
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.5" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/gold" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="left"
-                        android:layout_weight="4.5"
+                        android:layout_marginLeft="5sp"
+                        android:layout_weight="3"
                         android:fontFamily="@font/ibm_semibold"
                         android:gravity="center_vertical"
-                        android:text="pull request :  1"
+                        android:text="Gold  \n기여도: 500 ~ 999"
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="20sp" />
+
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3.7"
-                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:padding="5sp"
                     android:weightSum="5">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:gravity="center_horizontal"
-                        android:padding="5sp"
-                        android:weightSum="5">
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/platinum" />
 
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.7"
-                            android:adjustViewBounds="true"
-                            android:background="@drawable/bronze" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="5sp"
-                            android:layout_weight="3"
-                            android:fontFamily="@font/ibm_semibold"
-                            android:gravity="center_vertical"
-                            android:text="Bronze \n기여도: 50 ~ 199"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:gravity="center_horizontal"
-                        android:padding="5sp"
-                        android:weightSum="5">
-
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.7"
-                            android:adjustViewBounds="true"
-                            android:background="@drawable/silver" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="5sp"
-                            android:layout_weight="3"
-                            android:fontFamily="@font/ibm_semibold"
-                            android:gravity="center_vertical"
-                            android:text="Silver \n기여도: 200 ~ 499"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center_horizontal"
-                        android:orientation="horizontal"
-                        android:padding="5sp"
-                        android:weightSum="5">
-
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.7"
-                            android:adjustViewBounds="true"
-                            android:background="@drawable/gold" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="5sp"
-                            android:layout_weight="3"
-                            android:fontFamily="@font/ibm_semibold"
-                            android:gravity="center_vertical"
-                            android:text="Gold  \n기여도: 500 ~ 999"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:gravity="center_horizontal"
-                        android:padding="5sp"
-                        android:weightSum="5">
-
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.7"
-                            android:adjustViewBounds="true"
-                            android:background="@drawable/platinum" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="5sp"
-                            android:layout_weight="3"
-                            android:fontFamily="@font/ibm_semibold"
-                            android:gravity="center_vertical"
-                            android:text="Platinum  \n기여도: 1000 ~ 2999"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:gravity="center_horizontal"
-                        android:padding="5sp"
-                        android:weightSum="5">
-
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.7"
-                            android:adjustViewBounds="true"
-                            android:background="@drawable/diamond" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="5sp"
-                            android:layout_weight="3"
-                            android:fontFamily="@font/ibm_semibold"
-                            android:gravity="center_vertical"
-                            android:text="Diamond  \n기여도: 3000~"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5sp"
+                        android:layout_weight="3"
+                        android:fontFamily="@font/ibm_semibold"
+                        android:gravity="center_vertical"
+                        android:text="Platinum  \n기여도: 1000 ~ 2999"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:padding="5sp"
+                    android:weightSum="5">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/diamond" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5sp"
+                        android:layout_weight="3"
+                        android:fontFamily="@font/ibm_semibold"
+                        android:gravity="center_vertical"
+                        android:text="Diamond  \n기여도: 3000~"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
 
         </LinearLayout>
 
+
     </LinearLayout>
-</layout>
+
+</LinearLayout>

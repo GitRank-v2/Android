@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -26,7 +25,8 @@ class RegistOrgActivity : AppCompatActivity() {
     private val viewModel by viewModels<RegistOrgViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_regist_org)
+        binding = ActivityRegistOrgBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initObserver()
         val arr1: MutableList<String> = mutableListOf("선택하세요")
         arr1.apply {
