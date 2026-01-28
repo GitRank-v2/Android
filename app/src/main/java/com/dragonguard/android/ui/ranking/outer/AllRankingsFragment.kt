@@ -57,55 +57,37 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 viewModel.setTypeName("사용자 전체")
                 viewModel.setTypeToUser()
                 viewModel.getTotalUserRanking(page, size)
-                RankingsAdapter(
-                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                    this
-                )
+                RankingsAdapter(this)
             }
 
             "조직 전체" -> {
                 viewModel.setTypeName("조직 전체")
                 viewModel.getTotalOrganizationRanking(page)
-                RankingsAdapter(
-                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    this
-                )
+                RankingsAdapter(this)
             }
 
             "회사" -> {
                 viewModel.setTypeName("회사")
                 viewModel.getCompanyRanking(page)
-                RankingsAdapter(
-                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    this
-                )
+                RankingsAdapter(this)
             }
 
             "대학교" -> {
                 viewModel.setTypeName("대학교")
                 viewModel.getUniversityRanking(page)
-                RankingsAdapter(
-                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    this
-                )
+                RankingsAdapter(this)
             }
 
             "고등학교" -> {
                 viewModel.setTypeName("고등학교")
                 viewModel.getHighSchoolRanking(page)
-                RankingsAdapter(
-                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    this
-                )
+                RankingsAdapter(this)
             }
 
             "ETC" -> {
                 viewModel.setTypeName("ETC")
                 viewModel.getEtcRanking(page)
-                RankingsAdapter(
-                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                    this
-                )
+                RankingsAdapter(this)
             }
         }
     }
@@ -267,10 +249,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                     viewModel.currentState.rankings.ranking.removeAt(0)
                     viewModel.currentState.rankings.ranking.removeAt(0)
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
-                        rankingsAdapter = RankingsAdapter(
-                            (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking,
-                            this
-                        )
+                        rankingsAdapter = RankingsAdapter(this)
                         binding.eachRankings.adapter = rankingsAdapter
                         val layoutmanager = LinearLayoutManager(requireContext())
                         layoutmanager.initialPrefetchItemCount = 4
@@ -282,7 +261,7 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                 }
             }
         }
-        binding.eachRankings.adapter?.notifyDataSetChanged()
+        rankingsAdapter.submitList((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.AllUsers.Rankings).userRanking.toList())
         page++
         if ((page * size) - 3 == viewModel.currentState.rankings.ranking.size) {
             current++
@@ -351,31 +330,19 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
                     if (this@AllRankingsFragment.isAdded && !this@AllRankingsFragment.isDetached && this@AllRankingsFragment.isVisible && !this@AllRankingsFragment.isRemoving) {
                         when (rankingType) {
                             "회사" -> {
-                                rankingsAdapter = RankingsAdapter(
-                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    this
-                                )
+                                rankingsAdapter = RankingsAdapter(this)
                             }
 
                             "대학교" -> {
-                                rankingsAdapter = RankingsAdapter(
-                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    this
-                                )
+                                rankingsAdapter = RankingsAdapter(this)
                             }
 
                             "고등학교" -> {
-                                rankingsAdapter = RankingsAdapter(
-                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    this
-                                )
+                                rankingsAdapter = RankingsAdapter(this)
                             }
 
                             "ETC" -> {
-                                rankingsAdapter = RankingsAdapter(
-                                    (viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking,
-                                    this
-                                )
+                                rankingsAdapter = RankingsAdapter(this)
                             }
                         }
                         binding.eachRankings.adapter = rankingsAdapter
@@ -388,8 +355,8 @@ class AllRankingsFragment(private val rankingType: String, private val userName:
 
                 }
             }
+            rankingsAdapter.submitList((viewModel.currentState.rankings as RankingsContract.RankingsState.Rankings.Organization.Rankings).orgRanking.toList())
         }
-        binding.eachRankings.adapter?.notifyDataSetChanged()
         page++
         if ((page * size) - 3 == viewModel.currentState.rankings.ranking.size) {
             current++

@@ -36,10 +36,6 @@ class ApprovedOrgAdapter :
         holder.bind(getItem(position))
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
     companion object {
         private val differ = object : DiffUtil.ItemCallback<ApproveRequestOrgModelItem>() {
             override fun areItemsTheSame(

@@ -53,10 +53,6 @@ class ContributorsAdapter(
         holder.bind(getItem(position))
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
     interface OnRepoContributorClickListener {
         fun onRepoContributorClick(userName: String)
     }

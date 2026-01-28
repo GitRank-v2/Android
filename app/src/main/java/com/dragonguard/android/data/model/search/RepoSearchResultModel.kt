@@ -17,4 +17,11 @@ data class RepoSearchResultModel(
     val description: String?,
     @field:Json(name = "created_at")
     val created_at: String?
-) : Serializable
+) : Serializable {
+    fun compare(other: RepoSearchResultModel): Boolean {
+        return this.full_name == other.full_name &&
+                this.language == other.language &&
+                this.description == other.description &&
+                this.created_at == other.created_at
+    }
+}

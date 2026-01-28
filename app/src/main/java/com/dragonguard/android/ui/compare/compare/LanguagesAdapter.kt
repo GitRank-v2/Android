@@ -89,10 +89,6 @@ class LanguagesAdapter(
 
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }

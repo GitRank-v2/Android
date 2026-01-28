@@ -116,7 +116,6 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
                         )
                     )
                 }
-//                Log.d("유져", "랭킹 ${ranking+1} 추가")
                 ranking++
             }
             Log.d("뷰 보이기 전", "initrecycler 전")
@@ -131,12 +130,13 @@ class OrganizationInternalActivity : AppCompatActivity(), RankingsAdapter.OnRank
         binding.orgInternalRanking.setItemViewCacheSize(orgInternalRankings.size)
         if (page == 0) {
             organizationInternalRankingAdapter =
-                RankingsAdapter(orgInternalRankings, this)
+                RankingsAdapter(this)
             binding.orgInternalRanking.adapter = organizationInternalRankingAdapter
             binding.orgInternalRanking.layoutManager = LinearLayoutManager(this)
             binding.orgInternalRanking.visibility = View.VISIBLE
         }
-        organizationInternalRankingAdapter.notifyDataSetChanged()
+        organizationInternalRankingAdapter.submitList(orgInternalRankings.toList())
+
         page++
         Log.d("api 횟수", "$page 페이지 검색")
         binding.progressBar.visibility = View.GONE

@@ -3,6 +3,8 @@ package com.dragonguard.android.ui.search
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.data.model.search.RepoSearchResultModel
 import com.dragonguard.android.data.model.search.UserNameModelItem
@@ -10,11 +12,10 @@ import com.dragonguard.android.databinding.RepositoryListBinding
 
 //검색한 레포지토리 나열하는 리사이클러뷰 어댑터 구현
 class RepositoryProfileAdapter(
-    private val datas: ArrayList<*>,
     private val imgList: HashMap<String, Int>,
     private val repoCount: Int,
     private val listener: OnRepositoryClickListener
-) : RecyclerView.Adapter<RepositoryProfileAdapter.ViewHolder>() {
+) : ListAdapter<Any, RepositoryProfileAdapter.ViewHolder>(differ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             RepositoryListBinding.inflate(
@@ -24,8 +25,6 @@ class RepositoryProfileAdapter(
             )
         )
     }
-
-    override fun getItemCount(): Int = datas.size
 
     //리사이클러 뷰의 요소들을 넣어줌
     inner class ViewHolder(private val binding: RepositoryListBinding) :
@@ -81,6 +80,32 @@ class RepositoryProfileAdapter(
         }
     }
 
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<Any>() {
+            override fun areItemsTheSame(
+                oldItem: Any,
+                newItem: Any
+            ) = when (oldItem) {
+                is RepoSearchResultModel -> {
+                    val new = newItem as RepoSearchResultModel
+                    oldItem.compare(new)
+                }
+
+                is UserNameModelItem -> {
+                    val new = newItem as UserNameModelItem
+                    oldItem.compare(new)
+                }
+
+                else -> false
+            }
+
+            override fun areContentsTheSame(
+                oldItem: Any,
+                newItem: Any
+            ) = oldItem == newItem
+        }
+    }
+
     interface OnRepositoryClickListener {
         fun onSearchRepositoryClick(repoName: String)
         fun onCompareSearchResultRepositoryClick(repoName: String)
@@ -88,12 +113,8 @@ class RepositoryProfileAdapter(
         fun onUserNotServiceMemberClick(userName: String)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(datas[position])
+        holder.bind(getItem(position))
     }
 
 }

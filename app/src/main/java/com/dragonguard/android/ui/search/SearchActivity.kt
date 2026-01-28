@@ -60,12 +60,14 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
                     if (name != lastSearch) {
                         viewModel.clearRepoNames()
                         viewModel.clearUserNames()
+                        repositoryProfileAdapter.submitList(null)
                         binding.searchResult.visibility = View.GONE
                     }
                     if (type == getString(R.string.member)) {
                         if (type != this.type) {
                             viewModel.clearUserNames()
                             viewModel.clearRepoNames()
+                            repositoryProfileAdapter.submitList(null)
                             binding.searchResult.visibility = View.GONE
                         }
                         callSearchApi(name)
@@ -355,7 +357,6 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
         if (type == getString(R.string.member)) {
             if (count == 1) {
                 repositoryProfileAdapter = RepositoryProfileAdapter(
-                    viewModel.currentState.userNames.userNames,
                     imgList,
                     repoCount,
                     this@SearchActivity
@@ -364,20 +365,18 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
                 binding.searchResult.layoutManager = LinearLayoutManager(this)
             }
             binding.searchResult.visibility = View.VISIBLE
-            repositoryProfileAdapter.notifyDataSetChanged()
+            repositoryProfileAdapter.submitList(viewModel.currentState.userNames.userNames.toList())
             Log.d(getString(R.string.member), viewModel.currentState.userNames.userNames.toString())
         } else {
             if (count == 1) {
                 repositoryProfileAdapter = if (type.isBlank()) {
                     RepositoryProfileAdapter(
-                        viewModel.currentState.repoNames.repoNames,
                         imgList,
                         repoCount,
                         this@SearchActivity
                     )
                 } else {
                     RepositoryProfileAdapter(
-                        viewModel.currentState.repoNames.repoNames,
                         imgList,
                         repoCount,
                         this@SearchActivity
@@ -388,7 +387,7 @@ class SearchActivity : AppCompatActivity(), RepositoryProfileAdapter.OnRepositor
 
             }
             Log.d("repository", viewModel.currentState.repoNames.repoNames.toString())
-            repositoryProfileAdapter.notifyDataSetChanged()
+            repositoryProfileAdapter.submitList(viewModel.currentState.repoNames.repoNames.toList())
             binding.searchResult.visibility = View.VISIBLE
         }
         Log.d("api 횟수", "$count 페이지 검색")

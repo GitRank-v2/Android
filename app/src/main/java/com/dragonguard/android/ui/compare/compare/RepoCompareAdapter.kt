@@ -161,10 +161,6 @@ class RepoCompareAdapter(private val data1: RepoStats, private val data2: RepoSt
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(data1, data2, getItem(position), position)
     }

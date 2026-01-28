@@ -54,10 +54,6 @@ class ApproveRequestOrgAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
     private fun approveApproval(
         data1: ApproveRequestOrgModelItem,
         currentPosition: Int,

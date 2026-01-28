@@ -4,6 +4,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dragonguard.android.R
 import com.dragonguard.android.data.model.rankings.OrgInternalRankingsModel
@@ -13,9 +15,8 @@ import com.dragonguard.android.databinding.RankingListBinding
 import com.dragonguard.android.util.CustomGlide
 
 class RankingsAdapter(
-    private val rankings: List<*>,
     private val listener: OnRankingClickListener
-) : RecyclerView.Adapter<RankingsAdapter.ViewHolder>() {
+) : ListAdapter<Any, RankingsAdapter.ViewHolder>(differ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             RankingListBinding.inflate(
@@ -143,14 +144,8 @@ class RankingsAdapter(
 
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
-    override fun getItemCount(): Int = rankings.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(rankings[position])
+        holder.bind(getItem(position))
     }
 
     interface OnRankingClickListener {
@@ -158,5 +153,34 @@ class RankingsAdapter(
         fun onOrgInternalRankingClick(orgName: String)
         fun onOrgInternalRankingUserClick(userName: String)
         fun onOrgRankingClick(orgName: String)
+    }
+
+    companion object {
+        private val differ = object : DiffUtil.ItemCallback<Any>() {
+            override fun areItemsTheSame(oldItem: Any, newItem: Any) =
+                when (oldItem) {
+                    is TotalUsersRankingsModel -> {
+                        if (newItem !is TotalUsersRankingsModel) false
+                        else oldItem.github_id == newItem.github_id
+                    }
+
+                    is OrgInternalRankingsModel -> {
+                        if (newItem !is OrgInternalRankingsModel) false
+                        else oldItem.github_id == newItem.github_id
+                    }
+
+                    is TotalOrganizationModel -> {
+                        if (newItem !is TotalOrganizationModel) false
+                        else oldItem.name == newItem.name
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+
+            override fun areContentsTheSame(oldItem: Any, newItem: Any) =
+                oldItem == newItem
+        }
     }
 }
